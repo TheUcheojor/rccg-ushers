@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>RCCG Ushers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css"   rel="stylesheet" href="/views/stylesheets/main.css" media="all"  />
+    <link type="text/css"   rel="stylesheet" href="/views/stylesheets/graph.css" media="all"  />
+    <link type="text/css"   rel="stylesheet" href="/views/stylesheets/search.css" media="all"  />
+
+
+    <script src="../javascripts/importedScripts/jquery-3.5.0.min.js" ></script>
+    <script src="../javascripts/importedScripts/moment.min.js"></script>
+
+    <script src="../javascripts/importedScripts/sweetalert2.all.min.js" ></script>
+    <script src="../javascripts/importedScripts/Chart.min.js" ></script>
+
+    <script src="../javascripts/myScripts/main.js" ></script>
+    <script src="../javascripts/myScripts/requestsController.js" ></script>
+    <script src="../javascripts/myScripts/graphs.js" ></script>
+    <script src="../javascripts/myScripts/search.js" ></script>
+
+
+
+
+  </head>
+  <body >
+    <div class="hor-bar"  >
+
+         <div class="hor-bar-item vert-menu-sel" name='menu OFF' onclick="highlightButton('vert-menu-sel');"> <img src="/views/images/menu.png"  style="position:absolute;float:left;top:0;padding:10px;width:30px;height:30px;filter:'none'"/> </div>
+         <div class="hor-bar-item about-us" onclick="highlightButton('about-us')"> About Us</div>
+         <div class="hor-bar-item main-page" onclick="highlightButton('main-page');"> <bold> RCCG Ushers</bold></div>
+         <div class="hor-bar-item rccgLogo" >  <img src="/views/images/rccg.png" style="position:relative;top:0px;width:25px;height:25px;filter:none;"/></div>
+         <!--<div class="hor-bar-item"> Item 3</div> -->
+
+         <div class="vert-bar">
+           <div class="vert-bar-item " onclick="getPage('main')">Home</div>
+           <div class="vert-bar-item " onclick="getPage('search')">Search</div>
+           <div class="vert-bar-item " onclick="getPage('documents')">Documents</div>
+           <div class="vert-bar-item "onclick="getPage('setting')">Settings</div>
+           <div class="vert-bar-item " onclick="getPage('updates')">Updates</div>
+
+
+              <!-- <span> Item 1</span> -->
+          </div>
+    </div>
+
+    <div class="mainContent">
+
+
+        <div class="page search">
+
+                      <div class="search-container">
+                        <input type="text" class="inputSearch" placeholder="Search" onkeyup="search(this.value)" />
+
+                        <div class="search-results">
+                          <table class="result-table">
+
+                          </table>
+                        </div>
+                      </div>
+
+                      <div class="preview-container">
+
+
+                      </div>
+
+                      <div class="result-preview-container" >
+                            <div class="result-preview-content">
+                                  <div class="filterBy" id="year-filter">Filter By Year</div>
+                                  <div class="filterBy" id="month-filter" >Filter By Month</div>
+                                  <div class="filterBy" id="day-filter" >Filter By Day  </div>
+                            </div>
+                      </div>
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+  </body>
+</html>
