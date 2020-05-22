@@ -139,45 +139,6 @@ function search(searchStr){
             }
 
 
-
-
-
-
-
-
-
-
-              // else  if(mode=='year'){
-              //
-              //        htmlString=`
-              //                     <tr>
-              //                         <th colspan="2">Year</th>
-              //                         <th></th>
-              //                       </tr>`  ;
-              //
-              //       htmlString+=`
-              //                       <tr>
-              //                             <td colspan="2">${searchStr}</td>
-              //                             <td class='result-preview-button' onclick='openResultPreview("year", { data: ${JSON.stringify(data)},year:"${searchStr}"})'>Prevew Details</td>
-              //                       </tr>`;
-              //
-              //   }else  if(mode=='yearMonth'){
-              //
-              //          htmlString=`
-              //                       <tr>
-              //                           <th colspan="2">Year/Month</th>
-              //                           <th></th>
-              //                         </tr>`  ;
-              //
-              //         htmlString+=`
-              //                         <tr>
-              //                               <td colspan="2">${searchStr.toLowerCase()}</td>
-              //                               <td class='result-preview-button' onclick='openResultPreview("yearMonth", { data: ${JSON.stringify(data)},yearMonth:"${searchStr.toLowerCase()}"})'>Prevew Details</td>
-              //                         </tr>`;
-              //
-              //     }
-
-
               $('.result-table').hide();
               $('.result-table').html(htmlString);
               $('.result-table').fadeIn();
@@ -263,22 +224,6 @@ function filterDateResult(data,filter,graphs,title){
   developHtmlResults(overviewMain, title,graphs,filter,fileName);
 
 }
-
-//
-// function filterYearResult(data,filter,graphs,year){
-//
-//     $('.filterBy').fadeOut();
-//     console.log("data: "+JSON.stringify(data));
-//
-//     var overviewMain=developMultiOverview(data,filter);
-//     var title=`YEAR ${year}`;
-//     developHtmlResults(overviewMain, title,graphs,filter);
-//     //console.log("testingArray: "+JSON.stringify(testingArray));
-//
-// }
-
-
-
 
 
 function filterNameResult(data,filter, graphs){
