@@ -42,6 +42,8 @@ function generateGraphs(mode,graphType,graphData,filter){
 
     if(mode==null||mode==undefined){return;}
 
+    console.log("graphData: "+JSON.stringify(graphData) );
+
     var canvas=$('.'+mode+"Canvas"+graphType.charAt(0).toUpperCase()+graphType.slice(1))[0];
 
     fitToContainer(canvas);
@@ -54,7 +56,7 @@ function generateGraphs(mode,graphType,graphData,filter){
 
       if( ['totalDonationsVsDate','numOfMembersVsDate'].includes(graphType)){
 
-            let xValues=sortDates(Object.keys(graphData));
+            let xValues=sortDates(Object.keys(graphData),'num');
 
             xValues.forEach((xVal,index)=>{
                     // xValues[index]= capitalize(xVal)}
@@ -76,7 +78,7 @@ function generateGraphs(mode,graphType,graphData,filter){
 
 
       if( ['methodOfPaymentVsDate'].includes(graphType)){
-          let xValues=sortDates(Object.keys(graphData));
+          let xValues=sortDates(Object.keys(graphData),'num');
 
           console.log("xValues: "+JSON.stringify(xValues));
 
@@ -173,7 +175,13 @@ function createCanvas(ctx,xValues, y_dataset,graphType,filter){
 
 
 //This functions sorts a given array of string dates: forms include YEAR, MONTH/YEAR, and MONTH/DAY/YEAR
-function sortDates(dates){
+function sortDates(dates, monthOuputPreference){//monthOuputPreference can be num or text [Referring to the month]
+
+	var monthNumericalToString={  1:"janurary",2:"feburary",3:"march",4:"april",5:"may",6:"june",
+                    7:"july",8:"august",9:"september",10:"october",11:"november",12:"december"};
+
+var stringToMonthNumerical={"janurary":1,"feburary":2,"march":3,"april":4,"may":5,"june":6,"july":7,
+              "august":8,"september":9,"october":10,"november":11,"december":12};
 
     var sortedDates=[];
 
@@ -183,8 +191,17 @@ function sortDates(dates){
 
     dates.forEach( (date,dateIndex)=>{//Break dates array into 2-d array of date components
           sortedDates[dateIndex]=[];
-          date.split('/').forEach( (dateComp)=>{
-                sortedDates[dateIndex].push(parseInt(dateComp));
+          date.split('/').forEach( (dateComp,index)=>{
+
+          		if(isNaN(dateComp)){
+
+                		sortedDates[dateIndex].push(stringToMonthNumerical[dateComp]);
+                }else{
+                	sortedDates[dateIndex].push(parseInt(dateComp));
+                }
+
+
+
               });
     });
 
@@ -197,12 +214,18 @@ function sortDates(dates){
             sortedDates.sort((a,b)=>{return a[1]-b[1];});//sort year
 
     }else if(sortedDates[0].length==3){//SORT YEAR/MONTH/DAY
-    		sortedDates.sort((a,b)=>{return a[1]-b[1];});//sort day
+    		  sortedDates.sort((a,b)=>{return a[1]-b[1];});//sort day
             sortedDates.sort((a,b)=>{return a[0]-b[0];});//sort month
             sortedDates.sort((a,b)=>{return a[2]-b[2];});//sort year
     }
 
 	sortedDates.forEach( (dateArray, arrIndex)=>{//Turing 2-d array into 1-d string array
+
+                  if(dateArray.length!=1 && monthOuputPreference=='text' ){
+
+                  	dateArray[0]=monthNumericalToString[ dateArray[0] ];
+                  }
+
                   dates[arrIndex]=dateArray.join('/');
     });
 

@@ -15,10 +15,19 @@
     <script src="../javascripts/importedScripts/sweetalert2.all.min.js" ></script>
     <script src="../javascripts/importedScripts/Chart.min.js" ></script>
 
+    <script src="../javascripts/importedScripts/jspdf.min.js" ></script>
+    <script src="../javascripts/importedScripts/html2canvas.js" ></script>
+    <script src="../javascripts/importedScripts/html2canvas.min.js" ></script>
+    <script src="../javascripts/importedScripts/jspdf.plugin.autotable.js" ></script>
+
     <script src="../javascripts/myScripts/main.js" ></script>
     <script src="../javascripts/myScripts/requestsController.js" ></script>
     <script src="../javascripts/myScripts/graphs.js" ></script>
     <script src="../javascripts/myScripts/search.js" ></script>
+
+
+    <script src="../javascripts/myScripts/print.js" ></script>
+
 
 
 
@@ -34,7 +43,7 @@
          <!--<div class="hor-bar-item"> Item 3</div> -->
 
          <div class="vert-bar">
-           <div class="vert-bar-item " onclick="getPage('main')">Home</div>
+           <div class="vert-bar-item " onclick="getPage('main')">Main</div>
            <div class="vert-bar-item " onclick="getPage('search')">Search</div>
            <div class="vert-bar-item " onclick="getPage('documents')">Documents</div>
            <div class="vert-bar-item "onclick="getPage('setting')">Settings</div>
@@ -65,7 +74,7 @@
 
                       </div>
 
-                      <div class="result-preview-container" >
+                      <div class="result-preview-container" id='searchResults' >
                             <div class="result-preview-content">
                                   <div class="filterBy" id="year-filter">Filter By Year</div>
                                   <div class="filterBy" id="month-filter" >Filter By Month</div>

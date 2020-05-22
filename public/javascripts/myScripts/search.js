@@ -18,6 +18,8 @@ window.onclick = function(event) {
 };
 
 
+
+
 function search(searchStr){
 
     var mode;
@@ -87,11 +89,16 @@ function search(searchStr){
                   $('.result-table').html('');
                   return;
                 }
-              console.log("data: "+JSON.stringify(data));
 
-              if(mode='name'){
 
-                    var htmlString=`
+              // console.log("mode :"+mode);
+              // console.log("data: "+JSON.stringify(data));
+
+                var htmlString='';
+
+              if(mode=='name'){
+
+                     htmlString=`
                                   <tr>
                                       <th>First Name</th>
                                       <th>Last Name</th>
@@ -106,238 +113,432 @@ function search(searchStr){
                                       <tr>
                                             <td> ${capitalize(item.FirstName)} </td>
                                             <td>${capitalize(item.LastName)} </td>
-                                            <td class='result-preview-button' onclick='openNameResultPreview(${JSON.stringify(item)})'>Prevew Details</td>
+                                            <td class='result-preview-button' onclick='openResultPreview("name", {data:${JSON.stringify(item)}})'>Prevew Details</td>
                                       </tr>`;
 
                     });
 
-                    $('.result-table').html(htmlString);
 
-              }
+
+              }else  if(['year','yearMonth','yearMonthDay'].includes(mode)){
+
+                    var modeToTableHead={"year":"Year","yearMonth":"Year/Month","yearMonthDay":"Year/Month/Day" };
+
+                     htmlString=`
+                                  <tr>
+                                      <th colspan="2">${modeToTableHead[mode]}</th>
+                                      <th></th>
+                                    </tr>`  ;
+
+                    htmlString+=`
+                                    <tr>
+                                          <td colspan="2">${searchStr.toLowerCase()}</td>
+                                          <td class='result-preview-button' onclick='openResultPreview("date", { data: ${JSON.stringify(data)},date:"${searchStr.toLowerCase()}"})'>Prevew Details</td>
+                                    </tr>`;
+
+            }
+
+
+
+
+
+
+
+
+
+
+              // else  if(mode=='year'){
+              //
+              //        htmlString=`
+              //                     <tr>
+              //                         <th colspan="2">Year</th>
+              //                         <th></th>
+              //                       </tr>`  ;
+              //
+              //       htmlString+=`
+              //                       <tr>
+              //                             <td colspan="2">${searchStr}</td>
+              //                             <td class='result-preview-button' onclick='openResultPreview("year", { data: ${JSON.stringify(data)},year:"${searchStr}"})'>Prevew Details</td>
+              //                       </tr>`;
+              //
+              //   }else  if(mode=='yearMonth'){
+              //
+              //          htmlString=`
+              //                       <tr>
+              //                           <th colspan="2">Year/Month</th>
+              //                           <th></th>
+              //                         </tr>`  ;
+              //
+              //         htmlString+=`
+              //                         <tr>
+              //                               <td colspan="2">${searchStr.toLowerCase()}</td>
+              //                               <td class='result-preview-button' onclick='openResultPreview("yearMonth", { data: ${JSON.stringify(data)},yearMonth:"${searchStr.toLowerCase()}"})'>Prevew Details</td>
+              //                         </tr>`;
+              //
+              //     }
+
+
+              $('.result-table').hide();
+              $('.result-table').html(htmlString);
+              $('.result-table').fadeIn();
        },
       error : function(e) {alert("Error!");}
     });
 }
 
 
-function openNameResultPreview(memberItem){
-
-  $('.result-preview-container').show();
-
-  $(`#year-filter`).click( ()=>{
-  //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
-    $.ajax({
-            url: '/internals/getMemberGraph',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({member:[memberItem], filter:'year' } ),
-            dataType: 'json',
-            success: function(memberGraph){
-                  console.log("memberGraph: "+JSON.stringify(memberGraph));
-                  filterNameResult(memberItem,'year',memberGraph);
-            },
-           error : function(e) {alert("Error!");}
-        });
-  } );
+function openResultPreview(mode, paramsObj){
 
 
-  $(`#month-filter`).click( ()=>{
-  //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
-    $.ajax({
-            url: '/internals/getMemberGraph',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({member:[memberItem], filter:'month' } ),
-            dataType: 'json',
-            success: function(memberGraph){
-                  console.log("memberGraph: "+JSON.stringify(memberGraph));
-                  filterNameResult(memberItem,'month',memberGraph);
-            },
-           error : function(e) {alert("Error!");}
-        });
-  } );
+        $('.result-preview-container').show();
+        if(mode=='name' ){paramsObj.data=[paramsObj.data];}
 
-  $(`#day-filter`).click( ()=>{
-  //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
-    $.ajax({
-            url: '/internals/getMemberGraph',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({member:[memberItem], filter:'day' } ),
-            dataType: 'json',
-            success: function(memberGraph){
-                  console.log("memberGraph: "+JSON.stringify(memberGraph));
-                  filterNameResult(memberItem,'day',memberGraph);
-            },
-           error : function(e) {alert("Error!");}
-        });
-  } );
+        $(`#year-filter`).click( ()=>{
+        //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
+
+          $.ajax({
+                  url: '/internals/getMemberGraph',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({member:paramsObj.data, filter:'year' } ),
+                  dataType: 'json',
+                  success: function(memberGraph){
+                        console.log("mode: "+mode)
+                        console.log("memberGraph: "+JSON.stringify(memberGraph));
+                        if(mode=='name' ){ filterNameResult(paramsObj.data[0],'year',memberGraph);}
+                        else if(mode=='date'){ filterDateResult(paramsObj.data,'year',memberGraph,paramsObj.date);}
+
+                  },
+                 error : function(e) {alert("Error!");}
+              });
+        } );
+
+
+        $(`#month-filter`).click( ()=>{
+        //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
+          $.ajax({
+                  url: '/internals/getMemberGraph',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({member:paramsObj.data, filter:'month' } ),
+                  dataType: 'json',
+                  success: function(memberGraph){
+                        console.log("memberGraph: "+JSON.stringify(memberGraph));
+                          if(mode=='name' ){filterNameResult(paramsObj.data[0],'month',memberGraph);}
+                          else if(mode=='date'){filterDateResult(paramsObj.data,'month',memberGraph,paramsObj.date);}
+                  },
+                 error : function(e) {alert("Error!");}
+              });
+        } );
+
+        $(`#day-filter`).click( ()=>{
+        //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
+          $.ajax({
+                  url: '/internals/getMemberGraph',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({member:paramsObj.data, filter:'day' } ),
+                  dataType: 'json',
+                  success: function(memberGraph){
+                        console.log("memberGraph: "+JSON.stringify(memberGraph));
+                        if(mode=='name' ){filterNameResult(paramsObj.data[0],'day',memberGraph);}
+                        else if(mode=='date'){filterDateResult(paramsObj.data,'day',memberGraph,paramsObj.date);}
+                  },
+                 error : function(e) {alert("Error!");}
+              });
+        } );
+
 
 }
 
 
+function filterDateResult(data,filter,graphs,title){
+
+  $('.filterBy').fadeOut();
+  console.log("data: "+JSON.stringify(data));
+
+  var overviewMain=developMultiOverview(data,filter);
+  var fileName=title;
+  var title=`YEAR ${title}`;
+  developHtmlResults(overviewMain, title,graphs,filter,fileName);
+
+}
+
+//
+// function filterYearResult(data,filter,graphs,year){
+//
+//     $('.filterBy').fadeOut();
+//     console.log("data: "+JSON.stringify(data));
+//
+//     var overviewMain=developMultiOverview(data,filter);
+//     var title=`YEAR ${year}`;
+//     developHtmlResults(overviewMain, title,graphs,filter);
+//     //console.log("testingArray: "+JSON.stringify(testingArray));
+//
+// }
+
+
+
+
+
 function filterNameResult(data,filter, graphs){
 
-        //console.log("String data:"+data);
-
-        //console.log("IN FILTER_NAME_RES graphs:"+JSON.stringify(graphs));
         $('.filterBy').fadeOut();
-
-        // $('.result-preview-container').html('');
-
-
-        // data=JSON.parse(data);
         var overviewData={'FirstName': data['FirstName'],'LastName': data['LastName']};
+        overviewData=developOverview(data,overviewData,filter);
 
-        for([yearKey,yearObj] of Object.entries(data) ){
+        console.log(overviewData);
+        var title=`${capitalize(overviewData['FirstName'])} ${capitalize(overviewData['LastName'])}`;
+        var fileName=capitalize(overviewData['FirstName'])+"_"+capitalize(overviewData['LastName']);
+        developHtmlResults(overviewData, title,graphs,filter,fileName);
 
-                      if(!['FirstName', 'LastName', 'FullName','_id'].includes(yearKey)){
+}
 
-                              if (filter=='year') {overviewData[yearKey]={}; }
 
-                              for([monthKey,monthObj] of Object.entries(yearObj)){
 
-                                    if (filter=='month') {overviewData[`${yearKey}/${monthKey}`]={}; }
 
-                                    for([dayKey,dayObj] of Object.entries(monthObj)){
+function developMultiOverview(data,filter){//Develop overview for an array of data object
 
-                                        if (filter=='day') {overviewData[`${yearKey}/${monthKey}/${dayKey}`]={};}
+  var overviewMain={};
 
-                                        for([itemKey,item] of Object.entries(dayObj)){
+  data.forEach((memberData) =>{
 
-                                            var filterToKey={'year':yearKey ,'month':`${yearKey}/${monthKey}`,'day':`${yearKey}/${monthKey}/${dayKey}` };
+        var overviewMember=developOverview(memberData,{},filter);
 
-                                            var category='';
+        // console.log("Object.keys(overviewMain): "+Object.keys(overviewMain)[0]);
+        // console.log("Object.keys(overviewMember): "+Object.keys(overviewMember)[0]);
+        // console.log( "State: "+(Object.keys(overviewMain)[0]!=Object.keys(overviewMember)[0]));
 
-                                            if(isNaN(item)){
+           Object.keys(overviewMember).forEach( (overviewMemberKey)=>{
 
-                                                  var flagPaymentType=false;
-                                                  item.split(',').forEach( (miniItem)=>{
-                                                        if(['yes','y','true','t','no','n','false','f'].includes(miniItem)){
-                                                              flagPaymentType=true;
-                                                        }
-                                                  });
-                                                  if(flagPaymentType){
-                                                      category='Payment Method';
-                                                  }else{
-                                                      category='Extra Details';
+                  if(!Object.keys(overviewMain).includes(overviewMemberKey) ){
+                        overviewMain[overviewMemberKey]=overviewMember[overviewMemberKey];
+
+                  }else{
+                    Object.keys(overviewMember[overviewMemberKey]).forEach( (overviewMemberCategory)=>{
+
+                            if(!Object.keys(overviewMain[overviewMemberKey]).includes(overviewMemberCategory) ){
+                                  overviewMain[overviewMemberKey][overviewMemberCategory]=overviewMember[overviewMemberKey][overviewMemberCategory];
+                            }else{
+
+                                    Object.keys(overviewMember[overviewMemberKey][overviewMemberCategory]).forEach( (overviewMemberSubCategory)=>{
+
+                                        if( !Object.keys(overviewMain[overviewMemberKey][overviewMemberCategory]).includes(overviewMemberSubCategory) ){
+
+                                            overviewMain[overviewMemberKey][overviewMemberCategory][overviewMemberSubCategory]=overviewMember[overviewMemberKey][overviewMemberCategory][overviewMemberSubCategory];
+
+                                        }else{
+                                            overviewMain[overviewMemberKey][overviewMemberCategory][overviewMemberSubCategory]+=overviewMember[overviewMemberKey][overviewMemberCategory][overviewMemberSubCategory];
+                                        }
+                                    } );
+                            }
+                  });
+                }
+            } );
+  });
+
+
+  console.log(" B4 overviewMain: "+JSON.stringify(overviewMain));
+  //console.log("graphs: "+JSON.stringify(graphs));
+
+  var orderedDateKeys=sortDates(Object.keys(overviewMain),'text');
+
+  console.log("Object.keys(overviewMain): "+JSON.stringify(Object.keys(overviewMain)));
+  console.log("orderedDateKeys: "+JSON.stringify(orderedDateKeys));
+  var ordedOverviewMain={};
+
+  orderedDateKeys.forEach((key)=>{
+
+          ordedOverviewMain[key]=overviewMain[key];
+
+  });
+
+  console.log("ordedOverviewMain: "+JSON.stringify(ordedOverviewMain));
+
+  return ordedOverviewMain;
+
+
+}
+
+
+//Generates the html elements for a given search result
+function developHtmlResults(overviewData, title,graphs,filter,fileName){
+
+              var idOffset=-1;
+
+
+              var htmlString=`
+                                <div class="fullResults-container">
+
+
+                                <table class="result-table inner" id="result-table-${idOffset+=1}">
+                                  <thead>
+                                        <tr>
+                                            <th colspan="2" style="border-radius:10px;text-align:center;"><h2>${title}</h2></th>
+                                        </tr>
+                                  </thead>
+                                </table>
+                                <div class="searchGraph-container" id="searchGraph-container-0" >
+                                      <canvas class=" searchGraph searchCanvasTotalDonationsVsDate">
+                                      </canvas>
+                                </div>
+                                  <div class="searchGraph-container" id="searchGraph-container-1">
+                                        <canvas class="searchGraph searchCanvasMethodOfPaymentVsDate">
+                                        </canvas>
+                                  </div>
+
+                            `;
+
+
+              for([categoryKey,categoryObj] of Object.entries(overviewData)){//Disolay user data filtered by year,month or day
+                    if(!['FirstName','LastName'].includes(categoryKey)){
+                          htmlString+=`
+                                <table class="result-table inner" id="result-table-${idOffset+=1}">
+                                      <thead>
+                                          <tr>
+                                                <th colspan="2" style="text-transform: uppercase;border-radius:10px;text-align:left;"> ${categoryKey.toUpperCase()} </th>
+                                          </tr>
+
+                                      </thead>
+                                <tbody>
+                                    `;
+
+                       for([subCatKey,subCatObj] of Object.entries(categoryObj)){
+                              htmlString+=`
+
+                                                <tr>
+                                                  <td colspan="2" style="background-color:#eee; font-size:17px; text-align:center; ">${subCatKey}</td>
+                                                </tr>
+
+
+                                          `;
+
+
+                            for([key,val] of Object.entries(subCatObj)){
+                              htmlString+=`
+                                          <tr>
+                                              <td style="background-color:white;">${key}</td>
+                                              <td style="background-color:white;">${val}</td>
+                                          </tr>`;
+
+                            }
+
+                            //htmlString+=``;
+
+
+                       }
+                       htmlString+=`</tbody></table>`;
+                      // htmlString+=`<tr><th colspan="2"></th> </tr>`;
+
+                    }
+
+
+
+            }
+
+            htmlString+=`</div>`;
+
+            $('.result-preview-content').html(htmlString);
+
+            var footer=`<div class="downloadData-button" )">
+                                  Download PDF
+                            </div>`;
+
+            $('.result-preview-container').append(footer);
+
+
+            $('.downloadData-button').click( ()=>{
+
+              $('.downloadData-button').html('<img src="/views/images/loading.gif" style="width:25px;height:25px;" />');
+              pdfDownload(fileName);
+
+            });
+
+            for([graphType,graphData] of Object.entries(graphs)){
+                    if(graphType!="numOfMembersVsDate"){
+                          generateGraphs('search',graphType,graphData,filter);
+                    }
+
+            }
+
+
+}
+
+
+
+
+//Generate an overview data set to be displayed to users
+function developOverview(data,overviewData,filter){
+
+  for([yearKey,yearObj] of Object.entries(data) ){
+
+                if(!['FirstName', 'LastName', 'FullName','_id'].includes(yearKey)){
+
+                        if (filter=='year') {overviewData[yearKey]={}; }
+
+                        for([monthKey,monthObj] of Object.entries(yearObj)){
+
+                              if (filter=='month') {overviewData[`${monthKey}/${yearKey}`]={}; }
+
+                              for([dayKey,dayObj] of Object.entries(monthObj)){
+
+                                  if (filter=='day') {overviewData[`${monthKey}/${dayKey}/${yearKey}`]={};}
+
+                                  for([itemKey,item] of Object.entries(dayObj)){
+
+                                      var filterToKey={'year':yearKey ,'month':`${monthKey}/${yearKey}`,'day':`${monthKey}/${dayKey}/${yearKey}` };
+
+                                      var category='';
+
+                                      if(isNaN(item)){
+
+                                            var flagPaymentType=false;
+                                            item.split(',').forEach( (miniItem)=>{
+                                                  if(['yes','y','true','t','no','n','false','f'].includes(miniItem)){
+                                                        flagPaymentType=true;
                                                   }
-
+                                            });
+                                            if(flagPaymentType){
+                                                category='Payment Method';
                                             }else{
-                                                category='Donations';
-
+                                                category='Extra Details';
                                             }
 
+                                      }else{
+                                          category='Donations';
 
-                                            if(! Object.keys(overviewData[ filterToKey[filter]]).includes(category)){
-                                                        console.log("filter: "+filter+ " itemKey: "+itemKey);
-
-                                                          overviewData[filterToKey[filter]][category]={}
-
-
-                                              }
-
-                                              if(!Object.keys(overviewData[filterToKey[filter]][category]).includes(itemKey)){
-                                                    overviewData[filterToKey[filter]][category][itemKey]=0;
-                                              }
-
-
-                                              if(isNaN(item)){
-                                                      item.split(',').forEach((item) => {
-                                                                if(['yes','y','true','t'].includes(item)){
-                                                                    overviewData[filterToKey[filter]][category][itemKey]+=1;
-                                                                }
-                                                      });
-                                              }else{
-                                                overviewData[filterToKey[filter]][category][itemKey]+=parseFloat(item);
-                                              }
-                                          }
-                                        }
                                       }
+
+
+                                      if(! Object.keys(overviewData[ filterToKey[filter]]).includes(category)){
+                                                  console.log("filter: "+filter+ " itemKey: "+itemKey);
+
+                                                    overviewData[filterToKey[filter]][category]={}
+
+
+                                        }
+
+                                        if(!Object.keys(overviewData[filterToKey[filter]][category]).includes(itemKey)){
+                                              overviewData[filterToKey[filter]][category][itemKey]=0;
+                                        }
+
+
+                                        if(isNaN(item)){
+                                                item.split(',').forEach((item) => {
+                                                          if(['yes','y','true','t'].includes(item)){
+                                                              overviewData[filterToKey[filter]][category][itemKey]+=1;
+                                                          }
+                                                });
+                                        }else{
+                                          overviewData[filterToKey[filter]][category][itemKey]+=parseFloat(item);
+                                        }
                                     }
-    }
+                                  }
+                                }
+                              }
+}
 
 
-
-    console.log(overviewData);
-
-    var htmlString=`
-                  <div style="background-color:#E8E8E8">
-                  <table class="result-table">
-                          <tr>
-                              <th style="border-radius:10px;text-align:center;"><h2>${capitalize(overviewData['FirstName'])} ${capitalize(overviewData['LastName'])}</h2></th>
-                          </tr>
-                  </table>
-                  <br />
-
-                  <div class="searchGraph-container">
-                        <canvas class=" searchGraph searchCanvasTotalDonationsVsDate">
-                        </canvas>
-                  </div>
-                    <div class="searchGraph-container">
-                          <canvas class="searchGraph searchCanvasMethodOfPaymentVsDate">
-                          </canvas>
-                    </div>
-
-
-
-                  `;
-
-
-    for([categoryKey,categoryObj] of Object.entries(overviewData)){//Disolay user data filtered by year,month or day
-          if(!['FirstName','LastName'].includes(categoryKey)){
-                htmlString+=`
-                            <table class="result-table">
-                                <tr>
-                                      <th style="border-radius:10px;text-align:center;"> ${categoryKey} </th>
-                                </tr>
-
-                            </table>
-                          `;
-
-             for([subCatKey,subCatObj] of Object.entries(categoryObj)){
-                    htmlString+=`<table class="result-table">
-                                      <tr>
-                                        <th>${subCatKey}</th>
-                                      </tr>
-                                </table>
-                                <table class="result-table">
-
-                                `;
-
-
-                  for([key,val] of Object.entries(subCatObj)){
-                    htmlString+=`
-                                <tr>
-                                    <td>${key}</td>
-                                    <td>${val}</td>
-                                </tr>`;
-
-                  }
-
-                  htmlString+=`</table>`;
-
-
-             }
-
-            htmlString+=`<br/><br/>`;
-
-          }
-
-
-
-    }
-
-    htmlString+="</div>";
-    $('.result-preview-content').html(htmlString);
-
-
-    for([graphType,graphData] of Object.entries(graphs)){
-              if(graphType!="numOfMembersVsDate"){
-                    generateGraphs('search',graphType,graphData,filter);
-              }
-
-      }
-
+return overviewData;
 
 }

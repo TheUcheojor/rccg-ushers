@@ -1,8 +1,7 @@
 /*
-Title: RCCG Ushers
-Description: Web application for storing church transancations and users
-Author: Paul Okenne
-Date: May 9,2020
+
+  This module contains the functions that interacts with the database.
+  By requiring the module, one can interact with the database using the "mainInterface" control function
 
 */
 
@@ -629,7 +628,17 @@ async function searchDatabase(mode,queryStr){
 
         if(yearExistArray.length>0){
           let finalResult= await collection.aggregate( [{$project: {[`${givenYear}`]:1, FirstName: 1,LastName: 1,_id:0 }}] ).toArray();
-          return finalResult.filter( function (item){return Object.keys(item).length>0 });//Filter empty objects
+           finalResult=finalResult.filter( function (item){return Object.keys(item).length>0 });//Filter empty objects
+
+           finalResult.forEach((member) =>{
+                delete member['FirstName'];
+                delete member['LastName'];
+                delete member['FullName'];
+           })
+
+           console.log("finalResult: "+JSON.stringify(finalResult) );
+           return finalResult;
+
         }else{
             return null;
         }
@@ -656,6 +665,15 @@ async function searchDatabase(mode,queryStr){
         if(yearMonthExistArray.length>0){
 
           let finalResult = await collection.aggregate( [{$project: {[`${givenYear}.${givenMonth}`]:1, FirstName: 1,LastName: 1,_id:0 }}] ).toArray();
+
+          finalResult.forEach((member) =>{
+               delete member['FirstName'];
+               delete member['LastName'];
+               delete member['FullName'];
+          });
+
+          console.log("finalResult: "+JSON.stringify(finalResult) );
+
           return finalResult.filter( function (item){return Object.keys(item).length>0 });
         }else{
           return null;
@@ -682,6 +700,15 @@ async function searchDatabase(mode,queryStr){
         //console.log(yearMonthDayExistArray);
         if(yearMonthDayExistArray.length>0){
           let finalResult = await collection.aggregate( [{$project: {[`${givenYear}.${givenMonth}.${givenDay}`]:1, FirstName: 1,LastName: 1,_id:0 }}] ).toArray() ;
+
+          finalResult.forEach((member) =>{
+               delete member['FirstName'];
+               delete member['LastName'];
+               delete member['FullName'];
+          });
+
+          console.log("finalResult: "+JSON.stringify(finalResult) );
+
           return finalResult.filter( function (item){return Object.keys(item).length>0 })
         }else{
           return null;
