@@ -375,16 +375,18 @@ async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether t
           if(Object.keys(oldItem).includes(givenYear) &&  Object.keys(oldItem[givenYear]).includes(givenMonth)  &&    Object.keys(oldItem[givenYear][givenMonth]).includes(givenDay)){
 
                 let setQuery={};
-
+                resetedIdStrArr.push(oldItem._id.toHexString());
                 for([itemKey, item] of Object.entries(oldItem[givenYear][givenMonth][givenDay])){
 
                      if(isNaN(item)){
                         setQueryStr={[`${givenYear}.${givenMonth}.${givenDay}.${itemKey}`]:''};
+
                         await collection.updateOne( {_id:oldItem._id }, { $set:setQueryStr  });
                      }else{
                        setQueryStr={[`${givenYear}.${givenMonth}.${givenDay}.${itemKey}`]:'0'};
                        await collection.updateOne( {_id:oldItem._id }, { $set:setQueryStr  });
                      }
+
 
                 }
           }
@@ -441,7 +443,7 @@ async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether t
         console.log(await collection.find({_id: ObjectID.createFromHexString(hexString) }).toArray());
 
         delete notUpdatedObj[givenYear][givenMonth][givenDay];
-        console.log("B4:"+ JSON.stringify(notUpdatedObj)+'\n');
+        console.log("B4 hex:"+ JSON.stringify(notUpdatedObj)+'\n');
 
         if(Object.keys(notUpdatedObj[givenYear][givenMonth])==0){
               //await collection.aggregate([{ $unset: [`${givenYear}.${givenMonth}`] }]);
@@ -455,7 +457,7 @@ async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether t
               delete notUpdatedObj[givenYear];
         }
 
-        console.log("AFTER:"+ JSON.stringify(notUpdatedObj)+'\n');
+        console.log("AFTER hex:"+ JSON.stringify(notUpdatedObj)+'\n');
 
   }
 
@@ -575,7 +577,6 @@ async function addItemToDatabase(objStr){//mode can 'add' or 'update', signifyin
                                     return objDayObj[objItemKey]+','+itemDayObj[objItemKey];
                                   }
                         })();
-
 
                       }else{
                           itemDayObj[objItemKey]=(parseFloat(objDayObj[objItemKey])+parseFloat(itemDayObj[objItemKey])).toString();

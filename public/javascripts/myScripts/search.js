@@ -1,6 +1,6 @@
 /*
 
-  JS Documents focues on search features
+ This  JS Document focuses on search features
 
 */
 
@@ -221,7 +221,7 @@ function filterDateResult(data,filter,graphs,title){
   var overviewMain=developMultiOverview(data,filter);
   var fileName=title;
   var title=`YEAR ${title}`;
-  developHtmlResults(overviewMain, title,graphs,filter,fileName);
+  developHtmlResults('date',overviewMain, title,graphs,filter,fileName);
 
 }
 
@@ -229,13 +229,13 @@ function filterDateResult(data,filter,graphs,title){
 function filterNameResult(data,filter, graphs){
 
         $('.filterBy').fadeOut();
-        var overviewData={'FirstName': data['FirstName'],'LastName': data['LastName']};
-        overviewData=developOverview(data,overviewData,filter);
+        //var overviewData={'FirstName': data['FirstName'],'LastName': data['LastName']};
+        overviewData=developOverview(data,{},filter);
 
         console.log(overviewData);
-        var title=`${capitalize(overviewData['FirstName'])} ${capitalize(overviewData['LastName'])}`;
-        var fileName=capitalize(overviewData['FirstName'])+"_"+capitalize(overviewData['LastName']);
-        developHtmlResults(overviewData, title,graphs,filter,fileName);
+        var title=`${capitalize(data['FirstName'])} ${capitalize(data['LastName'])}`;
+        var fileName=capitalize(data['FirstName'])+"_"+capitalize(data['LastName']);
+        developHtmlResults('name',overviewData, title,graphs,filter,fileName);
 
 }
 
@@ -307,11 +307,11 @@ function developMultiOverview(data,filter){//Develop overview for an array of da
 
 
 //Generates the html elements for a given search result
-function developHtmlResults(overviewData, title,graphs,filter,fileName){
+function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
+
+
 
               var idOffset=-1;
-
-
               var htmlString=`
                                 <div class="fullResults-container">
 
@@ -323,16 +323,45 @@ function developHtmlResults(overviewData, title,graphs,filter,fileName){
                                         </tr>
                                   </thead>
                                 </table>
-                                <div class="searchGraph-container" id="searchGraph-container-0" >
-                                      <canvas class=" searchGraph searchCanvasTotalDonationsVsDate">
-                                      </canvas>
-                                </div>
-                                  <div class="searchGraph-container" id="searchGraph-container-1">
-                                        <canvas class="searchGraph searchCanvasMethodOfPaymentVsDate">
-                                        </canvas>
-                                  </div>
 
                             `;
+
+
+              if(Object.keys(overviewData).length==0 ){
+
+                      htmlString+=`<div style="width:80%;margin:auto;padding:10px 0px;color:white;font-size:18px; display:inline-block;border-radius:5px; background-color: rgba(136, 135, 156,1);">
+                                No Data Found </div> `;
+
+                      $('.result-preview-content').html(htmlString);
+                      return;
+
+              }else{
+
+
+                htmlString+=`<div class="searchGraph-container" id="searchGraph-container-0" >
+                                  <canvas class=" searchGraph searchCanvasTotalDonationsVsDate">
+                                  </canvas>
+                        </div>
+                        <div class="searchGraph-container" id="searchGraph-container-1">
+                              <canvas class="searchGraph searchCanvasMethodOfPaymentVsDate">
+                              </canvas>
+                        </div>`;
+
+              }
+
+
+
+
+
+
+
+              if(mode=='date'){
+
+                htmlString+=`<div class="searchGraph-container" id="searchGraph-container-2">
+                                    <canvas class="searchGraph searchCanvasNumOfMembersVsDate">
+                                    </canvas>
+                          </div>;`
+              }
 
 
               for([categoryKey,categoryObj] of Object.entries(overviewData)){//Disolay user data filtered by year,month or day
@@ -395,13 +424,18 @@ function developHtmlResults(overviewData, title,graphs,filter,fileName){
             $('.downloadData-button').click( ()=>{
 
               $('.downloadData-button').html('<img src="/views/images/loading.gif" style="width:25px;height:25px;" />');
-              pdfDownload(fileName);
+              pdfDownload(mode,fileName);
 
             });
 
             for([graphType,graphData] of Object.entries(graphs)){
-                    if(graphType!="numOfMembersVsDate"){
+                    if(graphType!="numOfMembersVsDate" && mode=='name'){
                           generateGraphs('search',graphType,graphData,filter);
+                    }
+
+                    if(mode=='date'){
+                          generateGraphs('search',graphType,graphData,filter);
+
                     }
 
             }

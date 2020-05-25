@@ -5,7 +5,7 @@ This file focuses on downloading a pdf of  members' data
 */
 
 
-async function  pdfDownload(name){
+async function  pdfDownload(mode,name){
 
    //window.scrollTo(0,0);
 
@@ -37,6 +37,14 @@ async function  pdfDownload(name){
                       var img=canvas.toDataURL("image/png");
                       doc.addImage(img, 'JPEG', 20,100,180,70);
           });
+
+          if(mode=='date'){
+
+            await html2canvas(document.querySelector(`#searchGraph-container-2`)).then(  (canvas) =>{
+                        var img=canvas.toDataURL("image/png");
+                        doc.addImage(img, 'JPEG', 20,180,180,70);
+            });
+          }
 
   }catch(error){console.log(error)}
   finally{
