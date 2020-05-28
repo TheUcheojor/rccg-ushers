@@ -1,5 +1,5 @@
 //Running scheduled tasks
-let database =  require("../database/database");
+let database =  require("../database/spreadsheet");
 let dateMod =  require("../database/date");
 
 (async function(){

@@ -1,7 +1,7 @@
 /*
 
-  This module contains the functions that interacts with the database.
-  By requiring the module, one can interact with the database using the "mainInterface" control function
+  This module contains the functions that interacts with the spreadsheet database.
+  By requiring the module, one can interact with the spreadsheet database using the "mainInterface" control function
 
 */
 
@@ -14,8 +14,10 @@ require('dotenv').config();
 
 const uri =process.env.DATABASE_URI;//IMPORTANT: UrI Connection to mongodb database
 let spreadsheetkey=process.env.SPREADSHEET_KEY;//IMPORTANT: Spreadsheet key( the is the long id in the sheets URL)
+
 let database=process.env.DATABASE_NAME;//IMPORTANT: Dataebase and collection
-let mainCollection=process.env.COLLECTION_NAME;//IMPORTANT:Collection
+let mainCollection=process.env.SPREADSHEET_COLLECTION_NAME;//IMPORTANT:Collection
+
 let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
 
 //Get access to  mongodb database
