@@ -4,12 +4,12 @@
 
  */
 
- .search-icon{
+ /* .search-icon{
    display: block;
 
- }
+ } */
 
-.inputSearch{
+/* .inputSearch{
 
 
     box-shadow: 0px 1px 6px 1px black;
@@ -41,17 +41,17 @@
     outline:none
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+::placeholder {
   color: black;
-  opacity: 1; /* Firefox */
-}
+  opacity: 1;
+} */
 
 
 
-.search-results:hover{
+/* .search-results:hover{
       box-shadow: 0px 1px 6px 3px white;
 
-}
+} */
 
 /* .container{
   display:inline-block;
@@ -61,11 +61,52 @@
   height: 100%;
   background-color: black;
 } */
+.dashboard-return{
+  position: relative;
+  display: inline-block;
+
+  margin-left: 2.5%;
+  margin-top: 2.5%;
+
+  text-decoration: underline;
+  font-size: 13px;
+  font-family: Courier ;
+  color:rgba(136, 135, 156,1);
+  cursor: pointer;
+}
+
+.dashboard-return:hover{
+  color:black;
+}
+
+.no-results{
+  display: none;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  font-family: Courier ;
+  color:rgba(136, 135, 156,1);
+}
 
 .search-container{
-  position: absolute;
-  width: 100%;
-  height:100%;
+  position: relative;
+  display: inline-block;
+  width: 90%;
+  /* top:10px; */
+
+  margin-top:2.5%;
+  margin-left:2.5%;
+  margin-right:2.5%;
+
+  text-align: center;
+  padding: 18px 20px;
+
+  border-radius: 10px;
+
+  box-shadow: 0 0.125rem 9.375rem rgba(90,97,105,.1), 0 0.25rem 0.5rem rgba(90,97,105,.12), 0 0.9375rem 1.375rem rgba(90,97,105,.1), 0 0.4375rem 2.1875rem rgba(165,182,201,.1);
+
+  background: white;
 
 
 }
@@ -80,21 +121,25 @@
 
 
 .search-results{
-    position: absolute;
-    bottom:40px;
-    width:calc(80% + 45px);
-    height:72.5%;
-    left:7.5%;
+    position: relative;
+    /* bottom:40px; */
+
+    width:100%;
+
+
+    /* margin-left: 5%;
+    margin-right: 5%; */
+    /* left:7.5%; */
     /* padding-left: 45px;
     padding-right: -45px; */
-    background-color: white;
+    /* background-color: white; */
 
 }
 .result-table{
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   border-collapse: collapse;
   width: 100%;
-  height:50px;
+  /* height:50px; */
   color:rgba(136, 135, 156,1);
 }
 
@@ -104,7 +149,7 @@
 
 }
 
-.result-table tr:nth-child(even){background-color: #f2f2f2;}
+/* .result-table tr:nth-child(even){background-color: white;} */
 
 .result-table tr:hover {background-color: #f2f2f2;}
 

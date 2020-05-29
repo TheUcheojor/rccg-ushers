@@ -96,13 +96,17 @@ async function login(userObj){
 
     console.log("isValidPassword: "+isValidPassword)
     if(isValidPassword){
-        return {success:true, errors:errors };
+        return {success:true, errors:errors, name:capitalize(user.name) };
     }else{
         return {success:false, errors:errors };
     }
 
 }
 
+function capitalize(str){//capitalize a given string
+      if(str==null|| str==''|| str==undefined){ return ""}
+      return str.charAt(0).toUpperCase() +str.toLowerCase().slice(1);
+  }
 
 
 /*

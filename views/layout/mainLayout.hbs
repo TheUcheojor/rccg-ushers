@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     <link type="text/css"   rel="stylesheet" href="/stylesheets/main.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/graph.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/search.css" media="all"  />
@@ -28,42 +28,83 @@
     <script src="javascripts/myScripts/search.js" ></script>
 
     <script src="javascripts/myScripts/print.js" ></script>
-
-
-
-
-    {{# if isMain }}
-         <script src="/javascripts/myScripts/mainInstance.js" ></script>
-    {{/if}}
+    <script src="/javascripts/myScripts/mainInstance.js" ></script>
 
     <title> {{title}}</title>
 
 
   </head>
   <body >
-    <div class="hor-bar"  >
 
-         <div class="hor-bar-item vert-menu-sel" name='menu OFF' onclick="highlightButton('vert-menu-sel');"> <img src="/images/menu.png"  style="position:absolute;float:left;top:0;padding:10px;width:30px;height:30px;filter:'none'"/> </div>
-         <div class="hor-bar-item about-us" onclick="highlightButton('about-us')"> About Us</div>
-         <div class="hor-bar-item main-page" onclick="highlightButton('main-page');"> <bold> RCCG Ushers</bold></div>
-         <div class="hor-bar-item rccgLogo" >  <img src="/images/rccg.png" style="position:relative;top:0px;width:25px;height:25px;filter:none;"/></div>
-         <!--<div class="hor-bar-item"> Item 3</div> -->
+    <div>
 
-         <div class="vert-bar">
-           <div class="vert-bar-item " onclick="getPage('main')">Main</div>
-           <div class="vert-bar-item " onclick="getPage('search')">Search</div>
-           <div class="vert-bar-item " onclick="getPage('documents')">Documents</div>
-           <div class="vert-bar-item "onclick="getPage('setting')">Settings</div>
-           <div class="vert-bar-item " onclick="getPage('updates')">Updates</div>
-
-
-              <!-- <span> Item 1</span> -->
-          </div>
     </div>
 
-      {{{ body }}}
+    <div class='side-bar'>
+          <div class='side-bar-title dashboard'>Dashboard</div>
+          <div class='side-bar-item' onclick='window.location.href="/logout" ' >Logout</div>
 
 
+
+
+    </div>
+
+
+
+    <div class='hor-nav-bar'>
+
+            <div class="hor-nav-item left search">
+               <input id='search-bar' type='text' onkeyup="$('.hbs-body-container').hide();$('.page.search').fadeIn();search(this.value)" placeholder='Search....' />
+            </div>
+            <div class="hor-nav-item right logo" > <img src="/images/rccg.png"/></div>
+            <div class="hor-nav-item right" > <div class='name-text'>{{name}}</div></div>
+
+    </div>
+
+
+    <div class='hbs-body-container'>
+          {{{ body }}}
+    </div>
+
+
+
+      <div class="mainContent">
+
+
+
+          <div class="page search" style='display:none'>
+                        <div class='dashboard-return' onclick='$(".page.search").hide();$("#search-bar").val(""); $(".hbs-body-container").fadeIn();'>
+                              Return to Dashboard
+                        </div>
+
+                        <div class="search-container">
+                          {{!-- <input type="text" class="inputSearch" placeholder="Search"  /> --}}
+                            <div class="no-results ">
+                                No Results
+                            </div>
+
+                          <div class="search-results">
+                            <table class="result-table">
+
+                            </table>
+                          </div>
+                        </div>
+
+                        <div class="preview-container">
+
+
+                        </div>
+
+                        <div class="result-preview-container" id='searchResults' >
+                              <div class="result-preview-content">
+                                    <div class="filterBy" id="year-filter">Filter By Year</div>
+                                    <div class="filterBy" id="month-filter" >Filter By Month</div>
+                                    <div class="filterBy" id="day-filter" >Filter By Day  </div>
+                              </div>
+                        </div>
+
+          </div>
+      </div>
 
   </body>
 </html>

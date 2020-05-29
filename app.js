@@ -9,6 +9,8 @@ const bodyParser=require('body-parser');
 const session=require('express-session');
 const cookieParser=require('cookie-parser')
 
+const MemoryStore=require('memorystore')(session);
+
 //const {checkLoggedIn, login,logout,signUp }=require('./auth/auth')
 const auth=require('./auth/auth');
 
@@ -44,17 +46,21 @@ app.use(
     secret: "app",
     name: "app",
     resave: true,
-    saveUninitialized: true
-    // cookie: { maxAge: 6000 } /* 6000 ms? 6 seconds  */
+    saveUninitialized: true,
+    store:new MemoryStore({reapInterval: 60000 * 10}),
   })
-);
+    // cookie: { maxAge: 6000 } /* 6000 ms? 6 seconds  */
+  );
 
 
 app.use('/internals',auth.checkLoggedIn,spreadsheetRouter);
 app.use('/organization',auth.checkLoggedIn,organizationRouter );
 app.use('/login',auth.login,indexRouter);
 app.use('/sign-up',auth.signUp,indexRouter);
+app.use('/logout',auth.logout);
+
 app.use('/',auth.checkLoggedIn, indexRouter);
+
 
 app.use(favicon(path.join(__dirname,'public','favicon.ico')));
 

@@ -6,7 +6,7 @@ module.exports={
     checkLoggedIn:function (req,res,next){
 
         if(req.session.email){
-            console.log(req.session.email)
+            console.log(req.session.email);
             //console.log('In here 2');
             next();
         }else{
@@ -21,6 +21,8 @@ module.exports={
         let loginResultObj={success:false, errors:[]};
         let user;
 
+        //console.log(req.body.email, req.body.password);
+
         if(req.body.email && req.body.password){
           console.log("In Login")
              user= {
@@ -32,7 +34,12 @@ module.exports={
         }
 
         if(loginResultObj.success){
+              console.log("IN LOGIN SUCESS");
+
               req.session.email=user.email;
+              req.session.name=loginResultObj.name;
+              console.log(req.session.email,req.session.name);
+
               res.redirect('/');
         }else{
 
@@ -51,8 +58,10 @@ module.exports={
     },
 
     logout: function (req,res,next){
-          req.session.email='';
-          res.render('login', {title:'login'});
+          req.session.email=undefined;
+          req.session.name=undefined;
+          res.redirect('/');
+        //  res.render('login', {title:'login'});
     },
 
     signUp:async function(req,res,next){

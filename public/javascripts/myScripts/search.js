@@ -4,6 +4,9 @@
 
 */
 
+
+onkeyup="$('hbs-body-container').hide();$('search').fadeIn();search(this.value)"
+
 window.onclick = function(event) {
       if (event.target == $('.result-preview-container')[0]) {
         $('.result-preview-container').hide();
@@ -26,7 +29,7 @@ function search(searchStr){
     var redFlag=false;
 
     $('.result-table').html('');
-    if(searchStr.trim().length==0){return;}
+    if(searchStr.trim().length==0){$('.no-results').fadeIn();return;}
 
 
     console.log(searchStr);
@@ -42,7 +45,7 @@ function search(searchStr){
         });
 
         console.log('YEAR/Month/.. redFlag: '+redFlag);
-        if(redFlag){return;}
+        if(redFlag){$('.no-results').fadeIn(); return;}
 
         if(searchArr.length==2){ mode='yearMonth';}
         else if(searchArr.length==3){ mode='yearMonthDay';}
@@ -53,7 +56,7 @@ function search(searchStr){
 
     }else if(!isNaN(searchStr)){//Search Option : YEAR
         mode='year';
-        if(searchStr.length!=4){return;}
+        if(searchStr.length!=4){$('.no-results').fadeIn();return;}
 
         console.log('YEAR redFlag: '+redFlag);
 
@@ -66,7 +69,7 @@ function search(searchStr){
         });
 
         console.log('name redFlag: '+redFlag);
-        if(redFlag){return}
+        if(redFlag){$('.no-results').fadeIn();return}
         // var hasNumber='/\d/';
         // console.log("(hasNumber.test(searchStr): "+hasNumber.test(searchStr));
         // if(hasNumber.test(searchStr)){return;}
@@ -87,6 +90,7 @@ function search(searchStr){
 
               if(data.length==0){
                   $('.result-table').html('');
+                  $('.no-results').fadeIn();
                   return;
                 }
 
@@ -140,6 +144,7 @@ function search(searchStr){
 
 
               $('.result-table').hide();
+              $('.no-results').hide();
               $('.result-table').html(htmlString);
               $('.result-table').fadeIn();
        },
