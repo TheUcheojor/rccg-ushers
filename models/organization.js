@@ -8,8 +8,8 @@ const organizationSchema=mongoose.Schema({
           type: String,
           ref:'User'
          },
-      owner:{ type:mongoose..Schema.Types.ObjectId, ref:'User'},
-      users:[{ type:mongoose..Schema.Types.ObjectId, ref:'User'}]
+      owner:{ type:mongoose.Schema.Types.ObjectId, ref:'User'},
+      users:[{ type:mongoose.Schema.Types.ObjectId, ref:'User'}]
 
 });
 

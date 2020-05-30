@@ -6,7 +6,7 @@ body{
   background: #f5f6f8;
   border: none;
     font-family: Times;
-    height: 100%;
+    height: 100%!important;
   /* font-size: 1rem;
   font-weight: 400;
   line-height: 1.5; */
@@ -62,6 +62,7 @@ body{
   padding: 7px 0px;
   font-family: Courier;
   color:rgba(136, 135, 156,1);
+  text-transform: capitalize;
 }
 .hor-nav-item.search{
   width:70%;
@@ -108,6 +109,9 @@ input, select, textarea{
     box-sizing: border-box;
 } */
 
+body.swal2-height-auto {
+    height: 100%!important;
+}
 
 .side-bar{
   position: relative;
@@ -117,7 +121,8 @@ input, select, textarea{
 
   width: 15%;
   max-width: 25%;
-  min-height: 100%;
+  /* height: 600px; */
+  min-height: 100%!important;
 
   box-shadow: 0 0.125rem 9.375rem rgba(90,97,105,.1), 0 0.25rem 0.5rem rgba(90,97,105,.12), 0 0.9375rem 1.375rem rgba(90,97,105,.1), 0 0.4375rem 2.1875rem rgba(165,182,201,.1);
 

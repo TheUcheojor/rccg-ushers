@@ -98,7 +98,7 @@ function search(searchStr){
               // console.log("mode :"+mode);
               // console.log("data: "+JSON.stringify(data));
 
-                var htmlString='';
+              var htmlString='';
 
               if(mode=='name'){
 
@@ -321,10 +321,10 @@ function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
                                 <div class="fullResults-container">
 
 
-                                <table class="result-table inner" id="result-table-${idOffset+=1}">
+                                <table class="result-table inner" id="result-table-${idOffset+=1}" style="position:sticky;top:0;background:rgba(136, 135, 156,1);">
                                   <thead>
                                         <tr>
-                                            <th colspan="2" style="border-radius:10px;text-align:center;"><h2>${title}</h2></th>
+                                              <th colspan="2" style="border-radius:10px;text-align:center;"><h2>${title}</h2></th>
                                         </tr>
                                   </thead>
                                 </table>
@@ -428,7 +428,7 @@ function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
 
             $('.downloadData-button').click( ()=>{
 
-              $('.downloadData-button').html('<img src="/views/images/loading.gif" style="width:25px;height:25px;" />');
+              $('.downloadData-button').html('<img src="/images/loading.gif" style="width:25px;height:25px;" />');
               pdfDownload(mode,fileName);
 
             });

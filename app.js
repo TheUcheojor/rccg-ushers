@@ -48,6 +48,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     store:new MemoryStore({reapInterval: 60000 * 10}),
+    // store:new MemoryStore({checkPeriod: 60000 * 10}),
   })
     // cookie: { maxAge: 6000 } /* 6000 ms? 6 seconds  */
   );

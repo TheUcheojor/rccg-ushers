@@ -75,7 +75,8 @@ module.exports={
              user={
                 name:req.body.name,
                 email:req.body.email,
-                password:req.body.password
+                password:req.body.password,
+                confirm_password:req.body.confirm_password,
               };
 
             console.log(user);
@@ -88,6 +89,7 @@ module.exports={
             console.log("Sign up 1");
               console.log(user)
               req.session.email=user.email;
+              req.session.name=user.name;
               res.redirect('/');
           }else{
               res.render('signUp',

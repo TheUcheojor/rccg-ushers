@@ -15,17 +15,17 @@ const uri=process.env.DATABASE_URI;
 const MongoClient=require('mongodb').MongoClient;
 const client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
 
-const db_name='data2020';
+const db_name=process.env.DATABASE_NAME;
 const collection_name='users';
 
-let collection;
+let users_collection;
 (async function( ){
 
     await client.connect();
-    collection=client.db(db_name).collection(collection_name);
-
-
+    users_collection=client.db(db_name).collection(collection_name);
 })();
+
+const organizationMainInterface=require('./organizations');
 
 
 async function mainInterface(mode,paramsObj){
@@ -37,17 +37,30 @@ async function mainInterface(mode,paramsObj){
                 return await signUp(paramsObj.user);
         }else if(mode=='login'){
                 return await login(paramsObj.user);
+        }else if(mode=='updateOrganization'){
+                return await updateOrganization(paramsObj.user,paramsObj.connection_obj)
         }
 
 
 
   }catch(err){
     console.log(err);
+    return {sucess:false errors:['Unexpected Database Error']}
   }
 
 }
 
 module.exports=mainInterface;
+
+
+
+/*
+    MAIN SECTION : Interface Functions Setion
+*/
+
+/*
+      Subsection - Users' Interactions with their account
+*/
 
 //The login function checks if user exists
 // userObj Structure:
@@ -61,7 +74,7 @@ async function login(userObj){
     errors=[];
     userArray=[];
     try{
-      userArray=await collection.find({email:userObj.email }).toArray();
+      userArray=await users_collection.find({email:userObj.email }).toArray();
     }catch(err){
       //errors.push('Database error!');
       console.log(err);
@@ -96,17 +109,14 @@ async function login(userObj){
 
     console.log("isValidPassword: "+isValidPassword)
     if(isValidPassword){
-        return {success:true, errors:errors, name:capitalize(user.name) };
+        return {success:true, errors:errors, name:user.name};
     }else{
         return {success:false, errors:errors };
     }
 
 }
 
-function capitalize(str){//capitalize a given string
-      if(str==null|| str==''|| str==undefined){ return ""}
-      return str.charAt(0).toUpperCase() +str.toLowerCase().slice(1);
-  }
+
 
 
 /*
@@ -116,6 +126,7 @@ function capitalize(str){//capitalize a given string
     //           name: string
     //           email: unique
     //           password: [will be encrypted]
+    //           confirm_password: password
     //           organization: reference
     //          }
 */
@@ -127,12 +138,18 @@ async function signUp(userObj){
         errors.push('Name must be greater than 2 characters' );
     }
 
-    if (!isValidEmail(userObj.email)){
+    if (!isValidEmail(userObj.email.trim())){
       errors.push('Email is not valid!' );
+    }else{
+      userObj.email=userObj.email.trim();
     }
 
     if(await doesUserExist(userObj.email)){
       errors.push('Existing email!');
+    }
+
+    if(userObj.confirm_password!=userObj.password){
+      errors.push('Passwords do not match!');
     }
 
     let passwordObj=isValidPassword(userObj.password);
@@ -146,6 +163,8 @@ async function signUp(userObj){
         return {loginSuccess:false , errors:errors };
     }
 
+    delete userObj.confirm_password;
+
     let success=true;
     let saltRounds=10;
     bcrypt.genSalt(saltRounds, (err ,salt)=>{
@@ -158,7 +177,7 @@ async function signUp(userObj){
               }
               userObj.password=hash;
               userObj.organization='';
-              await collection.insertOne(userObj);
+              await users_collection.insertOne(userObj);
         });
 
     } );
@@ -170,6 +189,149 @@ async function signUp(userObj){
     }
 }
 
+//add org and user coll
+
+/*
+      user Format
+      {
+            email: string,
+            permission: string
+        }
+
+*/
+
+
+
+
+
+/*
+      NEW SECTION - Users' Interactions with their organizations
+*/
+
+
+/*
+
+
+  Format of a given organization:
+      {
+        organization_name:String,
+        owner_name: String,
+        owner_email:String,
+        spreadsheet_url:String, -- Given by user
+        spreadsheet_id: String  -- Determined by program,
+        connection_str: String -- Will be the object's id (_id.toHexString())
+        users: [{
+                  email: String
+                  permission: String:
+                                  Permission Options:
+                                       All-Access - Save and Query Data, and manage Organization
+                                      Limited-Access - Only Save Data,
+                  }  , ... ]
+
+    }
+*/
+
+
+/*user format: {
+          email: string,
+          name:string,
+          organization_name:string
+
+        }
+
+*/
+async function createOrganization(user){
+
+      let organization={
+                        owner_name:user.name,
+                        owner_email:user.email,
+                        organization_name:user.organization_name
+
+     } ;
+
+      //const resultObj=await
+
+
+}
+
+async function updateOrganization(user,connection_obj){
+
+      const result= await users_collection.updateOne(
+            {
+              email:user.email
+            },
+            {
+              $set:{
+                organization:
+                    {
+                        organization_id:connection_obj,
+                        permission:user.permission
+
+                    }
+              }
+            }
+     );
+
+     if( result.matchedCount<1){
+       return {success: false}
+     }
+
+     return {success: true }
+
+}
+
+
+
+
+/*
+    User format:
+                {
+                  email:string,
+              }
+*/
+async function getOrganizationDetails(user, connection_obj){
+
+      //let errors=[];
+
+      const userArr= users_collection.find({email:user.email}).toArray();
+      const user=userArr[0];
+
+      if (user.organization==''){
+        return {sucess:false, errors:['No organization associated with your account']}
+      }
+
+      const organizationDetailObj= organizationMainInterface('getOrganizationDetails',
+                      {
+                        organization_id:user.organization.organization_id
+                      }
+                  );
+
+      if(organizationDetailObj.success){
+
+        let permissionToIsAllAccessFlag={'All-Access':true,'Limited-Access':false };
+
+        return {
+            success: true,
+            isAllAccess:permissionToIsAllAccessFlag[user.organization.permission] ,
+            organization_details:organizationDetailObj.details
+
+          }
+      }else{
+        return { sucess: false, errors:organizationDetailObj.errors}
+      }
+
+}
+
+
+
+
+
+
+
+
+/*
+  MAIN SECTION : Supporting Functions Section
+*/
 async function doesUserExist(email){
 
       let results= await collection.find({ 'email':email } ).toArray();
