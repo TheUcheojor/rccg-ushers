@@ -109,14 +109,16 @@ async function login(userObj){
 
     console.log("isValidPassword: "+isValidPassword)
     if(isValidPassword){
-        return {success:true, errors:errors,
-            name: user.name,
-            email:user.email,
-            organization:{
-              spreadsheet_id:user.organization.spreadsheet_id ,
-              organization_id:user.organization.connection_obj.toHexString(),
-            }
-        };
+        return {
+                  success:true,
+                  name: user.name,
+                  email:user.email,
+                  organization:{
+                    name:user.organization.name,
+                    spreadsheet_id:user.organization.spreadsheet_id ,
+                    organization_id:user.organization.connection_obj.toHexString(),
+                  }
+                };
     }else{
         return {success:false, errors:errors };
     }
@@ -199,8 +201,11 @@ async function signUp(userObj){
                 success:true ,
                 name: userObj.name,
                 email:userObj.email,
-                spreadsheet_id:'',
-                organization_id:'',
+                organization:{
+                  name:'',
+                  spreadsheet_id:'' ,
+                  organization_id:'',
+                }
               };
     }else{
       return {success:false , errors:errors };

@@ -37,11 +37,10 @@ module.exports={
               console.log("IN LOGIN SUCESS");
 
               req.session.user={
-                                  email:loginResultObj.email,
                                   name: loginResultObj.name,
-                                  spreadsheet_id:loginResultObj.spreadsheet_id,
-                                  organization_id:loginResultObj.organization_id
-                        };
+                                  email:loginResultObj.email,
+                                  organization:loginResultObj.organization
+                              };
 
               // req.session.email=user.email;
               // req.session.name=loginResultObj.name;
@@ -98,12 +97,10 @@ module.exports={
               console.log(user)
               // req.session.email=user.email;
               // req.session.name=user.name;
-
               req.session.user={
-                                  email:signUpResultObj.email,
                                   name: signUpResultObj.name,
-                                  spreadsheet_id:signUpResultObj.spreadsheet_id,
-                                  organization_id:signUpResultObj.organization_id
+                                  email:signUpResultObj.email,
+                                  organization:signUpResultObj.organization
               };
 
               res.redirect('/');

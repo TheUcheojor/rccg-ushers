@@ -100,7 +100,9 @@ async function createOrganization(organizationObj){
 
       organizationObj.spreadsheet_id=spreadsheet_url.match(spreadsheetIdRegex)[0];
       console.log("organizationObj.spreadsheet_id: "+organizationObj.spreadsheet_id);
+
       organizationObj.users=[];
+      organizationObj.name=organizationObj.name.trim();
 
       const result=await organizationCollection.insertOne(organizationObj);
 
@@ -114,6 +116,7 @@ async function createOrganization(organizationObj){
       return {
             sucess:true,
             organization:{
+                name: organizationObj.name,
                 connection_obj:result.insertedId,
                 spreadsheet_id:organizationObj.spreadsheet_id
             }

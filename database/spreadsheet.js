@@ -29,6 +29,7 @@ var collection;
 (async function(){
   client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
   await client.connect();
+  //await client.db(database).members.renameCollection("organization_1");
 })();
 
 
