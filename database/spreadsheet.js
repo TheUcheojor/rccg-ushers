@@ -26,11 +26,15 @@ var ObjectID = require('mongodb').ObjectID;
 let client;
 var collection;
 
+(async function(){
+  client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
+  await client.connect();
+})();
 
 
 //For Google Spreadsheet - node google spreadsheet (A google api framework for google-spreadsheets)
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-let doc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
+let doc;//Access doc object
 
 
 //Setting up date properties
@@ -68,21 +72,37 @@ module.exports={mainInterface:mainInterface};
 */
 
 
-async function mainInterface(desiredFunction, paramsObj){
+async function mainInterface(user,desiredFunction, paramsObj){
 
     try{
+      //{paramsObj.spreadsheetkey, paramsObj.collection }
+      //let doc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
+
       //setUp(sskey);
+
+        try{
+
+            let doc = new GoogleSpreadsheet(user.spreadsheetkey);//Access doc object
+            let collection= await client.db(database).collection('organization_'+user.organization_id);
+            await doc.useServiceAccountAuth(require(clientPath));
+            await doc.loadInfo();// loads document properties and worksheets
+
+        }catch(err){
+
+            console.log(err);
+            return {success:false, errors:['Errors with accessing your document']};
+
+        }
+
+
+      //connect, close, have become obselete
 
         var output="completed";
 
         if(desiredFunction=='connectClient'){
-              client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
-              await client.connect();
-              collection= await client.db(database).collection(mainCollection);
 
+              //collection= await client.db(database).collection(mainCollection);
               // load spreadsheet directly from json file
-              await doc.useServiceAccountAuth(require(clientPath));
-              await doc.loadInfo();// loads document properties and worksheets
 
         }if(desiredFunction=='closeClient'){
               await client.close();

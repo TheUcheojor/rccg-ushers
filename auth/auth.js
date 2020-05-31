@@ -36,9 +36,16 @@ module.exports={
         if(loginResultObj.success){
               console.log("IN LOGIN SUCESS");
 
-              req.session.email=user.email;
-              req.session.name=loginResultObj.name;
-              console.log(req.session.email,req.session.name);
+              req.session.user={
+                                  email:loginResultObj.email,
+                                  name: loginResultObj.name,
+                                  spreadsheet_id:loginResultObj.spreadsheet_id,
+                                  organization_id:loginResultObj.organization_id
+                        };
+
+              // req.session.email=user.email;
+              // req.session.name=loginResultObj.name;
+              console.log(req.session.user.email,req.session.user.name);
 
               res.redirect('/');
         }else{
@@ -58,8 +65,9 @@ module.exports={
     },
 
     logout: function (req,res,next){
-          req.session.email=undefined;
-          req.session.name=undefined;
+          req.session.user=undefined;
+          // req.session.email=undefined;
+          // req.session.name=undefined;
           res.redirect('/');
         //  res.render('login', {title:'login'});
     },
@@ -88,8 +96,16 @@ module.exports={
           if(signUpResultObj.success){
             console.log("Sign up 1");
               console.log(user)
-              req.session.email=user.email;
-              req.session.name=user.name;
+              // req.session.email=user.email;
+              // req.session.name=user.name;
+
+              req.session.user={
+                                  email:signUpResultObj.email,
+                                  name: signUpResultObj.name,
+                                  spreadsheet_id:signUpResultObj.spreadsheet_id,
+                                  organization_id:signUpResultObj.organization_id
+              };
+
               res.redirect('/');
           }else{
               res.render('signUp',

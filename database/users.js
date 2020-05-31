@@ -38,14 +38,14 @@ async function mainInterface(mode,paramsObj){
         }else if(mode=='login'){
                 return await login(paramsObj.user);
         }else if(mode=='updateOrganization'){
-                return await updateOrganization(paramsObj.user,paramsObj.connection_obj)
+                return await updateOrganization(paramsObj.user,paramsObj.organization)
         }
 
 
 
   }catch(err){
     console.log(err);
-    return {sucess:false errors:['Unexpected Database Error']}
+    return {sucess:false, errors:['Unexpected Database Error']}
   }
 
 }
@@ -109,7 +109,14 @@ async function login(userObj){
 
     console.log("isValidPassword: "+isValidPassword)
     if(isValidPassword){
-        return {success:true, errors:errors, name:user.name};
+        return {success:true, errors:errors,
+            name: user.name,
+            email:user.email,
+            organization:{
+              spreadsheet_id:user.organization.spreadsheet_id ,
+              organization_id:user.organization.connection_obj.toHexString(),
+            }
+        };
     }else{
         return {success:false, errors:errors };
     }
@@ -169,21 +176,32 @@ async function signUp(userObj){
     let saltRounds=10;
     bcrypt.genSalt(saltRounds, (err ,salt)=>{
         bcrypt.hash(userObj.password, salt, async (err,hash)=>{
+
               if(err){
                 console.log(err);
                 success=false;
                 errors.push('Password hashing error');
                 return;
               }
+
               userObj.password=hash;
               userObj.organization='';
+              userObj.name=userObj.name.trim();
+              userObj.email=userObj.email.trim();
+
               await users_collection.insertOne(userObj);
         });
 
     } );
 
     if(success){
-      return {success:true , errors:errors };
+      return {
+                success:true ,
+                name: userObj.name,
+                email:userObj.email,
+                spreadsheet_id:'',
+                organization_id:'',
+              };
     }else{
       return {success:false , errors:errors };
     }
@@ -236,7 +254,7 @@ async function signUp(userObj){
           email: string,
           name:string,
           organization_name:string
-
+          spreadsheet_url:string
         }
 
 */
@@ -245,16 +263,33 @@ async function createOrganization(user){
       let organization={
                         owner_name:user.name,
                         owner_email:user.email,
-                        organization_name:user.organization_name
+                        organization_name:user.organization_name,
+                        spreadsheet_url:user.spreadsheet_url
 
      } ;
 
-      //const resultObj=await
+      const resultObj=await organizationMainInterface('createOrganization',{organization:organization} );
 
+
+      if(resultObj.success ){
+        user.permission='All-Access';
+        return await updateOrganization(user,resultObj.organization);
+      }else{
+        return {success:false, errors:resultObj.errors};
+      }
 
 }
 
-async function updateOrganization(user,connection_obj){
+/*
+      organization format:
+          {
+                  connection_obj: obj,
+                  spreadsheet_id:string
+        }
+
+*/
+
+async function updateOrganization(user,organization){
 
       const result= await users_collection.updateOne(
             {
@@ -264,7 +299,8 @@ async function updateOrganization(user,connection_obj){
               $set:{
                 organization:
                     {
-                        organization_id:connection_obj,
+                        organization_id:organization.connection_obj,
+                        spreadsheet_id:organization.spreadsheet_id,
                         permission:user.permission
 
                     }
@@ -289,18 +325,18 @@ async function updateOrganization(user,connection_obj){
                   email:string,
               }
 */
-async function getOrganizationDetails(user, connection_obj){
+async function getOrganizationDetails(user){
 
       //let errors=[];
 
       const userArr= users_collection.find({email:user.email}).toArray();
-      const user=userArr[0];
+      user=userArr[0];
 
       if (user.organization==''){
         return {sucess:false, errors:['No organization associated with your account']}
       }
 
-      const organizationDetailObj= organizationMainInterface('getOrganizationDetails',
+      const organizationDetailObj= await organizationMainInterface('getOrganizationDetails',
                       {
                         organization_id:user.organization.organization_id
                       }
@@ -314,7 +350,6 @@ async function getOrganizationDetails(user, connection_obj){
             success: true,
             isAllAccess:permissionToIsAllAccessFlag[user.organization.permission] ,
             organization_details:organizationDetailObj.details
-
           }
       }else{
         return { sucess: false, errors:organizationDetailObj.errors}
@@ -322,6 +357,51 @@ async function getOrganizationDetails(user, connection_obj){
 
 }
 
+
+/*
+      user format:{
+            email:string
+    }
+*/
+async function leaveOrganization(user){
+
+     user=users_collection.find({email:user.email} ).toArray();
+
+    const organization_id=user.organization.organization_id;
+
+    await users_collection.updateOne(
+            {email:user.email },
+            {$set:{
+                      organization:''
+                  }
+            }
+    );
+
+    return removeFromOrganization({
+          organization_id:organization_id,
+          userEmails: [user.email]
+        }
+    );
+
+
+}
+
+/*
+      user format:{
+            email:string
+          }
+*/
+async function removeFromOrganization(organization){
+
+    const result= await organizationMainInterface('removeFromOrganization', {organization:organization });
+
+    if(result.success){
+      return {success:true}
+    }else{
+      return {success:false, errors:result.errors}
+
+    }
+}
 
 
 

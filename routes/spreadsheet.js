@@ -4,18 +4,22 @@ const routes=require('express').Router();
 const database =  require("../database/spreadsheet");
 
 
-(async function(){
+// (async function(){
+//
+//   await database.mainInterface("connectClient");
+//
+// })();
 
-  await database.mainInterface("connectClient");
 
-})();
+
+
 
 
 routes.get('/previewSpreadsheet', async function(req, res) {//Collect the data currently in the sheet
   let output=null;
-
+  //pass in collection_name
   try{
-    output=await database.mainInterface("previewSpreadsheet");
+    output=await database.mainInterface(req.session.user,"previewSpreadsheet");
   }
   catch(err){console.log(err)}
   finally{
@@ -28,7 +32,7 @@ routes.get('/getLastUpdated', async function(req, res) {//Collect the data curre
   let output=null;
 
   try{
-    output=await database.mainInterface("getLastUpdated");
+    output=await database.mainInterface(req.session.user,"getLastUpdated");
   }
   catch(err){console.log(err);}
   finally{
@@ -42,7 +46,7 @@ routes.get('/saveSpreadsheet', async function(req, res) {//Collect the data curr
   let output=[false,null];
   console.log(" get mode: "+req.params.mode);
   try{
-    output=[ true,await database.mainInterface("saveSpreadsheet") ];
+    output=[ true,await database.mainInterface(req.session.user,"saveSpreadsheet") ];
 
   }
   catch(err){console.log(err);}
@@ -57,7 +61,7 @@ routes.get('/getSavingMode', async function(req, res) {//Collect the data curren
   let output=false;
 
   try{
-    output=[true, await database.mainInterface("getSavingMode") ];
+    output=[true, await database.mainInterface(req.session.user,"getSavingMode") ];
   }
   catch(err){console.log(err);}
   finally{
@@ -71,7 +75,7 @@ routes.get('/setSpreadsheetOld',async function(req,res){//Set spreadsheet to old
   let output=false;
 
   try{
-    await database.mainInterface("setSpreadsheetOld");
+    await database.mainInterface(req.session.user,"setSpreadsheetOld");
     output=true;
   }
   catch(err){console.log(err);}
@@ -86,7 +90,7 @@ routes.get('/getGraphDetails/:filter', async function(req,res){//Get data for gr
 
   try{
 
-    output=await database.mainInterface("getGraphDetails",{filter:req.params.filter,mode:'home',data:null});
+    output=await database.mainInterface(req.session.user,"getGraphDetails",{filter:req.params.filter,mode:'home',data:null});
   }
   catch(err){console.log(err);}
   finally{
@@ -100,7 +104,7 @@ routes.get('/searchDatabase/:mode/:queryStr', async function(req,res){//Get data
 
   try{
     output=[];
-    output=await database.mainInterface("searchDatabase",{mode:req.params.mode, queryStr:decodeURIComponent(req.params.queryStr)});
+    output=await database.mainInterface(req.session.user,"searchDatabase",{mode:req.params.mode, queryStr:decodeURIComponent(req.params.queryStr)});
 
   }catch(err){console.log(err);}
   finally{
@@ -113,7 +117,7 @@ routes.post('/getMemberGraph', async function (req, res){
       memberGraph=null;
       try{
         console.log("req.body.member: "+JSON.stringify(req.body.member)+ "req.body.filter: "+req.body.filter);
-        var memberGraph=await database.mainInterface("getGraphDetails",{filter:req.body.filter,mode:'search',data:req.body.member});
+        var memberGraph=await database.mainInterface(req.session.user,"getGraphDetails",{filter:req.body.filter,mode:'search',data:req.body.member});
 
       }catch(err){console.log(err);}
       finally{

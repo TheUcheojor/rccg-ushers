@@ -35,8 +35,10 @@ async function mainInterface(mode, paramsObj){
       try{
           if( mode=='createOrganization'){
               return createOrganization(paramsObj.organization)
-          }else if (mode==getOrganizationDetails) {
-              //return getOrganizationDetails(paramsObj.organization)
+          }else if (mode=='getOrganizationDetails') {
+              return getOrganizationDetails(paramsObj.organization);
+          }else if(mode=='removeFromOrganization'){
+              return removeFromOrganization(paramsObj.organization);
           }
 
 
@@ -89,19 +91,33 @@ async function createOrganization(organizationObj){
       const spreadsheetIdRegex=/[-\w]{25,}/;
       if(!organizationObj.spreadsheet_url.test(spreadsheetIdRegex) || !organizationObj.spreadsheet_url.includes('spreadsheets') ){
           errors.push('Invalid spreadsheet url');
-      }else{
-        organizationObj.spreadsheet_id=spreadsheet_url.match(spreadsheetIdRegex)[0];
-        console.log("organizationObj.spreadsheet_id: "+organizationObj.spreadsheet_id);
       }
 
       if(errors.length>0){
         return {success:false, errors:errors};
       }
 
-      organizationObj.users=[];
-      await organizationCollection.insertOne(organizationObj);
 
-      return {sucess:true};
+      organizationObj.spreadsheet_id=spreadsheet_url.match(spreadsheetIdRegex)[0];
+      console.log("organizationObj.spreadsheet_id: "+organizationObj.spreadsheet_id);
+      organizationObj.users=[];
+
+      const result=await organizationCollection.insertOne(organizationObj);
+
+      // organization format:
+      //     {
+      //             connection_obj: obj,
+      //             spreadsheet_id:string
+      //   }
+
+
+      return {
+            sucess:true,
+            organization:{
+                connection_obj:result.insertedId,
+                spreadsheet_id:organizationObj.spreadsheet_id
+            }
+          };
 
 }
 
@@ -157,5 +173,58 @@ async function joinOrganization(user,connection_str){
         return {success:true, errors:['Unexpected Error: Try Again']};
     }
 
+
+}
+
+/*
+    organization format:{
+          organization_id:string
+  }
+*/
+async function getOrganizationDetails(organization){
+
+      const organizationArr=await organization.find({_id:organization.organization_id}).toArray();
+
+      if(organizationArr.length<1){
+        return {success:false, errors:['Organization does not exist']}
+      }
+
+      return {success:true,details:organizationArr[0] };
+
+}
+
+/*
+    organization format:{
+    organization_id: string,
+    userEmails:[string]
+  }
+*/
+//Removes individuals from an organization
+async function removeFromOrganization(organization){
+
+      const organizationArr=await organizationCollection.find({_id:organization_id}).toArray();
+
+      organization.userEmails=organization.userEmails.filter((email)=>{ email!=organizationArr[0].owner_email });
+
+      const result=await organizationCollection.updateOne(
+            {_id:organization.organization_id},
+            {
+              $pull:{
+                 users:{
+                    organization_id:{
+                      $in:organization.userEmails
+                    }
+                 }
+              }
+            }
+
+      );
+
+      if(result.modifiedCount==organization.userEmails.length){
+
+         return {success:true}
+      }else{
+        return {success:false,errors:['One or more individuals could not be deleted']}
+      }
 
 }
