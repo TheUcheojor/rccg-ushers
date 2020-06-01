@@ -5,12 +5,12 @@ const mainInterface=require('../database/users');
 module.exports={
     checkLoggedIn:function (req,res,next){
 
-        if(req.session.email){
-            console.log(req.session.email);
+        if(req.session.user){
+            console.log(req.session.user);
             //console.log('In here 2');
             next();
         }else{
-          console.log('In here');
+          console.log('checkLoggedIn- In here');
           res.render('login', {title: 'Login',layout:'landingLayout'});
         }
 
@@ -41,7 +41,7 @@ module.exports={
                                   email:loginResultObj.email,
                                   organization:loginResultObj.organization
                               };
-
+              req.session.errors={};
               // req.session.email=user.email;
               // req.session.name=loginResultObj.name;
               console.log(req.session.user.email,req.session.user.name);
@@ -56,7 +56,7 @@ module.exports={
                     layout:'landingLayout',
                     name:req.body.name,
                     email:req.body.email,
-                    password:req.body.password
+                    //password:req.body.password
                    }
                );
         }
@@ -86,7 +86,7 @@ module.exports={
                 confirm_password:req.body.confirm_password,
               };
 
-            console.log(user);
+//console.log("SIGN up user);
             signUpResultObj=await mainInterface('signUp', {user:user});
 
           }
@@ -94,7 +94,7 @@ module.exports={
 
           if(signUpResultObj.success){
             console.log("Sign up 1");
-              console.log(user)
+              //console.log(user)
               // req.session.email=user.email;
               // req.session.name=user.name;
               req.session.user={
@@ -102,6 +102,7 @@ module.exports={
                                   email:signUpResultObj.email,
                                   organization:signUpResultObj.organization
               };
+              req.session.errors={};
 
               res.redirect('/');
           }else{
@@ -111,7 +112,7 @@ module.exports={
                   layout:'landingLayout',
                   name:req.body.name,
                   email:req.body.email,
-                  password:req.body.password
+                  //password:req.body.password
 
                 })
           }

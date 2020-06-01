@@ -1,0 +1,56 @@
+
+<div class="mainContent">
+
+
+
+    <div class="page organization">
+
+            <div class='organization-options-item'>
+                        <div class='title'>Create Your Organization</div>
+
+                        <form action='/organization/create' method='post'>
+
+                          {{#if createOrganizationErrors}}
+                              <div class='organization-form-group' >
+                                  <ul>
+                                      {{#each createOrganizationErrors as |error|}}
+                                            <li>
+                                              {{error}}
+                                            </li>
+                                      {{/each}}
+                                  </ul>
+                              </div>
+                          {{/if}}
+
+                          <div class='organization-form-group' >
+                                <label for='organization_name' >Organization Name</label>
+                                <input type='text' id='organization_name' name='organization_name' placeholder='Your Organization Name..' required />
+                          </div>
+
+                          <div class='organization-form-group' >
+                                <label for='spreadsheet_url' >spreadsheet url</label>
+                                <input type='text' id='spreadsheet_url' name='spreadsheet_url' placeholder='Your Google Spreadsheet Url..' required />
+                          </div>
+
+                          <div class='organization-form-group' >
+
+                            <div class='form-group-message'>
+                                <div class='message'>Please share your google doc with</div>
+                                <div class='email'>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com </div>
+                            </div>
+
+                          </div>
+
+                          <div class='organization-form-group button-container'>
+                              <button class="create-button">Create</button>
+                          </div>
+
+                        </form>
+
+            </div>
+
+
+
+    </div>
+
+</div>

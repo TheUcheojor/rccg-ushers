@@ -15,6 +15,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: 
 
 const ObjectID = require('mongodb').ObjectID;
 
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+let clientPath=process.env.USER_CLIENT_SECRET_PATH;//IMPORTANT:Authorization
+
 const db_name=process.env.DATABASE_NAME;
 const collection_name='organizations';
 
@@ -34,16 +37,19 @@ async function mainInterface(mode, paramsObj){
 
       try{
           if( mode=='createOrganization'){
-              return createOrganization(paramsObj.organization)
+              return createOrganization(paramsObj.user,paramsObj.organization)
           }else if (mode=='getOrganizationDetails') {
               return getOrganizationDetails(paramsObj.organization);
           }else if(mode=='removeFromOrganization'){
               return removeFromOrganization(paramsObj.organization);
+          }else if(mode=='addToOrganization'){
+              return addToOrganization(paramsObj.user,paramsObj.organization);
           }
 
 
       }catch(err){
         console.log(err);
+        console.log('org main Interface error')
         return {sucess:false};
       }
 
@@ -80,32 +86,62 @@ module.exports=mainInterface;
 */
 
 //This function creates an organization
-async function createOrganization(organizationObj){
+async function createOrganization(user,organizationObj){
 
       let errors=[];
 
-      if(organizationObj.name.trim().length<3){
+      let potentialOwnerResultArray = await organizationCollection.find({owner_email:user.email}).toArray();
+
+      console.log("potentialOwnerResultArray: "+potentialOwnerResultArray);
+      if(potentialOwnerResultArray.length>0){
+        return{success:false, errors:['You already belong to an organization']}
+      }
+
+
+      if(organizationObj.organization_name.trim().length<3){
           errors.push('Organization name must be larger than 2 characters');
       }
 
       const spreadsheetIdRegex=/[-\w]{25,}/;
-      if(!organizationObj.spreadsheet_url.test(spreadsheetIdRegex) || !organizationObj.spreadsheet_url.includes('spreadsheets') ){
+      if( !spreadsheetIdRegex.test(organizationObj.spreadsheet_url) || !organizationObj.spreadsheet_url.includes('spreadsheets') ){
           errors.push('Invalid spreadsheet url');
       }
 
       if(errors.length>0){
+        console.log('\n  1 error check in createOrg')
+        return {success:false, errors:errors};
+      }
+
+      try{
+          let spreadsheetkey=organizationObj.spreadsheet_url.match(spreadsheetIdRegex)[0];
+          let doc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
+          await doc.useServiceAccountAuth(require(clientPath));
+          await doc.loadInfo();
+      }catch(err){
+          console.log(err)
+          errors.push('Unable to access your spreadsheet. Please share your document with email below');
+
+      }
+
+
+      if(errors.length>0){
+        console.log('\n  2 error check in createOrg')
         return {success:false, errors:errors};
       }
 
 
-      organizationObj.spreadsheet_id=spreadsheet_url.match(spreadsheetIdRegex)[0];
-      console.log("organizationObj.spreadsheet_id: "+organizationObj.spreadsheet_id);
+      organizationObj.spreadsheet_id=organizationObj.spreadsheet_url.match(spreadsheetIdRegex)[0];
+      console.log("\norganizationObj.spreadsheet_id: "+organizationObj.spreadsheet_id);
 
       organizationObj.users=[];
-      organizationObj.name=organizationObj.name.trim();
+      organizationObj.organization_name=organizationObj.organization_name.trim();
+
+
+
 
       const result=await organizationCollection.insertOne(organizationObj);
 
+      console.log("MAKES IT HERE")
       // organization format:
       //     {
       //             connection_obj: obj,
@@ -114,10 +150,11 @@ async function createOrganization(organizationObj){
 
 
       return {
-            sucess:true,
+            success:true,
             organization:{
-                name: organizationObj.name,
+                name: organizationObj.organization_name,
                 connection_obj:result.insertedId,
+                organization_id:result.insertedId.toHexString(),
                 spreadsheet_id:organizationObj.spreadsheet_id
             }
           };
@@ -133,9 +170,9 @@ async function createOrganization(organizationObj){
           permission: String
       }
 */
-async function joinOrganization(user,connection_str){
+async function addToOrganization(user,organization){
 
-    const connection_obj= ObjectID.createFromHexString(connection_str.trim());
+    const connection_obj= ObjectID.createFromHexString(organization.connection_str.trim());
 
     let organizationResult=await organizationCollection.updateOne(
         {
@@ -155,38 +192,51 @@ async function joinOrganization(user,connection_str){
 
     if(organizationResult.matchedCount<1){
         return {success:false , errors: ['Organization does not exist']};
+    }else{
+
+        return {
+                    success:true,
+                    user:{
+                      email:user.email,
+                      permission:user.permission
+                    },
+                    organization:{
+                        connection_obj:connection_obj
+                    }
+              }
     }
+
 
 
 
     //Update user
-    resultObj=userMainInterface('updateOrganization',
-                  {
-                    user:{
-                            email:user.email,
-                            permission:user.permission
-                          },
-                    connection_obj:connection_obj
-                  }
-            );
-
-    if(resultObj.success){
-        return {success:true};
-    }else{
-        return {success:true, errors:['Unexpected Error: Try Again']};
-    }
+    // resultObj=userMainInterface('updateOrganization',
+    //               {
+    //                 user:{
+    //                         email:user.email,
+    //                         permission:user.permission
+    //                       },
+    //                 connection_obj:connection_obj
+    //               }
+    //         );
+    //
+    // if(resultObj.success){
+    //     return {success:true};
+    // }else{
+    //     return {success:true, errors:['Unexpected Error: Try Again']};
+    // }
 
 
 }
 
 /*
     organization format:{
-          organization_id:string
+          connection_obj:obj
   }
 */
 async function getOrganizationDetails(organization){
 
-      const organizationArr=await organization.find({_id:organization.organization_id}).toArray();
+      const organizationArr=await organizationCollection.find({_id:organization.connection_obj}).toArray();
 
       if(organizationArr.length<1){
         return {success:false, errors:['Organization does not exist']}

@@ -38,12 +38,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use(bodyParser.json());
+
+// app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+//   extended: true
+// }));
+
 app.use(express.static(path.join(__dirname,'public')));
 
 // set up the session
 app.use(
   session({
-    secret: "app",
+    secret: "random app",
     name: "app",
     resave: true,
     saveUninitialized: true,

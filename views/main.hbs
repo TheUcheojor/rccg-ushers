@@ -2,6 +2,9 @@
     <div class="mainContent">
 
       <div class="page home">
+
+          {{#if user.organization.organization_id}}
+
               <div class="spreadsheet-display"  onmouseenter='$(".ss-onhover").css("display","inline-block");$(".ss-Default").css("display","none");'  onmouseleave='$(".ss-onhover").css("display","none");$(".ss-Default").css("display","inline-block");'>
 
                 <div class="center ss-Default" style="display:inline-block;width: 100%;">
@@ -9,12 +12,6 @@
                     <div style="float:top;font-size:18px;">Live Spreadsheet</div>
                 </div>
 
-
-                  {{!-- <div class="center ss-Default" style="display:block;margin:auto;width: 50%;">
-                    <div style="float:top;"><h2>Service Transactions</h2></div>
-                      <div style="float:top;"><h3>Live Spreadsheet</h3></div>
-
-                  </div> --}}
 
                   <div class="center ss-onhover" style="display:none;width:100%;height:100%;">
 
@@ -44,28 +41,7 @@
 
                         <div class="lastUpdated" style="position:absolute;bottom:0;width:100%;"> <img src="/images/loading.gif" style="position:relative;width:25px;height:25px;" /></div>
                   </div>
-                  {{!-- <div class="center ss-onhover" style="display:none;width:100%;height:100%;background-color:rgba(0, 0, 0,0.4);">
 
-                        <div class="center preview-save" style="width:60%;height:75px;">
-                                <!-- <span class="preview"> Preview </span>
-                                <span class="save">Save</span> -->
-                                <div class="preview" style="display:inline-block;position: relative;top:0px;float:left;cursor:pointer;text-shadow: 2px 2px 8px #000000;"  onclick="getPreviewSpreadsheet();"  onmouseover="$(this).css('color','rgba(136, 135, 156,1)'); "  onmouseout="$(this).css('color','white'); " ><h2>Preview</h2></div>
-                                <div class="save" onclick="saveSpreadsheet()"  style="display:inline-block;position: relative;top:0px;float:right;cursor:pointer;text-shadow: 2px 2px 8px #000000;" onmouseover="$(this).css('color','rgba(136, 135, 156,1)'); " onmouseout="$(this).css('color','white') "></div>
-
-                                <div class="loading-saveMessage" style="display:inline-block;position:relative;top:20px;float:right;cursor:pointer;">
-                                  <img src="/images/loading.gif" style="width:25px;height:25px;" />
-                                </div>
-
-                                <div class="loading-loadNewMessage" style="position:absolute;bottom:30px;text-align:center;display:none;margin:0;cursor:pointer;width:100%;">
-                                  <img src="/images/loading.gif" style="width:25px;height:25px;" />
-                                </div>
-
-
-
-                        </div>
-
-                        <div class="lastUpdated" style="position:absolute;bottom:0;width:100%;"> <img src="/images/loading.gif" style="position:relative;width:25px;height:25px;" /></div>
-                  </div> --}}
 
               </div>
 
@@ -112,10 +88,25 @@
                     </div>
               </div>
 
+        {{else}}
+              <div class='organization-none'>
+
+                  <div class='message'>
+                      Not registered with an organization
+
+                  </div>
+                  <div class='getStarted'>
+                      <a href='organization'> Get Started - Join or Create Your Organization</a>
+                  <div>
+
+              </div>
 
 
 
-        </div>
+              </div>
+
+          </div>
 
 
-    </div>
+
+        {{/if}}

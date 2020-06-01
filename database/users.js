@@ -39,6 +39,9 @@ async function mainInterface(mode,paramsObj){
                 return await login(paramsObj.user);
         }else if(mode=='updateOrganization'){
                 return await updateOrganization(paramsObj.user,paramsObj.organization)
+        }else if(mode=='createOrganization'){
+                return await createOrganization(paramsObj.user);
+
         }
 
 
@@ -109,6 +112,15 @@ async function login(userObj){
 
     console.log("isValidPassword: "+isValidPassword)
     if(isValidPassword){
+
+        // let organization_id
+        // if(user.organization.organization_id!==''){
+        //     organization_id=user.organization;
+        // }else{
+        //     organization_id='';
+        // }
+
+
         return {
                   success:true,
                   name: user.name,
@@ -116,7 +128,7 @@ async function login(userObj){
                   organization:{
                     name:user.organization.name,
                     spreadsheet_id:user.organization.spreadsheet_id ,
-                    organization_id:user.organization.connection_obj.toHexString(),
+                    organization_id:user.organization.organization_id,
                   }
                 };
     }else{
@@ -187,7 +199,11 @@ async function signUp(userObj){
               }
 
               userObj.password=hash;
-              userObj.organization='';
+              userObj.organization={
+                    name:'',
+                    spreadsheet_id:'' ,
+                    organization_id:'',
+              };
               userObj.name=userObj.name.trim();
               userObj.email=userObj.email.trim();
 
@@ -271,24 +287,35 @@ async function createOrganization(user){
                         organization_name:user.organization_name,
                         spreadsheet_url:user.spreadsheet_url
 
-     } ;
+     };
 
-      const resultObj=await organizationMainInterface('createOrganization',{organization:organization} );
+     console.log('organization: '+JSON.stringify(organization));
+      const result_org=await organizationMainInterface('createOrganization',{user:user,organization:organization} );
 
 
-      if(resultObj.success ){
+      if(result_org.success ){
         user.permission='All-Access';
-        return await updateOrganization(user,resultObj.organization);
+        let result_user =await updateOrganization(user,result_org.organization);
+
+        if(result_user.success){
+          return {sucess:true, organization:result_org.organization }
+
+        }else{
+          return {success:false,errors:result_user.errors}
+        }
+
       }else{
-        return {success:false, errors:resultObj.errors};
+        console.log("user createOrganization not successfull")
+        return {success:false, errors:result_org.errors};
       }
 
 }
 
+
 /*
       organization format:
           {
-                  connection_obj: obj,
+                  organization_id: obj,
                   spreadsheet_id:string
         }
 
@@ -314,12 +341,46 @@ async function updateOrganization(user,organization){
      );
 
      if( result.matchedCount<1){
-       return {success: false}
+       return {success: false, errors:['Unexpected Errors']}
      }
 
      return {success: true }
 
 }
+
+
+/*
+  user:{ email:str, permission:str }
+  organization:{connection_str: str}
+*/
+async function joinOrganization(user,organization){
+
+
+    let result_org =await organizationMainInterface('addToOrganization',{user:user,organization:organization.connection_str });
+
+    if(result_org.success){
+          let result_user= await updateOrganization(user,result_org.organization);
+
+          if(result_user.sucess){
+            return {success:true}
+          }else{
+            return {success:false,errors:result_user.errors}
+          }
+
+    }else{
+      return {success:false,errors:result_org.errors}
+    }
+
+
+
+
+
+}
+
+
+
+
+
 
 
 
@@ -419,7 +480,7 @@ async function removeFromOrganization(organization){
 */
 async function doesUserExist(email){
 
-      let results= await collection.find({ 'email':email } ).toArray();
+      let results= await users_collection.find({ 'email':email } ).toArray();
       console.log(results>0);
       return results.length>0;
 

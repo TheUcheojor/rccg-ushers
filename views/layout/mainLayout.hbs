@@ -18,18 +18,22 @@
     <script src="javascripts/importedScripts/html2canvas.min.js" ></script>
     <script src="javascripts/importedScripts/jspdf.plugin.autotable.js" ></script>
 
-    <script src="javascripts/myScripts/main.js" ></script>
     <script src="javascripts/myScripts/requestsController.js" ></script>
     <script src="javascripts/myScripts/graphs.js" ></script>
     <script src="javascripts/myScripts/search.js" ></script>
 
     <script src="javascripts/myScripts/print.js" ></script>
-    <script src="/javascripts/myScripts/mainInstance.js" ></script>
+    <script src="javascripts/myScripts/main.js" ></script>
+
+
+    {{#if user.organization.organization_id}}
+        <script src="/javascripts/myScripts/mainInstance.js" ></script>
+    {{/if}}
 
     <link type="text/css"   rel="stylesheet" href="/stylesheets/main.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/graph.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/search.css" media="all"  />
-
+    <link type="text/css"   rel="stylesheet" href="/stylesheets/organization.css" media="all"  />
 
 
     <title> {{title}}</title>
@@ -43,7 +47,14 @@
     </div>
 
     <div class='side-bar'>
-          <div class='side-bar-title dashboard'>Dashboard</div>
+          <div class='side-bar-title dashboard' onclick='window.location.href="/"'>Dashboard</div>
+
+          {{#if isOrganization}}
+            <div class='side-bar-item selected' onclick='window.location.href="/organization" ' >Organization</div>
+          {{else}}
+            <div class='side-bar-item' onclick='window.location.href="/organization" ' >Organization</div>
+          {{/if}}
+
           <div class='side-bar-item' onclick='window.location.href="/logout" ' >Logout</div>
 
 
@@ -55,58 +66,61 @@
 
     <div class='hor-nav-bar'>
 
-            <div class="hor-nav-item left search">
-               <input id='search-bar' type='text' onkeyup="$('.hbs-body-container').hide();$('.page.search').fadeIn();search(this.value)" placeholder='Search....' />
-            </div>
+            {{#if user.organization.organization_id}}
+                <div class="hor-nav-item left search">
+                   <input id='search-bar' type='text' placeholder='Search....' />
+                </div>
+            {{/if}}
             <div class="hor-nav-item right logo" > <img src="/images/rccg.png"/></div>
-            <div class="hor-nav-item right" > <div class='name-text'>{{name}}</div></div>
+            <div class="hor-nav-item right" > <div class='name-text'>{{user.name}}</div></div>
 
     </div>
 
+    {{#if user.organization.organization_id }}
+          <div class="mainContent">
+
+
+              <div class="page search" style='display:none'>
+                            <div class='dashboard-return' >
+                                  Return to Dashboard
+                            </div>
+
+                            <div class="search-container">
+                              {{!-- <input type="text" class="inputSearch" placeholder="Search"  /> --}}
+                                <div class="no-results ">
+                                    No Results
+                                </div>
+
+                              <div class="search-results">
+                                <table class="result-table">
+
+                                </table>
+                              </div>
+                            </div>
+
+                            {{!-- <div class="preview-container">
+
+
+                            </div> --}}
+
+                            <div class="result-preview-container" id='searchResults' >
+                                  <div class="result-preview-content">
+                                        <div class="filterBy" id="year-filter">Filter By Year</div>
+                                        <div class="filterBy" id="month-filter" >Filter By Month</div>
+                                        <div class="filterBy" id="day-filter" >Filter By Day  </div>
+                                  </div>
+                            </div>
+
+              </div>
+          </div>
+
+      {{/if}}
 
     <div class='hbs-body-container'>
           {{{ body }}}
     </div>
 
 
-
-      <div class="mainContent">
-
-
-
-          <div class="page search" style='display:none'>
-                        <div class='dashboard-return' onclick='$(".page.search").hide();$("#search-bar").val(""); $(".hbs-body-container").fadeIn();'>
-                              Return to Dashboard
-                        </div>
-
-                        <div class="search-container">
-                          {{!-- <input type="text" class="inputSearch" placeholder="Search"  /> --}}
-                            <div class="no-results ">
-                                No Results
-                            </div>
-
-                          <div class="search-results">
-                            <table class="result-table">
-
-                            </table>
-                          </div>
-                        </div>
-
-                        {{!-- <div class="preview-container">
-
-
-                        </div> --}}
-
-                        <div class="result-preview-container" id='searchResults' >
-                              <div class="result-preview-content">
-                                    <div class="filterBy" id="year-filter">Filter By Year</div>
-                                    <div class="filterBy" id="month-filter" >Filter By Month</div>
-                                    <div class="filterBy" id="day-filter" >Filter By Day  </div>
-                              </div>
-                        </div>
-
-          </div>
-      </div>
 
   </body>
 </html>

@@ -16,8 +16,8 @@ input{
    border: 1px solid #ccc;
 }
 ul{
-
   list-style-type: none;
+  padding: 0;
 }
 li{
   text-align: center;

@@ -24,18 +24,26 @@ let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
 const MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 let client;
-var collection;
-
-(async function(){
-  client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
-  await client.connect();
-  //await client.db(database).members.renameCollection("organization_1");
-})();
+let collection;
 
 
 //For Google Spreadsheet - node google spreadsheet (A google api framework for google-spreadsheets)
 const { GoogleSpreadsheet } = require('google-spreadsheet');
 let doc;//Access doc object
+
+
+(async function(){
+  client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: true });
+  await client.connect();
+
+  // doc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
+  // await doc.useServiceAccountAuth(require(clientPath));
+  // await doc.loadInfo();// loads document properties and worksheets
+  //
+  // collection= await client.db(database).collection(mainCollection);
+  //await client.db(database).members.renameCollection("organization_1");
+})();
+
 
 
 //Setting up date properties
@@ -73,27 +81,24 @@ module.exports={mainInterface:mainInterface};
 */
 
 
+
 async function mainInterface(user,desiredFunction, paramsObj){
 
     try{
       //{paramsObj.spreadsheetkey, paramsObj.collection }
-      //let doc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
 
-      //setUp(sskey);
+      // setUp(sskey);
+      console.log(typeof user.organization.organization_id);
 
-        try{
+          //console.log(JSON.stringify(user.organization.organization_id));
+           doc = new GoogleSpreadsheet(user.organization.spreadsheet_id);//Access doc object
 
-            let doc = new GoogleSpreadsheet(user.spreadsheetkey);//Access doc object
-            let collection= await client.db(database).collection('organization_'+user.organization_id);
-            await doc.useServiceAccountAuth(require(clientPath));
-            await doc.loadInfo();// loads document properties and worksheets
+          collection= await client.db(database).collection('organization_'+user.organization.organization_id );
 
-        }catch(err){
+          await doc.useServiceAccountAuth(require(clientPath));
+          await doc.loadInfo();// loads document properties and worksheets
 
-            console.log(err);
-            return {success:false, errors:['Errors with accessing your document']};
 
-        }
 
 
       //connect, close, have become obselete
@@ -371,7 +376,7 @@ async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether t
 
   let resetedIdStrArr=[];
 
-  const spreadsheetInfoArray= await collection.find( {Spreadsheet:{$exists:true,$ne:null}   }).toArray();
+  let spreadsheetInfoArray= await collection.find( {Spreadsheet:{$exists:true,$ne:null}   }).toArray();
 
   if(spreadsheetInfoArray.length==0){
       setDate();
