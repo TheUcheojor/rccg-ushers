@@ -59,10 +59,13 @@ function getGraphDetails(filter){//Get data for various graphs
            type : "GET",
            contentType : "String",
            url : `/internals/saveSpreadsheet`,
-           success : function(resultArr) {
+           success :async function(resultArr) {
 
                   var success=resultArr[0];
                   var spreadsheet=resultArr[1];
+
+
+                  console.log("requestsController: "+JSON.stringify(spreadsheet) )
 
                   var message;
                   if(spreadsheet==null ||spreadsheet==undefined ){message="Current Spreadsheet has been saved. (No Data)"}
@@ -91,7 +94,7 @@ function getGraphDetails(filter){//Get data for various graphs
                   $(".spreadsheet-display").attr("onmouseenter",'$(".ss-onhover").css("display","block");$(".ss-Default").css("display","none");');
                   $(".spreadsheet-display").attr("onmouseleave",'$(".ss-onhover").css("display","none");$(".ss-Default").css("display","block");');
 
-
+                  await getGraphDetails('month');
 
            },
          error : function(e) {

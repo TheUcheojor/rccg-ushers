@@ -29,9 +29,20 @@ let app = express();
 
 
 
-app.engine('hbs', hbs({extname:'hbs',defaultLayout:'mainLayout', layoutsDir: __dirname+'/views/layout'  }));
+
+app.engine('hbs', hbs({
+    extname:'hbs',
+    defaultLayout:'mainLayout',
+     layoutsDir: __dirname+'/views/layout',
+     helpers:{
+         ifEquals:function(arg1, arg2, options) {
+       return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+   }
+  }
+   }));
 app.set('views', path.join(__dirname,'views'));
 app.set('view engine','hbs');
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

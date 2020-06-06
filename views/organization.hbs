@@ -5,15 +5,24 @@
 
     <div class="page organization">
 
-            <div class='organization-options-item'>
-                        <div class='title'>Create Your Organization</div>
+            {{#if user.organization.organization_id}}
 
-                        <form action='/organization/create' method='post'>
+                    {{!-- Organization overview --}}
 
-                          {{#if createOrganizationErrors}}
+                    <div class='organization-options-item'>
+
+                          <div class='title'>{{user.organization.name}}</div>
+
+                          {{#ifEquals user.name "Owner - All Access"}}
+                                <form action='/organization/delete' method='post'>
+                          {{else}}
+                                <form action='/organization/leave' method='post'>
+                          {{/if}}
+
+                          {{#if deleteOrRemoveOrganizationErrors}}
                               <div class='organization-form-group' >
                                   <ul>
-                                      {{#each createOrganizationErrors as |error|}}
+                                      {{#each deleteOrRemoveOrganizationErrors as |error|}}
                                             <li>
                                               {{error}}
                                             </li>
@@ -22,34 +31,197 @@
                               </div>
                           {{/if}}
 
-                          <div class='organization-form-group' >
-                                <label for='organization_name' >Organization Name</label>
-                                <input type='text' id='organization_name' name='organization_name' placeholder='Your Organization Name..' required />
-                          </div>
+                            <div class='organization-form-group' style="padding-top:10px;">
+                                  <div class='form-group-message'>
+                                      <div class='message'>Your Permission Level</div>
+                                      {{#if isAllAccess}}
+                                          <div class='submessage'>All Access</div>
+                                      {{/if}}
+                                      {{#if isLimitedAccess}}
+                                          <div class='submessage'>Limited Access</div>
+                                      {{/if}}
+                                      {{#if isOwner}}
+                                          <div class='submessage'>Owner - All Access</div>
+                                      {{/if}}
+                                  {{!-- </div> --}}
+                            {{!-- </div> --}}
 
-                          <div class='organization-form-group' >
-                                <label for='spreadsheet_url' >spreadsheet url</label>
-                                <input type='text' id='spreadsheet_url' name='spreadsheet_url' placeholder='Your Google Spreadsheet Url..' required />
-                          </div>
+                            {{!-- <div class='organization-form-group' > --}}
 
-                          <div class='organization-form-group' >
+                              {{!-- <div class='form-group-message'> --}}
+                                  <div class='message'>Invitation Connection String</div>
+                                  <div class='submessage'>{{user.organization.organization_id}}</div>
+                              {{!-- </div> --}}
 
-                            <div class='form-group-message'>
-                                <div class='message'>Please share your google doc with</div>
-                                <div class='email'>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com </div>
+                            {{!-- </div> --}}
+
+                            {{!-- <div class='organization-form-group'> --}}
+
+                              {{!-- <div class='form-group-message' style='padding:5px 10px;'> --}}
+
+                                    <div class='input-confirmation '>
+                                      <input type='checkbox' id='delete_checkbox' name='delete_checkbox'style='width:25px;' required />
+                                    </div>
+
+                                    <div class='message important'>
+                                    <label for='delete_checkbox'>Confirmation</label>
+                                    </div>
+
+                                {{!-- <div class='submessage'>
+
+                                    <input type='checkbox' id='delete_checkbox' name='delete_checkbox' required />
+                                </div> --}}
+                              </div>
+
                             </div>
 
-                          </div>
+                            <div class='organization-form-group button-container'>
+                                {{#if isOwner}}
+                                      <button class="create-button leave">Delete Organization</button>
+                                {{else}}
+                                      <button class="create-button leave">Leave Organization</button>
+                                {{/if}}
 
-                          <div class='organization-form-group button-container'>
-                              <button class="create-button">Create</button>
-                          </div>
+                            </div>
 
-                        </form>
-
-            </div>
+                          </form>
 
 
+                    </div>
+
+                    {{!-- Manage Users --}}
+                    <div class='organization-options-item'>
+                              <div class='title'>Manage Users</div>
+
+                              <form action='/organization/updatePermissions'>
+                                      <div class="organization-form-group" style="padding-top:10px;">
+
+                                            <div class='form-group-message'>
+
+                                                    <div class='message'>
+                                                              Admin - admin@gmail.com
+                                                      </div>
+
+                                                      <div class='submessage permission'>
+                                                          <select name="permission" id="permission">
+                                                          <option value="All-Access">All-Access</option>
+                                                          <option value="Limited-Access">Limited-Access</option>
+                                                          </select>
+                                                      </div>
+
+                                                      <div class='message'>
+                                                                Admin - admin@gmail.com
+                                                        </div>
+
+                                                        <div class='submessage permission'>
+                                                            <select name="permission" id="permission">
+                                                            <option value="All-Access">All-Access</option>
+                                                            <option value="Limited-Access">Limited-Access</option>
+                                                            </select>
+                                                        </div>
+                                            </div>
+                                      </div>
+
+
+                              </form>
+
+
+
+
+
+
+
+
+                    </div>
+
+
+            {{else}}
+                    <div class='organization-options-item'>
+                                <div class='title'>Create Your Organization</div>
+
+                                <form action='/organization/create' method='post'>
+
+                                  {{#if createOrganizationErrors}}
+                                      <div class='organization-form-group' >
+                                          <ul>
+                                              {{#each createOrganizationErrors as |error|}}
+                                                    <li>
+                                                      {{error}}
+                                                    </li>
+                                              {{/each}}
+                                          </ul>
+                                      </div>
+                                  {{/if}}
+
+                                  <div class='organization-form-group' >
+                                        <label for='organization_name' >Organization Name</label>
+                                        <input type='text' id='organization_name' name='organization_name' placeholder='Your Organization Name..' required />
+                                  </div>
+
+                                  <div class='organization-form-group' >
+                                        <label for='spreadsheet_url' >spreadsheet url</label>
+                                        <input type='text' id='spreadsheet_url' name='spreadsheet_url' placeholder='Your Google Spreadsheet Url..' required />
+                                  </div>
+
+                                  <div class='organization-form-group' >
+
+                                    {{!-- <div class='form-group-message'>
+                                        <div class='message'>Please share your google spreadsheet with</div>
+                                        <div class='email'>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com </div>
+                                    </div> --}}
+
+                                    <div class='form-group-message'>
+                                        <div class='message'>Please share your google spreadsheet with</div>
+                                        <div class='email'>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com </div>
+                                        <div class='link'> <a href='https://docs.google.com/spreadsheets/d/1lW2UJ613xaa5uEgVJu5ncheN-qMjTBXcbLBHGuwz6WM/edit?usp=sharing' target="_blank">Spreadsheet Template</a> </div>
+                                    </div>
+
+
+                                    {{!-- https://docs.google.com/spreadsheets/d/1lW2UJ613xaa5uEgVJu5ncheN-qMjTBXcbLBHGuwz6WM/edit?usp=sharing --}}
+
+
+                                  </div>
+
+                                  <div class='organization-form-group button-container'>
+                                      <button class="create-button">Create</button>
+                                  </div>
+
+                                </form>
+
+                    </div>
+
+                    <div class='organization-options-item'>
+                                <div class='title'>Join An Organization</div>
+
+                                <form action='/organization/join' method='post'>
+
+                                  {{#if joinOrganizationErrors}}
+                                      <div class='organization-form-group' >
+                                          <ul>
+                                              {{#each joinOrganizationErrors as |error|}}
+                                                    <li>
+                                                      {{error}}
+                                                    </li>
+                                              {{/each}}
+                                          </ul>
+                                      </div>
+                                  {{/if}}
+
+                                  <div class='organization-form-group' >
+                                        <label for='connection_str' >Connection String</label>
+                                        <input type='text' id='connection_str' name='connection_str' placeholder="The Organization's Connection String.." required />
+                                  </div>
+
+
+                                  <div class='organization-form-group button-container'>
+                                      <button class="create-button">Join</button>
+                                  </div>
+
+                                </form>
+
+                    </div>
+
+          {{/if}}
 
     </div>
 

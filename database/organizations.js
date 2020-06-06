@@ -44,13 +44,17 @@ async function mainInterface(mode, paramsObj){
               return removeFromOrganization(paramsObj.organization);
           }else if(mode=='addToOrganization'){
               return addToOrganization(paramsObj.user,paramsObj.organization);
+          }else if(mode=='deleteOrganization'){
+              return deleteOrganization(paramsObj.owner);
+          }else if(mode=='removeFromOrganization'){
+              return removeFromOrganization(paramsObj.organization);
           }
 
 
       }catch(err){
         console.log(err);
         console.log('org main Interface error')
-        return {sucess:false};
+        return {sucess:false ,errors:['Organization Main Interface - Unexpected error']};
       }
 
 }
@@ -90,6 +94,8 @@ async function createOrganization(user,organizationObj){
 
       let errors=[];
 
+      //potentialOwnerResultCheck is not needed as user will not have this option
+      //when they are under an organization
       let potentialOwnerResultArray = await organizationCollection.find({owner_email:user.email}).toArray();
 
       console.log("potentialOwnerResultArray: "+potentialOwnerResultArray);
@@ -155,11 +161,59 @@ async function createOrganization(user,organizationObj){
                 name: organizationObj.organization_name,
                 connection_obj:result.insertedId,
                 organization_id:result.insertedId.toHexString(),
-                spreadsheet_id:organizationObj.spreadsheet_id
+                spreadsheet_id:organizationObj.spreadsheet_id,
+                permission:'Owner - All Access'
             }
           };
 
 }
+
+
+async function deleteOrganization(owner){
+
+      if(owner==null){return{success:false,errors:['Empty Owner']}};
+
+      let organizationArr=await organizationCollection.find({owner_email:owner.email}).toArray();
+
+      console.log("organizationArr:  "+organizationArr);
+
+      //console.log("WOAH");
+      if(organizationArr.length<1){
+          console.log("WOAH")
+          return {success:false,errors:['Organization does not exist']}
+      }
+
+      let organization=organizationArr[0];
+
+      let result= await organizationCollection.deleteOne({owner_email:owner.email});
+
+
+
+      if (result.deletedCount>0){
+
+            let users=[];
+            console.log("\n\nowner.organization.organization_id: "+owner.organization.organization_id+'\n');
+            try{
+              await client.db(db_name).collection('organization_'+owner.organization.organization_id).drop();
+
+            }catch{
+              console.log("\nEmpty Collection!!!\n")
+            }
+            organization.users.forEach((user)=>{users.push(user.email)});
+
+            return {success:true, users:users};
+
+      }else{
+          return {success:false, errors:'Unable to delete organization'}
+      }
+
+
+
+}
+
+
+
+
 
 
 //Given a connection str, allows user to connect to organization
@@ -172,7 +226,13 @@ async function createOrganization(user,organizationObj){
 */
 async function addToOrganization(user,organization){
 
-    const connection_obj= ObjectID.createFromHexString(organization.connection_str.trim());
+    let  connection_obj;
+    try{
+      connection_obj= ObjectID.createFromHexString(organization.connection_str.trim());
+    }catch(err){
+      return{success:false, errors:['Organization does not exist']}
+    }
+
 
     let organizationResult=await organizationCollection.updateOne(
         {
@@ -194,6 +254,12 @@ async function addToOrganization(user,organization){
         return {success:false , errors: ['Organization does not exist']};
     }else{
 
+        let result_details= await organizationCollection.find({ _id:connection_obj}).toArray();
+        let mainResult=result_details[0];
+
+        console.log("mainResult._id.toHexString(): "+mainResult._id.toHexString());
+        console.log("mainResult.organization_name: "+mainResult.organization_name);
+
         return {
                     success:true,
                     user:{
@@ -201,12 +267,19 @@ async function addToOrganization(user,organization){
                       permission:user.permission
                     },
                     organization:{
-                        connection_obj:connection_obj
+                        name:mainResult.organization_name,
+                        connection_obj:connection_obj,
+                        organization_id:mainResult._id.toHexString(),
+                        spreadsheet_id:mainResult.spreadsheet_id,
+                        permission:'Limited-Access'
                     }
               }
     }
 
-
+    // name: organizationObj.organization_name,
+    // connection_obj:result.insertedId,
+    // organization_id:result.insertedId.toHexString(),
+    // spreadsheet_id:organizationObj.spreadsheet_id
 
 
     //Update user
@@ -236,13 +309,24 @@ async function addToOrganization(user,organization){
 */
 async function getOrganizationDetails(organization){
 
+      if(organization==null){return {success:false,errors:['Null Organization']}}
+
       const organizationArr=await organizationCollection.find({_id:organization.connection_obj}).toArray();
 
       if(organizationArr.length<1){
         return {success:false, errors:['Organization does not exist']}
       }
 
-      return {success:true,details:organizationArr[0] };
+
+      return {success:true,
+          organization:{
+                owner_name:organization.owner_name,
+                owner_email:organization.owner_email,
+                users:organization.users,
+
+          }
+
+          };
 
 }
 
@@ -255,16 +339,21 @@ async function getOrganizationDetails(organization){
 //Removes individuals from an organization
 async function removeFromOrganization(organization){
 
-      const organizationArr=await organizationCollection.find({_id:organization_id}).toArray();
+      console.log("\n\nremoveFromOrganization  organization"+JSON.stringify(organization)+'\n\n');
 
-      organization.userEmails=organization.userEmails.filter((email)=>{ email!=organizationArr[0].owner_email });
+      let organizationArr=await organizationCollection.find({_id:organization.organization_id}).toArray();
+      //console.log("type organization.organization_id: "+typeof organization.organization_id)
+      organization.userEmails=organization.userEmails.filter((email)=>{ return email!=organizationArr[0].owner_email });
 
-      const result=await organizationCollection.updateOne(
+
+      console.log("\n\n"+  organization.userEmails+"\n\n")
+
+      let result=await organizationCollection.updateOne(
             {_id:organization.organization_id},
             {
               $pull:{
                  users:{
-                    organization_id:{
+                    email:{
                       $in:organization.userEmails
                     }
                  }

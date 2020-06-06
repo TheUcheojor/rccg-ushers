@@ -1,18 +1,23 @@
 
 .page.organization{
-  margin-top: 50px;
+  margin-top: 25px;
   text-align: center;
 }
 
 .organization-options-item{
 
     display:inline-block;
-    margin: auto;
-    width: 45%;
+    margin: 5px 10px;
+    width:35%;
+    max-width: 450px;
     background: #fff;
     box-shadow: 0 0rem 9.375rem rgba(90,97,105,.1), 0 0.25rem 0.5rem rgba(90,97,105,.12), 0 0.9375rem 1.375rem rgba(90,97,105,.1), 0 0.4375rem 2.1875rem rgba(165,182,201,.1);
 
     border-radius: 10px;
+    vertical-align: top;
+    margin: 5px 10px;
+    overflow: hidden;
+    text-overflow:ellipsis;
 }
 
 .organization-options-item .title{
@@ -33,7 +38,7 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  padding: 12px 20px;
+  padding: 5px 20px;
   text-align: left;
 }
 
@@ -59,6 +64,7 @@
   padding: 0;
   text-align: left;
   list-style-type: none;
+  margin: 0;
 }
 .organization-form-group li{
   text-align: center;
@@ -74,28 +80,73 @@
   font-size: 15px;
   font-weight: 400;
   line-height: 1.5;
-  padding: 20px 20px;
+  padding: 10px 20px;
   text-align: center;
-  background: rgba(136, 135, 156,0.5);
+  background: rgba(136, 135, 156,0.4);
+
   border-radius: 5px;
 
+  /* margin: 10px 0; */
 }
+
+
 
 .form-group-message .message{
     padding: 0 10px;
+    font-size: 15px;
     padding-bottom: 5px;
     font-family: Courier;
+    font-variant-caps: all-small-caps;
+    color:#fff;
+    background: rgba(136, 135, 156,0.9);
+    overflow: hidden;
+    text-overflow:ellipsis;
+    /* margin: 5px 0; */
+}
+
+.form-group-message .message.important{
+    font-size: 15px;
+    font-family: Courier;
+    font-variant-caps: all-small-caps;
+    color:#fff;
+    background: rgba(136, 135, 156,0.9);
+    overflow: hidden;
+    text-overflow:ellipsis;
+    width:70%;
+    display: inline-block;
+    margin: 0;
+    border-radius: 5px;
+}
+
+.form-group-message .input-confirmation{
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.form-group-message .input-confirmation input{
+  width:25px;
+  height: 30px;
+  margin: 0;
+}
+
+
+.form-group-message .message label{
     color:#fff;
 }
 
-.form-group-message .email{
+.form-group-message .email, .form-group-message .link, .form-group-message .submessage{
   font-size: 12px;
   font-family: Courier;
   padding: 5px 12px;
   background: #fff;
   box-shadow: 0 0rem 9.375rem rgba(90,97,105,.1), 0 0.25rem 0.5rem rgba(90,97,105,.12), 0 0.9375rem 1.375rem rgba(90,97,105,.1), 0 0.4375rem 2.1875rem rgba(165,182,201,.1);
-
   border-radius: 5px;
+  overflow: hidden;
+  text-overflow:ellipsis;
+  margin-top:5px;
+  margin-bottom:15px;
+
 }
 
 .organization-form-group.button-container{
@@ -121,8 +172,30 @@
 
 }
 
+.organization-form-group.button-container .create-button.leave{
+  background: rgba(255,186,186,1);
+}
 
+.organization-form-group.button-container .create-button.leave:hover{
+  background: rgba(255,186,186,0.8);
+}
 
 *, ::after, ::before {
     box-sizing: border-box;
+}
+
+
+
+
+
+/* Manage User Box */
+
+
+/* form-group-message,member-name,permission */
+.form-group-message .permission {
+  padding: 0;
+}
+.form-group-message .permission select{
+    width: 100%;
+    padding: 5px 0px;
 }

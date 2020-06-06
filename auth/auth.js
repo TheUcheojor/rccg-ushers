@@ -3,12 +3,31 @@ const mainInterface=require('../database/users');
 
 
 module.exports={
-    checkLoggedIn:function (req,res,next){
+    checkLoggedIn:async function (req,res,next){
+
+        console.log("\ncheckLoggedIn: "+JSON.stringify(req.session.user)+'\n\n');
 
         if(req.session.user){
-            console.log(req.session.user);
+
+            //Should go get user from database - ADD
+
+            let getUserResult=await mainInterface('getUser',{user:req.session.user})
+            //req.session.user
+            console.log("getUserResult.success: "+getUserResult.success);
+
+            if(getUserResult.success){
+                    console.log("getUserResult.user:  "+JSON.stringify(getUserResult.user));
+                    req.session.user=getUserResult.user;
+
+                    next();
+            }else{
+                console.log(getUserResult.errors)
+                req.session.user=undefined;
+                res.redirect('/')
+            }
+
             //console.log('In here 2');
-            next();
+
         }else{
           console.log('checkLoggedIn- In here');
           res.render('login', {title: 'Login',layout:'landingLayout'});
@@ -94,7 +113,7 @@ module.exports={
 
           if(signUpResultObj.success){
             console.log("Sign up 1");
-              //console.log(user)
+              console.log(user)
               // req.session.email=user.email;
               // req.session.name=user.name;
               req.session.user={

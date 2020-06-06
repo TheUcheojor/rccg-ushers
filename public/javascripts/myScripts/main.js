@@ -11,6 +11,8 @@ $(document).ready( ()=>{
     //       $(this).addClass('selected');
     // })
 
+
+
     $('.dashboard-return').on('click', ()=>{
           $(".page.search").hide();
           $("#search-bar").val("");

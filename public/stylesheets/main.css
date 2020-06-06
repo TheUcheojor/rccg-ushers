@@ -20,7 +20,6 @@ body{
 .hor-nav-bar{
   display: inline-block;
   float:left;
-  position: relative;
   background: #fff;
 
   width:85%;
@@ -113,13 +112,15 @@ body.swal2-height-auto {
 }
 
 .side-bar{
-  position: relative;
-  display: inline-block;
+
+  display:inline-block;
+  z-index: 1;
+
   background: #fff;
   float: left;
 
   width: 15%;
-  max-width: 25%;
+  max-width: 200px;
   /* height: 600px; */
   min-height: 100%!important;
 
@@ -201,6 +202,7 @@ body.swal2-height-auto {
 .page{
     display: inline-block;
     width:100%;
+
     /* box-shadow: 0px 1px 6px 1px #777; */
 }
 
@@ -227,14 +229,17 @@ body.swal2-height-auto {
 
   width: 25%;
 
+
+
   /* max-width: 35%; */
-  height:200px;
+  height:250px;
 
   vertical-align: top;
-  margin-top: 50px;
+  margin-top: 10px;
   margin-left: 2.5%;
   margin-right: 2.5%;
   margin-bottom: 25px;
+
 
 background-image:url('/images/previewgradient.png');
 background-size:100% 100%;
@@ -267,9 +272,9 @@ background-size:100% 100%;
     display:inline-block;
 
     width:92.5%;
-    /* margin-top: 5%; */
+    margin-top: 10px;
     margin-left: 2.5%;
-    margin-right: 5%;
+    /* margin-right: 5%; */
 
     border: none;
 
@@ -302,7 +307,15 @@ background-size:100% 100%;
 
 }
 
+.spreadsheet-table th {
+    position: sticky;
+    top: 0;
+
+}
+
+
 .spreadsheet-table td, .spreadsheet-table th {
+
   border: 1px solid #ddd;
   padding: 8px;
 }

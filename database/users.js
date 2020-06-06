@@ -33,7 +33,6 @@ async function mainInterface(mode,paramsObj){
   try{
 
         if(mode=='signUp'){
-
                 return await signUp(paramsObj.user);
         }else if(mode=='login'){
                 return await login(paramsObj.user);
@@ -41,14 +40,24 @@ async function mainInterface(mode,paramsObj){
                 return await updateOrganization(paramsObj.user,paramsObj.organization)
         }else if(mode=='createOrganization'){
                 return await createOrganization(paramsObj.user);
-
+        }else if(mode=='joinOrganization'){
+                return await joinOrganization(paramsObj.user,paramsObj.organization);
+        }else if(mode=='deleteOrganization'){
+                console.log("main Interface paramsObj.owner:"+JSON.stringify(paramsObj.owner));
+                return await deleteOrganization(paramsObj.owner);
+        }else if(mode=='getUser'){
+                return await getUser(paramsObj.user);
+        }else if(mode=='leaveOrganization'){
+                return await leaveOrganization(paramsObj.user);
+        }else if(mode=='getOrganizationDetails'){
+                return await getOrganizationDetails(paramsObj.organization);
         }
 
 
 
   }catch(err){
     console.log(err);
-    return {sucess:false, errors:['Unexpected Database Error']}
+    return {success:false, errors:['User Main Interface- Unexpected  Error']}
   }
 
 }
@@ -65,12 +74,39 @@ module.exports=mainInterface;
       Subsection - Users' Interactions with their account
 */
 
+async function getUser(user){
+
+    //console.log("IN FUNCTION")
+    let searchedUser;
+    try{
+
+        console.log("IN TRY getUser user.email: "+user.email);
+       searchedUser=(await users_collection.find({email:user.email}).project({_id:0, name:1,email:1,organization:1 }).toArray())[0];
+       console.log("IN TRY searchedUser:  "+JSON.stringify(searchedUser));
+    }catch(err){
+      console.log(err);
+      //console.log('getuser error caught')
+      return{success:false,errors:['User could not be found']};
+    }
+
+  //  console.log('In here success true')
+  console.log("getUser searchedUser: "+JSON.stringify(searchedUser));
+
+    return {success:true,user:searchedUser};
+
+
+}
+
+
 //The login function checks if user exists
 // userObj Structure:
 //         {
 //           email: unique
 //           password: [will be encrypted]
 //          }
+
+
+
 async function login(userObj){
 
 
@@ -119,7 +155,8 @@ async function login(userObj){
         // }else{
         //     organization_id='';
         // }
-
+        //  console.log(user);
+        // console.log("user.organization.name: "+user.organization.name);
 
         return {
                   success:true,
@@ -129,6 +166,7 @@ async function login(userObj){
                     name:user.organization.name,
                     spreadsheet_id:user.organization.spreadsheet_id ,
                     organization_id:user.organization.organization_id,
+                    permission:user.organization.permission,
                   }
                 };
     }else{
@@ -188,29 +226,38 @@ async function signUp(userObj){
 
     let success=true;
     let saltRounds=10;
-    bcrypt.genSalt(saltRounds, (err ,salt)=>{
-        bcrypt.hash(userObj.password, salt, async (err,hash)=>{
 
-              if(err){
-                console.log(err);
-                success=false;
-                errors.push('Password hashing error');
-                return;
-              }
+    await bcrypt.genSalt(saltRounds)
+    .then( async (salt)=>{
 
-              userObj.password=hash;
-              userObj.organization={
-                    name:'',
-                    spreadsheet_id:'' ,
-                    organization_id:'',
-              };
-              userObj.name=userObj.name.trim();
-              userObj.email=userObj.email.trim();
+          await bcrypt.hash(userObj.password, salt)
+          .then(async (hash)=>{
+            userObj.password=hash;
+            userObj.organization={
+                  name:'',
+                  spreadsheet_id:'' ,
+                  organization_id:'',
+                  permission:'',
+            };
+            userObj.name=userObj.name.trim();
+            userObj.email=userObj.email.trim();
 
-              await users_collection.insertOne(userObj);
-        });
+            await users_collection.insertOne(userObj);
 
-    } );
+          }).catch((err)=>{
+            console.log(err);
+            success=false;
+            errors.push('Password hashing error');
+          });
+
+    }).catch((err)=>{
+        console.log(err);
+        success=false;
+        errors.push('Password hashing error');
+      });
+
+
+
 
     if(success){
       return {
@@ -221,6 +268,7 @@ async function signUp(userObj){
                   name:'',
                   spreadsheet_id:'' ,
                   organization_id:'',
+                  permission:'',
                 }
               };
     }else{
@@ -294,11 +342,11 @@ async function createOrganization(user){
 
 
       if(result_org.success ){
-        user.permission='All-Access';
+        user.permission='Owner - All Access';
         let result_user =await updateOrganization(user,result_org.organization);
 
         if(result_user.success){
-          return {sucess:true, organization:result_org.organization }
+          return {success:true, organization:result_org.organization }
 
         }else{
           return {success:false,errors:result_user.errors}
@@ -308,6 +356,41 @@ async function createOrganization(user){
         console.log("user createOrganization not successfull")
         return {success:false, errors:result_org.errors};
       }
+
+}
+
+// User format: {email: String}
+async function deleteOrganization(owner){
+
+    console.log("\n\ndeleteOrganization owner: "+JSON.stringify(owner)+"\n\n" );
+
+    let result_org=await organizationMainInterface('deleteOrganization',{owner:owner})
+
+
+    if(result_org.success){
+
+            let organization={name:'',spreadsheet_id:'' ,organization_id:'',permission:''};
+
+            result_org.users.push(owner.email);
+            console.log("\nresult_org: "+result_org+'\n');
+
+            let result_user = await users_collection.updateMany(
+                      {email:{$in:result_org.users} },
+                      {$set:{
+                                organization:organization
+                            }
+                      }
+          );
+
+          return {success:true};
+
+    }else{
+
+      return {success:false, errors:result_org.errors}
+
+    }
+
+
 
 }
 
@@ -331,6 +414,7 @@ async function updateOrganization(user,organization){
               $set:{
                 organization:
                     {
+                        name:organization.name,
                         organization_id:organization.connection_obj,
                         spreadsheet_id:organization.spreadsheet_id,
                         permission:user.permission
@@ -356,13 +440,13 @@ async function updateOrganization(user,organization){
 async function joinOrganization(user,organization){
 
 
-    let result_org =await organizationMainInterface('addToOrganization',{user:user,organization:organization.connection_str });
+    let result_org =await organizationMainInterface('addToOrganization',{user:user,organization:organization });
 
     if(result_org.success){
           let result_user= await updateOrganization(user,result_org.organization);
 
-          if(result_user.sucess){
-            return {success:true}
+          if(result_user.success){
+            return {success:true,organization:result_org.organization}
           }else{
             return {success:false,errors:result_user.errors}
           }
@@ -391,20 +475,18 @@ async function joinOrganization(user,organization){
                   email:string,
               }
 */
-async function getOrganizationDetails(user){
+async function getOrganizationDetails(organization){
 
       //let errors=[];
 
-      const userArr= users_collection.find({email:user.email}).toArray();
-      user=userArr[0];
 
-      if (user.organization==''){
-        return {sucess:false, errors:['No organization associated with your account']}
+      if ( organization==null||organization.organization_id==''|| organization.organization_id==''){
+        return {sucess:false, errors:['Error - Not associated to an organization']}
       }
 
       const organizationDetailObj= await organizationMainInterface('getOrganizationDetails',
                       {
-                        organization_id:user.organization.organization_id
+                        organization_id:organization.organization_id
                       }
                   );
 
@@ -414,8 +496,7 @@ async function getOrganizationDetails(user){
 
         return {
             success: true,
-            isAllAccess:permissionToIsAllAccessFlag[user.organization.permission] ,
-            organization_details:organizationDetailObj.details
+            organization:organizationDetailObj.organization
           }
       }else{
         return { sucess: false, errors:organizationDetailObj.errors}
@@ -431,14 +512,22 @@ async function getOrganizationDetails(user){
 */
 async function leaveOrganization(user){
 
-     user=users_collection.find({email:user.email} ).toArray();
+    if(user==null){return {success:false, errors:['Empty User']}};
+    console.log(" b4user: "+JSON.stringify(user))
 
+
+     // user=(users_collection.find({email:user.email} ).toArray())[0];
+     // console.log("after user: "+JSON.stringify(user))
     const organization_id=user.organization.organization_id;
 
     await users_collection.updateOne(
             {email:user.email },
             {$set:{
-                      organization:''
+                      organization:{
+                        name:'',
+                        spreadsheet_id:'' ,
+                        organization_id:'',
+                      }
                   }
             }
     );
@@ -459,6 +548,8 @@ async function leaveOrganization(user){
 */
 async function removeFromOrganization(organization){
 
+    if(organization==null||Object.keys(organization).length==0) return {success:false,errors:['Fatal Error']};
+
     const result= await organizationMainInterface('removeFromOrganization', {organization:organization });
 
     if(result.success){
@@ -468,6 +559,8 @@ async function removeFromOrganization(organization){
 
     }
 }
+
+
 
 
 

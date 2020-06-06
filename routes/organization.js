@@ -34,11 +34,97 @@ routes.post('/create',async (req,res)=>{
 
     }catch(err){
         console.log(err);
+        alert("Fatal ERROR!")
+        res.redirect('/logout');
     }
 
 
 
-})
+});
+
+
+routes.post('/join',async (req,res)=>{
+
+      try{
+
+          if(!req.session.user.organization.organization_id){
+
+                let user={email:req.session.user.email, permission:'Limited-Access'};
+                let organization={connection_str:req.body.connection_str};
+
+                let result = await userMainInterface('joinOrganization',{user:user,organization:organization});
+
+                console.log("Join Results: "+JSON.stringify(result));
+
+                if(result.success){
+                    req.session.user.organization=result.organization;
+                    req.session.errors={};
+                    res.redirect('/');
+                }else{
+
+                    req.session.errors={joinOrganization:result.errors};
+                    res.redirect('/organization');
+                }
+          }else{
+              req.session.errors={joinOrganization:['You belong to an organization']};
+              res.redirect('/organization');
+
+          }
+
+
+
+      }catch(err){
+        console.log(err)
+        alert("Fatal ERROR!")
+        res.redirect('/logout');
+      }
+
+});
+
+routes.post('/delete',async (req,res)=>{
+    try{
+        let result=await userMainInterface('deleteOrganization',{owner:req.session.user});
+
+
+        if(result.success){
+          res.redirect('/');
+        }else{
+          req.session.errors={deleteOrganization:result.errors};
+          res.redirect('/organization')
+        }
+
+    }catch(err){
+        console.log(err);
+        alert("Fatal ERROR!")
+        res.redirect('/logout');
+    }
+});
+
+
+routes.post('/leave', async (req,res)=>{
+    try{
+      let result=await userMainInterface('leaveOrganization',{user:req.session.user});
+
+      if(result.success){
+          req.errors={};
+          res.redirect('/');
+
+      }else{
+
+        req.session.errors={leaveOrganization:result.errors};
+        res.redirect('/organization');
+      }
+
+    }catch(err){
+      console.log(err);
+      alert("Fatal ERROR!")
+      res.redirect('/logout');
+    }
+
+
+});
+
+
 
 
 module.exports=routes

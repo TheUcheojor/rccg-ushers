@@ -357,7 +357,7 @@ async function updateSpreadsheetInfo(sheetState,givenYear,givenMonth,givenDay,ti
 
   console.log("updateSpreadsheetInfo: "  + (await collection.find({Spreadsheet:{$exists:true,$ne:null}   }).toArray())[0]);
 
-  return  (await collection.find( {Spreadsheet:{$exists:true,$ne:null}   }).toArray())[0] ;
+  return await collection.find( { Spreadsheet:{$exists:true,$ne:null} } ).toArray() ;
 
 }
 
@@ -376,7 +376,7 @@ async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether t
 
   let resetedIdStrArr=[];
 
-  let spreadsheetInfoArray= await collection.find( {Spreadsheet:{$exists:true,$ne:null}   }).toArray();
+  let spreadsheetInfoArray= await collection.find( {Spreadsheet:{$exists:true,$ne:null} }).toArray();
 
   if(spreadsheetInfoArray.length==0){
       setDate();
@@ -491,7 +491,7 @@ async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether t
 
 
   if(rows.length>0){//Adding to the Database:  a spreadsheet info object, if there was inputed data
-        return await updateSpreadsheetInfo(true,givenYear,givenMonth,givenDay,time24Hrs);
+        return (await updateSpreadsheetInfo(true,givenYear,givenMonth,givenDay,time24Hrs))[0];
   }else{
     return null;
   }
