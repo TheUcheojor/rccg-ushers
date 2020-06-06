@@ -173,11 +173,11 @@
 }
 
 .organization-form-group.button-container .create-button.leave{
-  background: rgba(255,186,186,1);
+  background: rgba(255,186,186,0.7);
 }
 
 .organization-form-group.button-container .create-button.leave:hover{
-  background: rgba(255,186,186,0.8);
+  background: rgba(255,186,186,1);
 }
 
 *, ::after, ::before {
@@ -194,8 +194,12 @@
 /* form-group-message,member-name,permission */
 .form-group-message .permission {
   padding: 0;
+  margin-top: 0;
+
 }
 .form-group-message .permission select{
     width: 100%;
     padding: 5px 0px;
+ 
+
 }

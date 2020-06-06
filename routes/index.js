@@ -28,16 +28,27 @@ routes.get('/organization',async (req,res)=>{
 
   let organization='';
   if(req.session.user.organization.organization_id){
-     organization=await userMainInterface('getOrganizationDetails',req.session.user.organization);
+     let organizationResult=await userMainInterface('getOrganizationDetails',{organization:req.session.user.organization});
+
+     console.log("\norganization: "+JSON.stringify(organization))
+     if(!organizationResult.success){
+       req.session.errors.fetchOrganizationDetails=organizationResult.errors;
+     }else{
+       organization=organizationResult.organization;
+     }
   }
 
   res.render('organization',{title: 'Dashboard',isOrganization:true,  user:req.session.user,
-                              createOrganizationErrors:req.session.errors.createOrganization,
-                              joinOrganizationErrors:req.session.errors.joinOrganization,
-                              deleteOrRemoveOrganizationErrors:req.session.errors.deleteOrganization||req.session.errors.leaveOrganization,
-                              isLimitedAccess:req.session.user.organization.permission=='Limited-Access',
-                              isAllAccess:req.session.user.organization.permission=='All-Access',
-                              isOwner:req.session.user.organization.permission=='Owner - All Access',
+                              errors:req.session.errors,
+                              // createOrganizationErrors:req.session.errors.createOrganization,
+                              // joinOrganizationErrors:req.session.errors.joinOrganization,
+                              // deleteOrRemoveOrganizationErrors:req.session.errors.deleteOrganization||req.session.errors.leaveOrganization,
+                              // fetchOrganizationDetailsErrors:req.session.errors.fetchOrganizationDetails,
+                              organization:organization,
+
+                              // isLimitedAccess:req.session.user.organization.permission=='Limited-Access',
+                              // isAllAccess:req.session.user.organization.permission=='All-Access',
+                              // isOwner:req.session.user.organization.permission=='Owner - All Access',
                     });
 
 

@@ -13,16 +13,27 @@
 
                           <div class='title'>{{user.organization.name}}</div>
 
-                          {{#ifEquals user.name "Owner - All Access"}}
+                          {{#ifEquals user.organization.permission "Owner - All Access"}}
                                 <form action='/organization/delete' method='post'>
                           {{else}}
                                 <form action='/organization/leave' method='post'>
-                          {{/if}}
+                          {{/ifEquals}}
 
-                          {{#if deleteOrRemoveOrganizationErrors}}
+                          {{#if errors.deleteOrganization}}
                               <div class='organization-form-group' >
                                   <ul>
-                                      {{#each deleteOrRemoveOrganizationErrors as |error|}}
+                                      {{#each errors.deleteOrganization as |error|}}
+                                            <li>
+                                              {{error}}
+                                            </li>
+                                      {{/each}}
+                                  </ul>
+                              </div>
+                          {{/if}}
+                          {{#if errors.leaveOrganization}}
+                              <div class='organization-form-group' >
+                                  <ul>
+                                      {{#each errors.leaveOrganization as |error|}}
                                             <li>
                                               {{error}}
                                             </li>
@@ -34,15 +45,8 @@
                             <div class='organization-form-group' style="padding-top:10px;">
                                   <div class='form-group-message'>
                                       <div class='message'>Your Permission Level</div>
-                                      {{#if isAllAccess}}
-                                          <div class='submessage'>All Access</div>
-                                      {{/if}}
-                                      {{#if isLimitedAccess}}
-                                          <div class='submessage'>Limited Access</div>
-                                      {{/if}}
-                                      {{#if isOwner}}
-                                          <div class='submessage'>Owner - All Access</div>
-                                      {{/if}}
+                                          <div class='submessage'>{{user.organization.permission}}</div>
+
                                   {{!-- </div> --}}
                             {{!-- </div> --}}
 
@@ -76,11 +80,11 @@
                             </div>
 
                             <div class='organization-form-group button-container'>
-                                {{#if isOwner}}
+                                {{#ifEquals user.organization.permission "Owner - All Access"}}
                                       <button class="create-button leave">Delete Organization</button>
                                 {{else}}
                                       <button class="create-button leave">Leave Organization</button>
-                                {{/if}}
+                                {{/ifEquals}}
 
                             </div>
 
@@ -91,36 +95,91 @@
 
                     {{!-- Manage Users --}}
                     <div class='organization-options-item'>
-                              <div class='title'>Manage Users</div>
+                              {{#ifEquals user.organization.permission 'Limited-Access' }}
+                                    <div class='title'>Organization Members</div>
+                              {{else}}
+                                    <div class='title'>Manage Users</div>
+                              {{/ifEquals}}
 
                               <form action='/organization/updatePermissions'>
+                                {{#if errors.fetchOrganizationDetails }}
+                                  <div class="organization-form-group" style="padding-top:10px;">
+
+                                    <ul>
+                                              {{#each errors.fetchOrganizationDetails as |error|}}
+                                                    <li>
+                                                      {{error}}
+                                                    </li>
+                                              {{/each}}
+
+                                    </ul>
+                                  </div>
+                              {{/if}}
+
                                       <div class="organization-form-group" style="padding-top:10px;">
 
                                             <div class='form-group-message'>
+                                                    {{#if organization}}
+                                                              <div class='message'>
 
-                                                    <div class='message'>
-                                                              Admin - admin@gmail.com
-                                                      </div>
+                                                                {{#ifEquals  organization.owner_email @root.user.email}}
+                                                                    {{organization.owner_name}} <strong>(YOU)</strong> - {{organization.owner_email}}
+                                                                {{else}}
+                                                                    {{organization.owner_name}} - {{organization.owner_email}}
+                                                                {{/ifEquals}}
+                                                              </div>
 
-                                                      <div class='submessage permission'>
-                                                          <select name="permission" id="permission">
-                                                          <option value="All-Access">All-Access</option>
-                                                          <option value="Limited-Access">Limited-Access</option>
-                                                          </select>
-                                                      </div>
+                                                              <div class='submessage' style='margin-top:0'>
+                                                                    Owner
+                                                              </div>
 
-                                                      <div class='message'>
-                                                                Admin - admin@gmail.com
-                                                        </div>
+                                                            {{#each organization.users as |organizationUser|}}
 
-                                                        <div class='submessage permission'>
-                                                            <select name="permission" id="permission">
-                                                            <option value="All-Access">All-Access</option>
-                                                            <option value="Limited-Access">Limited-Access</option>
-                                                            </select>
-                                                        </div>
+                                                              <div class='message'>
+                                                                      {{#ifEquals  organizationUser.email @root.user.email}}
+                                                                        {{organizationUser.name}} <strong>(YOU)</strong> - {{organizationUser.email}}
+                                                                      {{else}}
+                                                                        {{organizationUser.name}} - {{organizationUser.email}}
+                                                                      {{/ifEquals}}
+                                                              </div>
+
+                                                                  {{#ifEquals @root.user.organization.permission 'Limited-Access'}}
+                                                                      <div class='submessage'>
+                                                                              Limited Access
+                                                                      </div>
+                                                                  {{else}}
+                                                                        <div class='submessage permission'>
+                                                                            <select name="permission" id="permission">
+                                                                                {{#ifEquals organizationUser.permission 'All-Access'}}
+                                                                                      <option value="All-Access" selected >All-Access</option>
+                                                                                {{else}}
+                                                                                      <option value="All-Access">All-Access</option>
+                                                                                {{/ifEquals}}
+                                                                                {{#ifEquals organizationUser.permission 'Limited-Access'}}
+                                                                                    <option value="Limited-Access" selected>Limited-Access</option>
+                                                                                {{else}}
+                                                                                  <option value="Limited-Access" selected>Limited-Access</option>
+                                                                                {{/ifEquals}}
+                                                                            </select>
+                                                                        </div>
+                                                                {{/ifEquals}}
+
+                                                            {{/each}}
+
+                                                  {{/if}}
                                             </div>
+
+
                                       </div>
+
+                                      {{#ifEquals user.organization.permission 'Limited-Access' }}
+
+                                      {{else}}
+                                            <div class='organization-form-group button-container'>
+                                                      <button class="create-button">Save Changes</button>
+                                            </div>
+                                      {{/ifEquals}}
+
 
 
                               </form>
@@ -141,10 +200,10 @@
 
                                 <form action='/organization/create' method='post'>
 
-                                  {{#if createOrganizationErrors}}
+                                  {{#if errors.createOrganization}}
                                       <div class='organization-form-group' >
                                           <ul>
-                                              {{#each createOrganizationErrors as |error|}}
+                                              {{#each errors.createOrganization as |error|}}
                                                     <li>
                                                       {{error}}
                                                     </li>
@@ -195,10 +254,10 @@
 
                                 <form action='/organization/join' method='post'>
 
-                                  {{#if joinOrganizationErrors}}
+                                  {{#if errors.joinOrganization}}
                                       <div class='organization-form-group' >
                                           <ul>
-                                              {{#each joinOrganizationErrors as |error|}}
+                                              {{#each errors.joinOrganization as |error|}}
                                                     <li>
                                                       {{error}}
                                                     </li>

@@ -242,6 +242,7 @@ async function addToOrganization(user,organization){
         {
           $push:{
                   users:{
+                    name:user.name,
                     email:user.email,
                     permission:user.permission
                   }
@@ -311,7 +312,7 @@ async function getOrganizationDetails(organization){
 
       if(organization==null){return {success:false,errors:['Null Organization']}}
 
-      const organizationArr=await organizationCollection.find({_id:organization.connection_obj}).toArray();
+      const organizationArr=await organizationCollection.find({_id:organization.organization_id}).toArray();
 
       if(organizationArr.length<1){
         return {success:false, errors:['Organization does not exist']}
@@ -320,10 +321,9 @@ async function getOrganizationDetails(organization){
 
       return {success:true,
           organization:{
-                owner_name:organization.owner_name,
-                owner_email:organization.owner_email,
-                users:organization.users,
-
+                owner_name:organizationArr[0].owner_name,
+                owner_email:organizationArr[0].owner_email,
+                users:organizationArr[0].users,
           }
 
           };

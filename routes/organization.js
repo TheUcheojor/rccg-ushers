@@ -49,7 +49,7 @@ routes.post('/join',async (req,res)=>{
 
           if(!req.session.user.organization.organization_id){
 
-                let user={email:req.session.user.email, permission:'Limited-Access'};
+                let user={name:req.session.user.name,email:req.session.user.email, permission:'Limited-Access'};
                 let organization={connection_str:req.body.connection_str};
 
                 let result = await userMainInterface('joinOrganization',{user:user,organization:organization});

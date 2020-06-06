@@ -434,7 +434,7 @@ async function updateOrganization(user,organization){
 
 
 /*
-  user:{ email:str, permission:str }
+  user:{name:str, email:str, permission:str }
   organization:{connection_str: str}
 */
 async function joinOrganization(user,organization){
@@ -479,16 +479,12 @@ async function getOrganizationDetails(organization){
 
       //let errors=[];
 
-
+      console.log("\n\ngetOrganizationDetails organization: "+JSON.stringify(organization)+'\n')
       if ( organization==null||organization.organization_id==''|| organization.organization_id==''){
-        return {sucess:false, errors:['Error - Not associated to an organization']}
+        return {success:false, errors:['Error - Not associated to an organization']}
       }
 
-      const organizationDetailObj= await organizationMainInterface('getOrganizationDetails',
-                      {
-                        organization_id:organization.organization_id
-                      }
-                  );
+      const organizationDetailObj= await organizationMainInterface('getOrganizationDetails',{organization :organization}  );
 
       if(organizationDetailObj.success){
 
@@ -499,7 +495,7 @@ async function getOrganizationDetails(organization){
             organization:organizationDetailObj.organization
           }
       }else{
-        return { sucess: false, errors:organizationDetailObj.errors}
+        return { success: false, errors:organizationDetailObj.errors}
       }
 
 }
