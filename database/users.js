@@ -51,6 +51,9 @@ async function mainInterface(mode,paramsObj){
                 return await leaveOrganization(paramsObj.user);
         }else if(mode=='getOrganizationDetails'){
                 return await getOrganizationDetails(paramsObj.organization);
+        }else if(mode=='updateOrganizationPermissions'){
+                return await  updateOrganizationPermissions(paramsObj.updateRequests, paramsObj.organization);
+                //updateOrganizationPermissions(params.updateRequests,paramsObj.organization);
         }
 
 
@@ -556,7 +559,22 @@ async function removeFromOrganization(organization){
     }
 }
 
+async function updateOrganizationPermissions(updateRequests, organization){
 
+      if(updateRequests==null){return {success:false,errors:['Null Request']}};
+
+      for(var[email,permission] of Object.entries(updateRequests)){
+            let result=users_collection.updateOne({email:email}, {$set: {'organization.permission':permission}});
+
+            if(result.matchedCount<1){
+              return{success:false,errors:['Unable to update user with email '+email]}
+            }
+
+      }
+
+      return await organizationMainInterface('updateOrganizationPermissions',{updateRequests:updateRequests,organization:organization });
+
+}
 
 
 

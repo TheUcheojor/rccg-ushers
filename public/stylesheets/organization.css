@@ -1,14 +1,15 @@
 
-.page.organization{
+.page.organization, .page.settings{
   margin-top: 25px;
   text-align: center;
+
 }
 
 .organization-options-item{
 
     display:inline-block;
     margin: 5px 10px;
-    width:35%;
+    width:45%;
     max-width: 450px;
     background: #fff;
     box-shadow: 0 0rem 9.375rem rgba(90,97,105,.1), 0 0.25rem 0.5rem rgba(90,97,105,.12), 0 0.9375rem 1.375rem rgba(90,97,105,.1), 0 0.4375rem 2.1875rem rgba(165,182,201,.1);
@@ -66,6 +67,10 @@
   list-style-type: none;
   margin: 0;
 }
+
+.organization-form-group li.message-list-item{
+    background:rgba(75,	202	,129,0.8);
+}
 .organization-form-group li{
   text-align: center;
   text-decoration: none;
@@ -86,6 +91,7 @@
 
   border-radius: 5px;
 
+
   /* margin: 10px 0; */
 }
 
@@ -98,9 +104,12 @@
     font-family: Courier;
     font-variant-caps: all-small-caps;
     color:#fff;
-    background: rgba(136, 135, 156,0.9);
+    background: rgba(136, 136, 156,1);
     overflow: hidden;
     text-overflow:ellipsis;
+    box-shadow: 0 0rem 9.375rem rgba(90,97,105,.1), 0 0.25rem 0.5rem rgba(90,97,105,.12), 0 0.9375rem 1.375rem rgba(90,97,105,.1), 0 0.4375rem 2.1875rem rgba(165,182,201,.1);
+
+
     /* margin: 5px 0; */
 }
 
@@ -144,8 +153,10 @@
   border-radius: 5px;
   overflow: hidden;
   text-overflow:ellipsis;
-  margin-top:5px;
+  margin-top:0px;
   margin-bottom:15px;
+
+
 
 }
 
@@ -200,6 +211,9 @@
 .form-group-message .permission select{
     width: 100%;
     padding: 5px 0px;
- 
+}
 
+.limitContent{
+  max-height: 250px;
+  overflow: auto;
 }

@@ -101,7 +101,7 @@
                                     <div class='title'>Manage Users</div>
                               {{/ifEquals}}
 
-                              <form action='/organization/updatePermissions'>
+                              <form action='/organization/updatePermissions' method='post'>
                                 {{#if errors.fetchOrganizationDetails }}
                                   <div class="organization-form-group" style="padding-top:10px;">
 
@@ -116,9 +116,38 @@
                                   </div>
                               {{/if}}
 
+                              {{#if errors.updatePermissions }}
+                                <div class="organization-form-group" style="padding-top:10px;">
+
+                                  <ul>
+                                            {{#each errors.updatePermissions as |error|}}
+                                                  <li>
+                                                    {{error}}
+                                                  </li>
+                                            {{/each}}
+
+                                  </ul>
+                                </div>
+                            {{/if}}
+
+                            {{#if message.updatePermissions }}
+                              <div class="organization-form-group" style="padding-top:10px;">
+
+                                <ul >
+                                          {{#each message.updatePermissions as |submessage|}}
+                                                <li class='message-list-item'>
+                                                    {{submessage}}
+                                                </li>
+                                          {{/each}}
+
+                                </ul>
+                              </div>
+                          {{/if}}
+
+
                                       <div class="organization-form-group" style="padding-top:10px;">
 
-                                            <div class='form-group-message'>
+                                            <div class='form-group-message limitContent'>
                                                     {{#if organization}}
                                                               <div class='message'>
 
@@ -149,16 +178,16 @@
                                                                       </div>
                                                                   {{else}}
                                                                         <div class='submessage permission'>
-                                                                            <select name="permission" id="permission">
+                                                                            <select name="{{organizationUser.email}}" id="permission">
                                                                                 {{#ifEquals organizationUser.permission 'All-Access'}}
-                                                                                      <option value="All-Access" selected >All-Access</option>
+                                                                                      <option value="All-Access" selected >All Access</option>
                                                                                 {{else}}
                                                                                       <option value="All-Access">All-Access</option>
                                                                                 {{/ifEquals}}
                                                                                 {{#ifEquals organizationUser.permission 'Limited-Access'}}
-                                                                                    <option value="Limited-Access" selected>Limited-Access</option>
+                                                                                    <option value="Limited-Access" selected>Limited Access</option>
                                                                                 {{else}}
-                                                                                  <option value="Limited-Access" selected>Limited-Access</option>
+                                                                                  <option value="Limited-Access">Limited Access</option>
                                                                                 {{/ifEquals}}
                                                                             </select>
                                                                         </div>

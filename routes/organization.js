@@ -1,7 +1,7 @@
 
 const routes=require("express").Router();
 
-const userMainInterface = require('../database/users')
+const userMainInterface = require('../database/users');
 
 // const User=require('../models/user');
 
@@ -125,6 +125,31 @@ routes.post('/leave', async (req,res)=>{
 });
 
 
+routes.post('/updatePermissions', async (req,res)=>{
 
+      console.log("\n\n updatePermissions"+JSON.stringify(req.body))
+      try{
+            const result=await userMainInterface('updateOrganizationPermissions',{updateRequests:req.body, organization:req.session.user.organization})
+
+            console.log("\n\nupdatePermissions RESULT: "+JSON.stringify(result)+'\n');
+
+            if(result.success){
+                req.session.errors={};
+                req.session.message={updatePermissions:['Updates have been saved']}
+            }else{
+                req.session.errors={updatePermissions:result.errors};
+            }
+
+            res.redirect('/organization');
+
+      }catch(err){
+        console.log(err);
+        console.log(err);
+        alert("Fatal ERROR!")
+        res.redirect('/logout');
+
+      }
+
+})
 
 module.exports=routes

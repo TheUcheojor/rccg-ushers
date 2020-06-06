@@ -26,11 +26,11 @@
     <script src="javascripts/myScripts/main.js" ></script>
 
 
-    {{#if isMain}}
+    {{#ifEquals title 'Dashboard'}}
         {{#if user.organization.organization_id}}
-        <script src="/javascripts/myScripts/mainInstance.js" ></script>
+            <script src="/javascripts/myScripts/mainInstance.js" ></script>
         {{/if}}
-    {{/if}}
+    {{/ifEquals}}
 
     <link type="text/css"   rel="stylesheet" href="/stylesheets/main.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/graph.css" media="all"  />
@@ -51,11 +51,18 @@
     <div class='side-bar'>
           <div class='side-bar-title dashboard' onclick='window.location.href="/"'>Dashboard</div>
 
-          {{#if isOrganization}}
+          {{#ifEquals title 'Organization'}}
             <div class='side-bar-item selected' onclick='window.location.href="/organization" ' >Organization</div>
           {{else}}
             <div class='side-bar-item' onclick='window.location.href="/organization" ' >Organization</div>
-          {{/if}}
+          {{/ifEquals}}
+
+
+          {{#ifEquals title 'Settings'}}
+            <div class='side-bar-item selected' onclick='window.location.href="/settings" ' >Settings</div>
+          {{else}}
+            <div class='side-bar-item' onclick='window.location.href="/settings" ' >Settings</div>
+          {{/ifEquals}}
 
           <div class='side-bar-item' onclick='window.location.href="/logout" ' >Logout</div>
 
@@ -65,16 +72,16 @@
 
     <div class='hor-nav-bar'>
 
-            {{#if isAllAccess}}
+            {{#ifEquals user.organization.permission 'All-Access'}}
                 <div class="hor-nav-item left search">
                    <input id='search-bar' type='text' placeholder='Search....' />
                 </div>
-            {{/if}}
-            {{#if isOwner}}
+            {{/ifEquals}}
+            {{#ifEquals user.organization.permission 'Owner - All Access'}}
                 <div class="hor-nav-item left search">
                    <input id='search-bar' type='text' placeholder='Search....' />
                 </div>
-            {{/if}}
+            {{/ifEquals}}
             <div class="hor-nav-item right logo" > <img src="/images/rccg.png"/></div>
             <div class="hor-nav-item right" > <div class='name-text'>{{user.name}}</div></div>
 

@@ -48,6 +48,8 @@ async function mainInterface(mode, paramsObj){
               return deleteOrganization(paramsObj.owner);
           }else if(mode=='removeFromOrganization'){
               return removeFromOrganization(paramsObj.organization);
+          }else if(mode=='updateOrganizationPermissions'){
+              return updateOrganizationPermissions(paramsObj.updateRequests,paramsObj.organization );
           }
 
 
@@ -368,5 +370,39 @@ async function removeFromOrganization(organization){
       }else{
         return {success:false,errors:['One or more individuals could not be deleted']}
       }
+
+}
+
+
+async function updateOrganizationPermissions(updateRequests,organization){
+
+        let result;
+
+        for(var [email,permission] of Object.entries(updateRequests) ){
+                try{
+                    console.log("\n\n\n messagekey=1 EMAIL: "+email+"\nPERMISSION: "+permission );
+                    console.log("organization: "+JSON.stringify(organization));
+                     result= await organizationCollection.updateOne({_id:organization.organization_id},
+                          {$set: {'users.$[elem].permission':permission }},
+                          { arrayFilters:[ {"elem.email":{$eq:email}} ]}
+                    );
+
+                    console.log("\nresult.matchedCount:"+result.matchedCount);
+                    if(result.matchedCount<1){
+                        return {success:false, errors:['Unable to update user with email '+email]}
+                    }
+
+                }catch(err){
+                  console.log(err);
+                  return {success:false, error:['Database Error']}
+                }
+
+        }
+
+
+
+  return {success:true}
+
+
 
 }

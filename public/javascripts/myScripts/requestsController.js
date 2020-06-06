@@ -3,6 +3,9 @@ This  module provides functions for  get and post requests.
 */
 
 
+
+
+
 function getPage(page){
 
   // console.log( "B4:" +window.location.href);
