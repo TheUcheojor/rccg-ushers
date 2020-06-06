@@ -12,9 +12,6 @@ const database =  require("../database/spreadsheet");
 
 
 
-
-
-
 routes.get('/previewSpreadsheet', async function(req, res) {//Collect the data currently in the sheet
   let output=null;
   //pass in collection_name

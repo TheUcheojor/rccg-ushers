@@ -43,12 +43,15 @@ routes.get('/organization',async (req,res)=>{
   let message=req.session.message;
   req.session.message={};
 
+  let errors=req.session.errors;
+  req.session.errors={};
+
   console.log("MESSAGE: "+JSON.stringify(message));
 
   res.render('organization',{title: 'Organization',
                               // isOrganization:true,
                               user:req.session.user,
-                              errors:req.session.errors,message:message,
+                              errors:errors,message:message,
                               // createOrganizationErrors:req.session.errors.createOrganization,
                               // joinOrganizationErrors:req.session.errors.joinOrganization,
                               // deleteOrRemoveOrganizationErrors:req.session.errors.deleteOrganization||req.session.errors.leaveOrganization,
@@ -66,8 +69,13 @@ routes.get('/organization',async (req,res)=>{
 
 routes.get('/settings',async (req,res)=>{
 
+    let message=req.session.message;
+    req.session.message={};
 
-    res.render('settings',{title:'Settings'})
+    let errors=req.session.errors;
+    req.session.errors={};
+
+    res.render('settings',{title:'Settings',errors:errors,message:message})
 
 });
 

@@ -54,6 +54,8 @@ async function mainInterface(mode,paramsObj){
         }else if(mode=='updateOrganizationPermissions'){
                 return await  updateOrganizationPermissions(paramsObj.updateRequests, paramsObj.organization);
                 //updateOrganizationPermissions(params.updateRequests,paramsObj.organization);
+        }else if(mode=='changePassword'){
+              return await  changePassword(paramsObj.user,paramsObj.passwords);
         }
 
 
@@ -278,6 +280,71 @@ async function signUp(userObj){
       return {success:false , errors:errors };
     }
 }
+
+
+async function changePassword(user,passwords){
+
+  if(user==null||passwords==null){return {success:false,errors:['Null User or Password']}}
+
+  let errors=[];
+
+  if(passwords.password!=passwords.confirm_password){
+      errors.push("Passwords do not match");
+  }
+
+
+  let passwordValidator=isValidPassword(passwords.password);
+  if(!passwordValidator.isValidPassword){
+      passwordValidator.errors.forEach( (error)=>{errors.push(error);})
+  }
+
+  if(errors.length>0){
+    return {success:false, errors:errors};
+  }
+
+  let success=true;
+  let saltRounds=10;
+  await bcrypt.genSalt(saltRounds)
+    .then( async (salt)=>{
+
+          await bcrypt.hash(passwords.password, salt)
+          .then(async (hash)=>{
+              let result=await users_collection.updateOne({email:user.email}, {$set:{password:hash} });
+
+              if(result.matchedCount<1){
+                success=false;
+                errors.push('Cannot find user');
+              }
+
+          }).catch((err)=>{
+            console.log(err);
+            success=false;
+            errors.push('Password hashing error');
+          });
+
+    }).catch((err)=>{
+        console.log(err);
+        success=false;
+        errors.push('Password hashing error');
+      });
+
+
+    if(success){
+        return{success:true}
+    }else{
+        return{success:false,errors:errors};
+    }
+
+}
+
+
+
+
+
+
+
+
+
 
 //add org and user coll
 

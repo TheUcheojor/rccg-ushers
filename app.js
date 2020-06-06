@@ -18,15 +18,13 @@ const auth=require('./auth/auth');
 const indexRouter=require("./routes/index");
 const spreadsheetRouter=require("./routes/spreadsheet");
 const organizationRouter=require("./routes/organization");
+const settingsRouter=require("./routes/settings");
 
 const {cron, cron_checker}=require("./tasks/scheduledTasks");
 
 const PORT=process.env.PORT||4000;
 
 let app = express();
-
-
-
 
 
 
@@ -72,6 +70,7 @@ app.use(
 
 app.use('/internals',auth.checkLoggedIn,spreadsheetRouter);
 app.use('/organization',auth.checkLoggedIn,organizationRouter );
+app.use('/settings',auth.checkLoggedIn,settingsRouter);
 app.use('/login',auth.login,indexRouter);
 app.use('/sign-up',auth.signUp,indexRouter);
 app.use('/logout',auth.logout);

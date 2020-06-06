@@ -9,11 +9,36 @@
                     <div class='organization-options-item'>
                                 <div class='title'>Change Your Password</div>
 
-                                <form action='/organization/changePassword' method='post'>
+                                <form action='/settings/changePassword' method='post'>
+
+                                {{#if errors.changePassword}}
+                                        <div class='organization-form-group' >
+                                              <ul>
+                                                    {{#each errors.changePassword as |error|}}
+                                                            <li>
+                                                               {{error}}
+                                                            </li>
+                                                    {{/each}}
+                                                </ul>
+                                        </div>
+                                    {{/if}}
+
+                                    {{#if message.changePassword }}
+                                      <div class="organization-form-group" style="padding-top:10px;">
+
+                                        <ul >
+                                                  {{#each message.changePassword as |submessage|}}
+                                                        <li class='message-list-item'>
+                                                            {{submessage}}
+                                                        </li>
+                                                  {{/each}}
+                                        </ul>
+                                      </div>
+                                  {{/if}}
 
                                     <div class='organization-form-group' >
                                           <label for='password' >Password</label>
-                                          <input type='text' id='password' name='password' placeholder='Password..' required />
+                                          <input type='password' id='password' name='password' placeholder='Password..' required />
                                     </div>
 
                                     <div class='organization-form-group' >
