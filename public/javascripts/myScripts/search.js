@@ -29,7 +29,7 @@ function search(searchStr){
     var redFlag=false;
 
     $('.result-table').html('');
-    if(searchStr.trim().length==0){$('.no-results').fadeIn();return;}
+    if(searchStr.trim().length==0){$('.no-results').show();return;}
 
 
     console.log(searchStr);
@@ -45,7 +45,7 @@ function search(searchStr){
         });
 
         console.log('YEAR/Month/.. redFlag: '+redFlag);
-        if(redFlag){$('.no-results').fadeIn(); return;}
+        if(redFlag){$('.no-results').show(); return;}
 
         if(searchArr.length==2){ mode='yearMonth';}
         else if(searchArr.length==3){ mode='yearMonthDay';}
@@ -56,7 +56,7 @@ function search(searchStr){
 
     }else if(!isNaN(searchStr)){//Search Option : YEAR
         mode='year';
-        if(searchStr.length!=4){$('.no-results').fadeIn();return;}
+        if(searchStr.length!=4){$('.no-results').show();return;}
 
         console.log('YEAR redFlag: '+redFlag);
 
@@ -69,7 +69,7 @@ function search(searchStr){
         });
 
         console.log('name redFlag: '+redFlag);
-        if(redFlag){$('.no-results').fadeIn();return}
+        if(redFlag){$('.no-results').show();return}
         // var hasNumber='/\d/';
         // console.log("(hasNumber.test(searchStr): "+hasNumber.test(searchStr));
         // if(hasNumber.test(searchStr)){return;}
@@ -94,9 +94,15 @@ function search(searchStr){
                   return;
                 }
 
+              console.log("data: "+JSON.stringify(data));
+              if(!Array.isArray(data)){
+                  console.log("You have been logged out");
+                  window.location.href="/";
+              }
+
 
               // console.log("mode :"+mode);
-              // console.log("data: "+JSON.stringify(data));
+
 
               var htmlString='';
 
@@ -146,7 +152,7 @@ function search(searchStr){
               $('.result-table').hide();
               $('.no-results').hide();
               $('.result-table').html(htmlString);
-              $('.result-table').fadeIn();
+              $('.result-table').show();
        },
       error : function(e) {alert("Error!");}
     });

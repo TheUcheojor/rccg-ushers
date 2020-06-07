@@ -11,6 +11,30 @@ const database =  require("../database/spreadsheet");
 // })();
 
 
+routes.get('/updateSpreadsheet', async (req,res)=>{
+
+      try{
+
+          if(req.session.user.organization.organization_id){
+              let result=await database.mainInterface(req.session.user,"updateSpreadsheet");
+              res.send(result);
+
+          }else{
+              res.send({success:false,errors:['No Organization']})
+          }
+
+
+
+      }catch(err){
+        console.log(err);
+        alert("Spreadsheet Fatal ERROR!")
+        res.redirect('/logout');
+
+      }
+
+
+});
+
 
 routes.get('/previewSpreadsheet', async function(req, res) {//Collect the data currently in the sheet
   let output=null;

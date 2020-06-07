@@ -139,6 +139,8 @@ async function mainInterface(user,desiredFunction, paramsObj){
                 return  (await collection.find( {Spreadsheet:{$exists:true,$ne:null}   }).toArray())[0] ;
         }else if(desiredFunction=="setSpreadsheetOld"){
               return await collection.updateOne( {Spreadsheet:true}, { $set:{ isOld:true}});
+        }else if(desiredFunction=="updateSpreadsheet"){
+              return await updateSpreadsheet();
         }
 
 
@@ -160,6 +162,24 @@ async function mainInterface(user,desiredFunction, paramsObj){
    SECTION : Functions
 */
 
+//This function updates or add the spreadsheet info object
+async function updateSpreadsheet(){
+
+  try{
+      let todayDate=new Date().getDate().toString();
+
+      let spreadsheetObjArr= await collection.find({Spreadsheet:true}).toArray();
+
+      if(spreadsheetObjArr.length==0 || spreadsheetObjArr[0].day!=todayDate){
+          await loadNewSpreadsheet();
+      }
+
+      return {success:true}
+  }catch(err){
+      return{success:false,errors:['Spreadsheet Error']}
+  }
+
+}
 
 
 //The function returns the  date of the last database update

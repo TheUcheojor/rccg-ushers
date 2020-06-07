@@ -22,10 +22,31 @@ function getPage(page){
   //   error : function(e) {alert("Error!");}
   // });
 
+}
+
+//Updates the spreadsheet day if neccessary
+function updateSpreadsheet(){
+    $.ajax({
+      type : "GET",
+      contentType : "String",
+      url : `/internals//updateSpreadsheet`,
+      success :function(result){
+
+                if(!result.success){
+                  alert("errors: "+result.errors);
+                }
+
+
+       },
+      error : function(e) {alert("Error!");}
+    });
+
 
 
 
 }
+
+
 function getGraphDetails(filter){//Get data for various graphs
 
   $.ajax({
@@ -38,6 +59,7 @@ function getGraphDetails(filter){//Get data for various graphs
               if(data!=null || data!=undefined){
 
                     for([graphType,graphData] of Object.entries(data)){
+                          
                           generateGraphs('home',graphType,graphData,filter);
                     }
 

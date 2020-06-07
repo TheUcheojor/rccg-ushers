@@ -23,7 +23,7 @@ module.exports={
             }else{
                 console.log(getUserResult.errors)
                 req.session.user=undefined;
-                res.redirect('/')
+                res.redirect('/');
             }
 
             //console.log('In here 2');

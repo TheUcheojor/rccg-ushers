@@ -1,8 +1,18 @@
 
 //Scripts to run when home page is opened
 
-$(document).ready( async ()=>{
-  await getSavingMode();
-  await getPreviewSpreadsheet();
-  await getGraphDetails('month');
+$(document).ready( async()=>{
+
+   (async ()=>{updateSpreadsheet()} )();
+
+   (async ()=>{getSavingMode()} )();
+
+   (async ()=>{getPreviewSpreadsheet()} )();
+
+   (async ()=>{getGraphDetails('month');} )();
+   // getSavingMode();
+   //
+   // getPreviewSpreadsheet();
+   //
+   // getGraphDetails('month');
 });
