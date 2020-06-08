@@ -34,7 +34,7 @@ $(document).ready( ()=>{
 function capitalize(str){//capitalize a given string
       if(str==null|| str==''|| str==undefined){ return ""}
       return str.charAt(0).toUpperCase() +str.toLowerCase().slice(1);
-  }
+}
 
 
 function saveOptionTransition(){//Perfroms a simple transition of the .save div

@@ -16,13 +16,10 @@ routes.get('/updateSpreadsheet', async (req,res)=>{
       try{
 
           if(req.session.user.organization.organization_id){
-              let result=await database.mainInterface(req.session.user,"updateSpreadsheet");
-              res.send(result);
-
+              res.send(await database.mainInterface(req.session.user,"updateSpreadsheet"));
           }else{
-              res.send({success:false,errors:['No Organization']})
+              res.send({success:false,organization:null,errors:['No Organization']})
           }
-
 
 
       }catch(err){
@@ -78,32 +75,32 @@ routes.get('/saveSpreadsheet', async function(req, res) {//Collect the data curr
 });
 
 
-routes.get('/getSavingMode', async function(req, res) {//Collect the data currently in the sheet
-  let output=false;
+// routes.get('/getSavingMode', async function(req, res) {//Collect the data currently in the sheet
+//   let output=false;
+//
+//   try{
+//     output=[true, await database.mainInterface(req.session.user,"getSavingMode") ];
+//   }
+//   catch(err){console.log(err);}
+//   finally{
+//     console.log("getSavingMode: "+JSON.stringify(output[1]));
+//     res.send(output);
+//    }
+// });
 
-  try{
-    output=[true, await database.mainInterface(req.session.user,"getSavingMode") ];
-  }
-  catch(err){console.log(err);}
-  finally{
-    console.log("getSavingMode: "+JSON.stringify(output[1]));
-    res.send(output);
-   }
-});
 
-
-routes.get('/setSpreadsheetOld',async function(req,res){//Set spreadsheet to old
-  let output=false;
-
-  try{
-    await database.mainInterface(req.session.user,"setSpreadsheetOld");
-    output=true;
-  }
-  catch(err){console.log(err);}
-  finally{
-    res.send(output);
-   }
-});
+// routes.get('/setSpreadsheetOld',async function(req,res){//Set spreadsheet to old
+//   let output=false;
+//
+//   try{
+//     await database.mainInterface(req.session.user,"setSpreadsheetOld");
+//     output=true;
+//   }
+//   catch(err){console.log(err);}
+//   finally{
+//     res.send(output);
+//    }
+// });
 
 
 routes.get('/getGraphDetails/:filter', async function(req,res){//Get data for graphs

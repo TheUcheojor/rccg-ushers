@@ -32,9 +32,43 @@ function updateSpreadsheet(){
       url : `/internals//updateSpreadsheet`,
       success :function(result){
 
-                if(!result.success){
-                  alert("errors: "+result.errors);
+                // if(!result.success){
+                //   alert("errors: "+result.errors);
+                // }
+
+                let spreadsheet=result.spreadsheet;
+
+                if(result.success && (spreadsheet!=null || spreadsheet!=undefined)  ){
+
+                      //&& (spreadsheet.isOld==false)
+                      Swal.fire(
+                                'Loaded!',
+                                `A new spreadsheet [ ${spreadsheet.title} ] has been loaded to Google Spreadsheet`,
+                                'success'
+                              );
+
+                       // $.ajax({
+                       //   type : "GET",
+                       //   contentType : "String",
+                       //   url : `/internals/setSpreadsheetOld`,
+                       //   success :function(success){if(!success){console.log("Error!")}  },
+                       //   error : function(e) {alert("Error!");}
+                       // });
+
+
                 }
+
+
+
+               saveOptionTransition();
+               if(spreadsheet!=null && spreadsheet!=undefined){
+                   console.log("IN HERE");
+                   $(".lastUpdated").fadeOut(1000, function(){
+                       $(".lastUpdated").text( `Recent Update: ${capitalize(spreadsheet.month)} ${spreadsheet.day}, ${spreadsheet.year} (${spreadsheet.time})` ).fadeIn(1500);
+                   });
+               }else{
+                 $(".lastUpdated").text("No Data").fadeIn(1500);
+               }
 
 
        },
@@ -55,13 +89,32 @@ function getGraphDetails(filter){//Get data for various graphs
     url : `/internals/getGraphDetails/${filter}`,
     success :function(data){
 
-              console.log("data for graph: "+data);
-              if(data!=null || data!=undefined){
+              console.log("data for graph: "+JSON.stringify(data));
+
+              console.log(" Object.keys(data.totalDonationsVsDate).length: "+ Object.keys(data.totalDonationsVsDate).length);
+
+              if(data!=null && data!=undefined &&  Object.keys(data.totalDonationsVsDate).length!=0 ){
+
+                    $('.totalDonationsVsDate').show();
+                    $('.graphNav').show();
+                    $('.graph-no-data').hide();
 
                     for([graphType,graphData] of Object.entries(data)){
-                          
+
                           generateGraphs('home',graphType,graphData,filter);
                     }
+
+              }else{
+                  $('.myGraph').fadeOut(()=>{
+                      $('.graphNav').fadeOut(()=>{
+                        $('.graph-no-data').show();
+                      });
+
+                  });
+
+
+
+
 
               }
      },
@@ -132,61 +185,61 @@ function getGraphDetails(filter){//Get data for various graphs
  }
 
 
- function getSavingMode(){//Saves spreadsheet to Database
-
-   $.ajax({
-           type : "GET",
-           contentType : "String",
-           url : `/internals/getSavingMode`,
-           success : function(resultArr) {
-
-                  var success=resultArr[0];
-                  var spreadsheet=resultArr[1];
-
-                   if(success && (spreadsheet!=null || spreadsheet!=undefined) && (spreadsheet.isOld==false) ){
-                         Swal.fire(
-                                   'Loaded!',
-                                   `A new spreadsheet [ ${spreadsheet.title} ] has been loaded to Google Spreadsheet`,
-                                   'success'
-                                 );
-
-                          $.ajax({
-                            type : "GET",
-                            contentType : "String",
-                            url : `/internals/setSpreadsheetOld`,
-                            success :function(success){if(!success){console.log("Error!")}  },
-                            error : function(e) {alert("Error!");}
-                          });
-
-
-                   }
-
-                  saveOptionTransition();
-
-                  if(spreadsheet!=null && spreadsheet!=undefined){
-                      console.log("IN HERE");
-                      $(".lastUpdated").fadeOut(1000, function(){
-                          $(".lastUpdated").text( `Recent Update: ${capitalize(spreadsheet.month)} ${spreadsheet.day}, ${spreadsheet.year} (${spreadsheet.time})` ).fadeIn(1500);
-                      });
-                  }else{
-
-                    $(".lastUpdated").text("No Data").fadeIn(1500);
-                  }
-
-           },
-         error : function(e) {
-           alert("Error!");
-           console.log("ERROR: ", e);
-             }
-        });
-
-
- }
+ // function getSavingMode(){//Saves spreadsheet to Database
+ //
+ //   $.ajax({
+ //           type : "GET",
+ //           contentType : "String",
+ //           url : `/internals/getSavingMode`,
+ //           success : function(resultArr) {
+ //
+ //                  var success=resultArr[0];
+ //                  var spreadsheet=resultArr[1];
+ //
+ //                   if(success && (spreadsheet!=null || spreadsheet!=undefined) && (spreadsheet.isOld==false) ){
+ //                         Swal.fire(
+ //                                   'Loaded!',
+ //                                   `A new spreadsheet [ ${spreadsheet.title} ] has been loaded to Google Spreadsheet`,
+ //                                   'success'
+ //                                 );
+ //
+ //                          $.ajax({
+ //                            type : "GET",
+ //                            contentType : "String",
+ //                            url : `/internals/setSpreadsheetOld`,
+ //                            success :function(success){if(!success){console.log("Error!")}  },
+ //                            error : function(e) {alert("Error!");}
+ //                          });
+ //
+ //
+ //                   }
+ //
+ //                  saveOptionTransition();
+ //
+ //                  if(spreadsheet!=null && spreadsheet!=undefined){
+ //                      console.log("IN HERE");
+ //                      $(".lastUpdated").fadeOut(1000, function(){
+ //                          $(".lastUpdated").text( `Recent Update: ${capitalize(spreadsheet.month)} ${spreadsheet.day}, ${spreadsheet.year} (${spreadsheet.time})` ).fadeIn(1500);
+ //                      });
+ //                  }else{
+ //
+ //                    $(".lastUpdated").text("No Data").fadeIn(1500);
+ //                  }
+ //
+ //           },
+ //         error : function(e) {
+ //           alert("Error!");
+ //           console.log("ERROR: ", e);
+ //             }
+ //        });
+ //
+ //
+ // }
 
 
  function getPreviewSpreadsheet(){//get the the current  content of spreadsheet
       $('.ss-loading-container').show();
-      $(".outputScreen").html(`<h3>Preview Screen</h3>`).fadeIn(1000);
+      $(".outputScreen").html(`<h3>Preview Screen</h3>`).fadeIn();
       $('.spreadsheet-table').html("");
 
 
@@ -202,13 +255,10 @@ function getGraphDetails(filter){//Get data for various graphs
                       var headerValues=result[1];
                       var contentRows=result[2];
                       //setting up the header
-                      $(".ss-loading-container").fadeOut(1000);
+                      $(".ss-loading-container").hide();
                       // $(".spreadsheet-content").css("border","3px solid  rgba(136, 135, 156,1)");
 
-                      $(".outputScreen").fadeOut( function(){
-                            $(".outputScreen").html(`<h3>${title} [PREVIEW]</h3> `).fadeIn(1000);
 
-                      })
 
                       var htmlString="<tr>";
                       for(var i=0;i<headerValues.length;i++){//Add Header values
@@ -235,7 +285,11 @@ function getGraphDetails(filter){//Get data for various graphs
 
                       }
 
-                      $(".spreadsheet-table").html(`${htmlString} </tr>`);
+                      $(".outputScreen").fadeOut( function(){
+                            $(".outputScreen").html(`<h3>${title} [PREVIEW]</h3> `).fadeIn();
+                            $(".spreadsheet-table").html(`${htmlString} </tr>`).fadeIn();
+                      })
+
 
                   console.log(result);
 

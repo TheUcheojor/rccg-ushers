@@ -120,6 +120,7 @@ async function login(userObj){
 
     errors=[];
     userArray=[];
+    console.log("userObj: "+JSON.stringify(userObj));
     try{
       userArray=await users_collection.find({email:userObj.email }).toArray();
     }catch(err){

@@ -162,7 +162,7 @@ async function mainInterface(user,desiredFunction, paramsObj){
    SECTION : Functions
 */
 
-//This function updates or add the spreadsheet info object
+//This function updates or add the spreadsheet info object if neccessary
 async function updateSpreadsheet(){
 
   try{
@@ -171,12 +171,13 @@ async function updateSpreadsheet(){
       let spreadsheetObjArr= await collection.find({Spreadsheet:true}).toArray();
 
       if(spreadsheetObjArr.length==0 || spreadsheetObjArr[0].day!=todayDate){
-          await loadNewSpreadsheet();
+          return{success:true,spreadsheet: (await loadNewSpreadsheet())[0]};
+      }else{
+          return{success:false,spreadsheet: await spreadsheetObjArr[0]};
       }
 
-      return {success:true}
   }catch(err){
-      return{success:false,errors:['Spreadsheet Error']}
+      return{success:false,spreadsheet:null,errors:['Spreadsheet Error']}
   }
 
 }
@@ -236,7 +237,10 @@ async function previewSpreadsheet(){
 
 }
 
-
+function capitalize(str){//capitalize a given string
+      if(str==null|| str==''|| str==undefined){ return ""}
+      return str.charAt(0).toUpperCase() +str.toLowerCase().slice(1);
+}
 
 async function loadNewSpreadsheet(){//The function saves and clears the current sheet, creating a new google spreadsheet
 
@@ -246,7 +250,7 @@ async function loadNewSpreadsheet(){//The function saves and clears the current 
   await setDate();
   const sheet = await doc.sheetsByIndex[0];
 
-  givenYear=year;givenMonth=month;givenDay=monthDay;
+  givenYear=year;givenMonth=capitalize(month);givenDay=monthDay;
   console.log("givenYear: "+givenYear+" givenMonth: "+givenMonth+" givenDay:"+givenDay);
 
   await  doc.updateProperties({title: 'RCCG Ushers - ( '+givenMonth+' '+givenDay+', '+givenYear +' )' });
