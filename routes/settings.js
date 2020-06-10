@@ -19,8 +19,8 @@ routes.post('/changePassword',async (req,res)=>{
         res.redirect('/settings');
 
     }catch(err){
-      console.log(err);
-      console.log(err);
+      //console.log(err);
+      //console.log(err);
       alert("Fatal ERROR!")
       res.redirect('/logout');
     }

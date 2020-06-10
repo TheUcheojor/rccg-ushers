@@ -7,8 +7,8 @@ const userMainInterface = require('../database/users');
 
 routes.get('/',(req,res)=>{
 
-  console.log(" X req.session.name: "+req.session.user.name);
-  console.log(" X req.session.email: "+req.session.user.email);
+  // console.log(" X req.session.name: "+req.session.user.name);
+  // console.log(" X req.session.email: "+req.session.user.email);
 
   req.session.errors-{};
   res.render('main',{title: 'Dashboard',
@@ -25,14 +25,14 @@ routes.get('/',(req,res)=>{
 
 routes.get('/organization',async (req,res)=>{
 
-  console.log(" X req.session.name: "+req.session.user.name);
-  console.log(" X req.session.email: "+req.session.user.email);
+  // console.log(" X req.session.name: "+req.session.user.name);
+  // console.log(" X req.session.email: "+req.session.user.email);
 
   let organization='';
   if(req.session.user.organization.organization_id){
      let organizationResult=await userMainInterface('getOrganizationDetails',{organization:req.session.user.organization});
 
-     console.log("\norganization: "+JSON.stringify(organization))
+     //console.log("\norganization: "+JSON.stringify(organization))
      if(!organizationResult.success){
        req.session.errors.fetchOrganizationDetails=organizationResult.errors;
      }else{
@@ -46,7 +46,7 @@ routes.get('/organization',async (req,res)=>{
   let errors=req.session.errors;
   req.session.errors={};
 
-  console.log("MESSAGE: "+JSON.stringify(message));
+  //console.log("MESSAGE: "+JSON.stringify(message));
 
   res.render('organization',{title: 'Organization',
                               // isOrganization:true,

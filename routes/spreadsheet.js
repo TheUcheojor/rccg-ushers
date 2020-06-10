@@ -23,7 +23,7 @@ routes.get('/updateSpreadsheet', async (req,res)=>{
 
 
       }catch(err){
-        console.log(err);
+        //console.log(err);
         alert("Spreadsheet Fatal ERROR!")
         res.redirect('/logout');
 
@@ -39,7 +39,7 @@ routes.get('/previewSpreadsheet', async function(req, res) {//Collect the data c
       res.send(await database.mainInterface(req.session.user,"previewSpreadsheet"));
     }
     catch(err){
-      console.log(err);
+      //console.log(err);
       res.send({success:false, errors:['Server error while previewing spreadsheet']})
     }
 
@@ -52,9 +52,11 @@ routes.get('/getLastUpdated', async function(req, res) {//Collect the data curre
   try{
     output=await database.mainInterface(req.session.user,"getLastUpdated");
   }
-  catch(err){console.log(err);}
+  catch(err){
+    //console.log(err);
+  }
   finally{
-    console.log("getLastUpdated: "+output);
+    //console.log("getLastUpdated: "+output);
     res.send(output);
    }
 });
@@ -62,12 +64,12 @@ routes.get('/getLastUpdated', async function(req, res) {//Collect the data curre
 
 routes.get('/saveSpreadsheet', async function(req, res) {//Collect the data currently in the sheet
 
-  console.log(" get mode: "+req.params.mode);
+  //console.log(" get mode: "+req.params.mode);
   try{
       res.send(await database.mainInterface(req.session.user,"saveSpreadsheet"));
   }
   catch(err){
-      console.log(err);
+      //console.log(err);
       res.send({success:false, errors:['Server error while saving spreadsheet']})
   }
 
@@ -80,9 +82,9 @@ routes.get('/saveSpreadsheet', async function(req, res) {//Collect the data curr
 //   try{
 //     output=[true, await database.mainInterface(req.session.user,"getSavingMode") ];
 //   }
-//   catch(err){console.log(err);}
+//   catch(err){//console.log(err);}
 //   finally{
-//     console.log("getSavingMode: "+JSON.stringify(output[1]));
+//     //console.log("getSavingMode: "+JSON.stringify(output[1]));
 //     res.send(output);
 //    }
 // });
@@ -95,7 +97,7 @@ routes.get('/saveSpreadsheet', async function(req, res) {//Collect the data curr
 //     await database.mainInterface(req.session.user,"setSpreadsheetOld");
 //     output=true;
 //   }
-//   catch(err){console.log(err);}
+//   catch(err){//console.log(err);}
 //   finally{
 //     res.send(output);
 //    }
@@ -106,7 +108,7 @@ routes.get('/getGraphDetails/:filter', async function(req,res){//Get data for gr
   let output=null;
 
   try{
-    
+
     res.send(await database.mainInterface(req.session.user,"getGraphDetails",{filter:req.params.filter,mode:'home',data:null}));
 
   }catch(err){
@@ -122,7 +124,9 @@ routes.get('/searchDatabase/:mode/:queryStr', async function(req,res){//Get data
     output=[];
     output=await database.mainInterface(req.session.user,"searchDatabase",{mode:req.params.mode, queryStr:decodeURIComponent(req.params.queryStr)});
 
-  }catch(err){console.log(err);}
+  }catch(err){
+    //console.log(err);
+  }
   finally{
     res.send(output);
    }
@@ -132,10 +136,12 @@ routes.get('/searchDatabase/:mode/:queryStr', async function(req,res){//Get data
 routes.post('/getMemberGraph', async function (req, res){
       memberGraph=null;
       try{
-        console.log("req.body.member: "+JSON.stringify(req.body.member)+ "req.body.filter: "+req.body.filter);
+        //console.log("req.body.member: "+JSON.stringify(req.body.member)+ "req.body.filter: "+req.body.filter);
         var memberGraph=await database.mainInterface(req.session.user,"getGraphDetails",{filter:req.body.filter,mode:'search',data:req.body.member});
 
-      }catch(err){console.log(err);}
+      }catch(err){
+        //console.log(err);
+      }
       finally{
         res.send(memberGraph);
       }

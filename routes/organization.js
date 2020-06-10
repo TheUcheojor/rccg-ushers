@@ -16,12 +16,12 @@ routes.post('/create',async (req,res)=>{
             spreadsheet_url:req.body.spreadsheet_url
       }
 
-        console.log("req.body.organization_name: "+req.body.organization_name+ "spreadsheet_url: "+req.body.spreadsheet_url);
+        //console.log("req.body.organization_name: "+req.body.organization_name+ "spreadsheet_url: "+req.body.spreadsheet_url);
 
         let result=await userMainInterface('createOrganization',{user:user});
-        //console.log("result from route org: "+JSON.stringify(result));
+        ////console.log("result from route org: "+JSON.stringify(result));
         if(result.success){
-          console.log("createOrganization success ")
+          //console.log("createOrganization success ")
           req.session.user.organization=result.organization;
           res.redirect('/');
 
@@ -33,7 +33,7 @@ routes.post('/create',async (req,res)=>{
 
 
     }catch(err){
-        console.log(err);
+        //console.log(err);
         alert("Fatal ERROR!")
         res.redirect('/logout');
     }
@@ -54,7 +54,7 @@ routes.post('/join',async (req,res)=>{
 
                 let result = await userMainInterface('joinOrganization',{user:user,organization:organization});
 
-                console.log("Join Results: "+JSON.stringify(result));
+                //console.log("Join Results: "+JSON.stringify(result));
 
                 if(result.success){
                     req.session.user.organization=result.organization;
@@ -74,7 +74,7 @@ routes.post('/join',async (req,res)=>{
 
 
       }catch(err){
-        console.log(err)
+        //console.log(err)
         alert("Fatal ERROR!")
         res.redirect('/logout');
       }
@@ -94,7 +94,7 @@ routes.post('/delete',async (req,res)=>{
         }
 
     }catch(err){
-        console.log(err);
+        //console.log(err);
         alert("Fatal ERROR!")
         res.redirect('/logout');
     }
@@ -116,7 +116,7 @@ routes.post('/leave', async (req,res)=>{
       }
 
     }catch(err){
-      console.log(err);
+      //console.log(err);
       alert("Fatal ERROR!")
       res.redirect('/logout');
     }
@@ -127,11 +127,11 @@ routes.post('/leave', async (req,res)=>{
 
 routes.post('/updatePermissions', async (req,res)=>{
 
-      console.log("\n\n updatePermissions"+JSON.stringify(req.body))
+      //console.log("\n\n updatePermissions"+JSON.stringify(req.body))
       try{
             const result=await userMainInterface('updateOrganizationPermissions',{updateRequests:req.body, organization:req.session.user.organization})
 
-            console.log("\n\nupdatePermissions RESULT: "+JSON.stringify(result)+'\n');
+            //console.log("\n\nupdatePermissions RESULT: "+JSON.stringify(result)+'\n');
 
             if(result.success){
                 req.session.errors={};
@@ -143,8 +143,8 @@ routes.post('/updatePermissions', async (req,res)=>{
             res.redirect('/organization');
 
       }catch(err){
-        console.log(err);
-        console.log(err);
+        //console.log(err);
+        //console.log(err);
         alert("Fatal ERROR!")
         res.redirect('/logout');
 
