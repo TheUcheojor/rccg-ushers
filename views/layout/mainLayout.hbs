@@ -64,6 +64,12 @@
             <div class='side-bar-item' onclick='window.location.href="/settings" ' >Settings</div>
           {{/ifEquals}}
 
+          {{#ifEquals title 'Overview'}}
+            <div class='side-bar-item selected' onclick='window.location.href="/overview" ' >Overview</div>
+          {{else}}
+            <div class='side-bar-item' onclick='window.location.href="/overview" '>Overview</div>
+          {{/ifEquals}}
+
           <div class='side-bar-item' onclick='window.location.href="/logout" ' >Logout</div>
 
     </div>

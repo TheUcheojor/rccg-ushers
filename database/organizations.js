@@ -121,13 +121,31 @@ async function createOrganization(user,organizationObj){
       }
 
       try{
+          let defaultHeader=['FirstName',	'LastName',	'Cheque',	'Cash',	'Debit',	'Tithe'	,'Offerings',	'Thanksgiving',	'Mission',	'Building',	'Vow']
+
+
+
           let spreadsheetkey=organizationObj.spreadsheet_url.match(spreadsheetIdRegex)[0];
-          let doc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
-          await doc.useServiceAccountAuth(require(clientPath));
-          await doc.loadInfo();
+
+
+          let templateDoc=new GoogleSpreadsheet(process.env.TEMPLATE_SPREADSHEET_KEY);
+          await templateDoc.useServiceAccountAuth(require(clientPath));
+          await templateDoc.loadInfo();
+          const templateSheet = templateDoc.sheetsByIndex[0];
+          await templateSheet.copyToSpreadsheet(spreadsheetkey);//Copy template doc to new doc
+
+          //Attempting to configure the spreadsheet
+          let newdoc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
+          await newdoc.useServiceAccountAuth(require(clientPath));
+          await newdoc.loadInfo();
+          await  newdoc.updateProperties({title: organizationObj.organization_name });
+          await  newdoc.sheetsByIndex[0].delete();//Remove default spreadsheet
+          //const newsheet=await newdoc.sheetsByIndex[0].updateProperties({ title: 'rccg ushers'});
+
+
       }catch(err){
           console.log(err)
-          errors.push('Unable to access your spreadsheet. Please share your document with email below');
+          errors.push('Unable to access your spreadsheet. Please share your document with email below (Editor Permissions)');
 
       }
 

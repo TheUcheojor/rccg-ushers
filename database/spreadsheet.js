@@ -25,6 +25,7 @@ const MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 let client;
 let collection;
+let currentUser;
 
 
 //For Google Spreadsheet - node google spreadsheet (A google api framework for google-spreadsheets)
@@ -89,7 +90,7 @@ async function mainInterface(user,desiredFunction, paramsObj){
 
       // setUp(sskey);
       console.log(typeof user.organization.organization_id);
-
+           currentUser=user;
           //console.log(JSON.stringify(user.organization.organization_id));
            doc = new GoogleSpreadsheet(user.organization.spreadsheet_id);//Access doc object
 
@@ -146,7 +147,8 @@ async function mainInterface(user,desiredFunction, paramsObj){
 
     }catch(err){
       console.log(err);
-      return null;
+      return {success:false,errors:['You may not be sharing EDITOR permissions with <strong>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com</strong>  ',
+              'Organization may no longer exists']};
     }
 
 
@@ -196,6 +198,9 @@ async function getLastUpdated(){
 
 //This function returns a preview Object of the current spreadsheet
 async function previewSpreadsheet(){
+
+  try{
+
     const sheet = await doc.sheetsByIndex[0]; //get the first sheet of the document
 
     const rows= await sheet.getRows();//Returns an array of row objects
@@ -218,7 +223,7 @@ async function previewSpreadsheet(){
         //objStr="";
         for( [key, value] of Object.entries(row)){
             if(key!='FirstName' && key!='LastName'&& key!='_sheet' && key!='_rowNumber' && key!='_rowNumber' && key!='_rawData'){
-                  if(value==null || value.trim().lenth==0){value=""}
+                  if(value==null || value.trim().length==0){value=""}
 
                 objStr+=` "${key}" : "${value}",`;
             }
@@ -232,7 +237,21 @@ async function previewSpreadsheet(){
 
     }
 
-    return [doc.title,headerRow,sheetDataArray];
+
+    return {success:true,spreadsheet:{title:doc.title,headerValues:headerRow,contentRows:sheetDataArray}};
+  //  return [doc.title,headerRow,sheetDataArray];
+
+    // var title=result[0];
+    // var headerValues=result[1];
+    // var contentRows=result[2];
+
+  }catch(err){
+    console.log();
+    return {success:false,errors:['Ensure that your header contains "FirstName" and "LastName"',
+            'Ensure that you are sharing EDITOR permissions with <strong>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com</strong> ',
+            'Organization may no longer exists']
+          };
+  }
 
 
 }
@@ -244,17 +263,16 @@ function capitalize(str){//capitalize a given string
 
 async function loadNewSpreadsheet(){//The function saves and clears the current sheet, creating a new google spreadsheet
 
-
   await saveSpreadsheet(); //Saving current spreadsheet
 
   await setDate();
   const sheet = await doc.sheetsByIndex[0];
 
-  givenYear=year;givenMonth=capitalize(month);givenDay=monthDay;
+  givenYear=year;givenMonth=month;givenDay=monthDay;
   console.log("givenYear: "+givenYear+" givenMonth: "+givenMonth+" givenDay:"+givenDay);
 
-  await  doc.updateProperties({title: 'RCCG Ushers - ( '+givenMonth+' '+givenDay+', '+givenYear +' )' });
-  await sheet.updateProperties({ title: '( '+givenMonth+' '+givenDay+', '+givenYear +' )'});
+  await  doc.updateProperties({title: currentUser.organization.name+' - ( '+capitalize(month)+' '+givenDay+', '+givenYear +' )' });
+  await sheet.updateProperties({ title: '( '+capitalize(month)+' '+givenDay+', '+givenYear +' )'});
 
   await sheet.loadHeaderRow();//Populate the propety headerValues
   const headerRow=await sheet.headerValues;//Get header values
@@ -272,98 +290,104 @@ async function loadNewSpreadsheet(){//The function saves and clears the current 
 //Retrieves neccessary details, stored in the database, to develop multiple graphs
 async function getGraphDetails(filter,mode,data){
 
-  if(  mode=='search' && (data==null||data==undefined) ){return null}
+  try{
+          if(  mode=='search' && (data==null||data==undefined) ){return null}
 
-  console.log("mode: "+mode+"\n")
-  if(mode=='home'){
-    const projectObj={FirstName: 0,LastName: 0,_id:0, Spreadsheet:0, year:0,month:0,day:0,time:0,isOld:0,title:0,FullName:0 };
-     data = await collection.aggregate( [{$project:projectObj }] ).toArray() ;
-     data = data.filter( (obj) => {return Object.keys(obj).length>0});//Remove empty objects
-  }else if(mode=='search'){
-      delete data[0]['FirstName'];
-      delete data[0]['LastName'];
-      delete data[0]['FullName'];
-      delete data[0]['_id'];
-      console.log("data after del: "+JSON.stringify(data));
-  }
-
-
-
-  let graphs={ totalDonationsVsDate:{}, numOfMembersVsDate:{}, methodOfPaymentVsDate:{}};
-  var methodOfPayment_allTypes=new Set();
-
-
-
-   data.forEach( (dataObj) =>{
-
-           for([yearKey,yearObj] of Object.entries(dataObj) ){//Iterating through each year key and values
-
-              for([monthKey, monthObj] of Object.entries(yearObj)  ){//Iterating through each month key and values
-
-                      for( [dayKey, dayObj] of Object.entries(monthObj)){//Iterating through each day key and values
-
-                            for( [graphType, graphData] of Object.entries(graphs)   ){   //Appending data to the appropriate graphs
-
-                              filterToKey={'year': `${yearKey}`,'month': `${stringToMonthNumerical[monthKey]+1}/${yearKey}` ,
-                                      'day': `${stringToMonthNumerical[monthKey]+1}/${dayKey}/${yearKey}` };
-
-                              var filterKey=filterToKey[filter];
-                              if( !Object.keys(graphData).includes(filterKey) && ['totalDonationsVsDate', 'numOfMembersVsDate'].includes(graphType) ){
-
-                                              console.log("monthKey: "+monthKey+" yearKey:"+yearKey );
-                                              graphs[graphType][filterKey]=0;
-                              }
-
-                              if(graphType == 'totalDonationsVsDate' ){
-                                          Object.values(dayObj).filter( (item)=> {return !isNaN(item)}).forEach( (item)=>{
-                                                    console.log("numerical values: "+item);
-                                                    graphs[graphType][filterKey]+=parseFloat(item);
-                                                    console.log("graphs[graphType][`${monthKey} ${yearKey}`]: "+graphs[graphType][filterKey]);
-                                            });
-                              }else if(graphType == 'numOfMembersVsDate' ){
-                                      graphs[graphType][filterKey]+=1;
-
-                              }else if(graphType == 'methodOfPaymentVsDate' ){
-
-                                    for([itemKey,item] of Object.entries(dayObj)){
-                                          item.split(",").forEach( (splitItem) =>{
-                                                    if(['true','t','yes','y'].includes(splitItem)){
-
-                                                          if(!Object.keys(graphs[graphType]).includes(filterKey)){
-                                                                      graphs[graphType][filterKey]={};
-                                                          }
-                                                          if(!Object.keys(graphs[graphType][filterKey]).includes(itemKey)){
-                                                                      methodOfPayment_allTypes.add(itemKey);
-                                                                      graphs[graphType][filterKey][itemKey]=0;
-                                                          }
-                                                          graphs[graphType][filterKey][itemKey]+=1;
-
-                                                    }
-                                          });
-                                    }
-                                }}}}}
-        });
-
-
-  Object.keys(graphs['methodOfPaymentVsDate']).forEach( (date) =>{
-
-          var datePayMethods=Object.keys(graphs['methodOfPaymentVsDate'][date]);
-          var allPaymentMethods=Array.from(methodOfPayment_allTypes);
-
-          console.log("datePayMethods: "+JSON.stringify(datePayMethods));
-          console.log("\nallPaymentMethods: "+JSON.stringify(allPaymentMethods));
-
-          if(datePayMethods!=allPaymentMethods){
-                allPaymentMethods.forEach( (payMethod) =>{
-                          if(!datePayMethods.includes(payMethod)){
-                                graphs['methodOfPaymentVsDate'][date][payMethod]=0;
-                          }
-                });
+          console.log("mode: "+mode+"\n")
+          if(mode=='home'){
+            const projectObj={FirstName: 0,LastName: 0,_id:0, Spreadsheet:0, year:0,month:0,day:0,time:0,isOld:0,title:0,FullName:0 };
+             data = await collection.aggregate( [{$project:projectObj }] ).toArray() ;
+             data = data.filter( (obj) => {return Object.keys(obj).length>0});//Remove empty objects
+          }else if(mode=='search'){
+              delete data[0]['FirstName'];
+              delete data[0]['LastName'];
+              delete data[0]['FullName'];
+              delete data[0]['_id'];
+              console.log("data after del: "+JSON.stringify(data));
           }
-  });
 
-  console.log(graphs);
-  return graphs;
+
+
+          let graphs={ totalDonationsVsDate:{}, numOfMembersVsDate:{}, methodOfPaymentVsDate:{}};
+          var methodOfPayment_allTypes=new Set();
+
+
+
+           data.forEach( (dataObj) =>{
+
+                   for([yearKey,yearObj] of Object.entries(dataObj) ){//Iterating through each year key and values
+
+                      for([monthKey, monthObj] of Object.entries(yearObj)  ){//Iterating through each month key and values
+
+                              for( [dayKey, dayObj] of Object.entries(monthObj)){//Iterating through each day key and values
+
+                                    for( [graphType, graphData] of Object.entries(graphs)   ){   //Appending data to the appropriate graphs
+
+                                      filterToKey={'year': `${yearKey}`,'month': `${stringToMonthNumerical[monthKey]+1}/${yearKey}` ,
+                                              'day': `${stringToMonthNumerical[monthKey]+1}/${dayKey}/${yearKey}` };
+
+                                      var filterKey=filterToKey[filter];
+                                      if( !Object.keys(graphData).includes(filterKey) && ['totalDonationsVsDate', 'numOfMembersVsDate'].includes(graphType) ){
+
+                                                      console.log("monthKey: "+monthKey+" yearKey:"+yearKey );
+                                                      graphs[graphType][filterKey]=0;
+                                      }
+
+                                      if(graphType == 'totalDonationsVsDate' ){
+                                                  Object.values(dayObj).filter( (item)=> {return !isNaN(item)}).forEach( (item)=>{
+                                                            console.log("numerical values: "+item);
+                                                            graphs[graphType][filterKey]+=parseFloat(item);
+                                                            console.log("graphs[graphType][`${monthKey} ${yearKey}`]: "+graphs[graphType][filterKey]);
+                                                    });
+                                      }else if(graphType == 'numOfMembersVsDate' ){
+                                              graphs[graphType][filterKey]+=1;
+
+                                      }else if(graphType == 'methodOfPaymentVsDate' ){
+
+                                            for([itemKey,item] of Object.entries(dayObj)){
+                                                  item.split(",").forEach( (splitItem) =>{
+                                                            if(['true','t','yes','y'].includes(splitItem)){
+
+                                                                  if(!Object.keys(graphs[graphType]).includes(filterKey)){
+                                                                              graphs[graphType][filterKey]={};
+                                                                  }
+                                                                  if(!Object.keys(graphs[graphType][filterKey]).includes(itemKey)){
+                                                                              methodOfPayment_allTypes.add(itemKey);
+                                                                              graphs[graphType][filterKey][itemKey]=0;
+                                                                  }
+                                                                  graphs[graphType][filterKey][itemKey]+=1;
+
+                                                            }
+                                                  });
+                                            }
+                                        }}}}}
+                });
+
+
+          Object.keys(graphs['methodOfPaymentVsDate']).forEach( (date) =>{
+
+                  var datePayMethods=Object.keys(graphs['methodOfPaymentVsDate'][date]);
+                  var allPaymentMethods=Array.from(methodOfPayment_allTypes);
+
+                  console.log("datePayMethods: "+JSON.stringify(datePayMethods));
+                  console.log("\nallPaymentMethods: "+JSON.stringify(allPaymentMethods));
+
+                  if(datePayMethods!=allPaymentMethods){
+                        allPaymentMethods.forEach( (payMethod) =>{
+                                  if(!datePayMethods.includes(payMethod)){
+                                        graphs['methodOfPaymentVsDate'][date][payMethod]=0;
+                                  }
+                        });
+                  }
+          });
+
+          console.log(graphs);
+          return {success:true,graphs:graphs};
+
+  }catch(err){
+      console.log(err);
+      return {success:false,errors:['']}
+  }
 
 }
 
@@ -392,133 +416,148 @@ async function updateSpreadsheetInfo(sheetState,givenYear,givenMonth,givenDay,ti
 
 async function saveSpreadsheet(){//mode can 'old' or 'new', signifying whether the sheet is an old or new sheet
 
-  var givenYear,givenMonth,givenDay;
+try{
+    var givenYear,givenMonth,givenDay;
 
 
-  const sheet = await doc.sheetsByIndex[0]; //get the first sheet of the document
-  const rows= await sheet.getRows();//Returns an array of row objects
+    const sheet = await doc.sheetsByIndex[0]; //get the first sheet of the document
+    const rows= await sheet.getRows();//Returns an array of row objects
 
-  let resetedIdStrArr=[];
+    let resetedIdStrArr=[];
 
-  let spreadsheetInfoArray= await collection.find( {Spreadsheet:{$exists:true,$ne:null} }).toArray();
+    let spreadsheetInfoArray= await collection.find( {Spreadsheet:{$exists:true,$ne:null} }).toArray();
 
-  if(spreadsheetInfoArray.length==0){
-      setDate();
-      spreadsheetInfoArray=await updateSpreadsheetInfo(false,year,month,monthDay,time24Hrs);
+    if(spreadsheetInfoArray.length==0){
+        setDate();
+        spreadsheetInfoArray=await updateSpreadsheetInfo(false,year,month,monthDay,time24Hrs);
 
-  }
+    }
 
-      //console.log(spreadsheetInfoArray);
-  givenYear=spreadsheetInfoArray[0].year;
-  givenMonth=spreadsheetInfoArray[0].month;
-  givenDay=spreadsheetInfoArray[0].day;
-
-
-  const projectObj={[`${givenYear}`]:1,[`${givenMonth}`]:1,[`${givenDay}`]:1,_id:1  };
-  let oldItems = await collection.aggregate( [{$project:projectObj }] ).toArray() ;
+        //console.log(spreadsheetInfoArray);
+    givenYear=spreadsheetInfoArray[0].year;
+    givenMonth=spreadsheetInfoArray[0].month;
+    givenDay=spreadsheetInfoArray[0].day;
 
 
-  oldItems=oldItems.filter((item)=>{return Object.keys(item).length>1; });
+    const projectObj={[`${givenYear}`]:1,[`${givenMonth}`]:1,[`${givenDay}`]:1,_id:1  };
+    let oldItems = await collection.aggregate( [{$project:projectObj }] ).toArray() ;
 
-  var oldItem;var setQueryStr;
-  for(var i=0;i<oldItems.length;i++){
 
-          oldItem=oldItems[i];
-          if(Object.keys(oldItem).includes(givenYear) &&  Object.keys(oldItem[givenYear]).includes(givenMonth)  &&    Object.keys(oldItem[givenYear][givenMonth]).includes(givenDay)){
+    oldItems=oldItems.filter((item)=>{return Object.keys(item).length>1; });
 
-                let setQuery={};
-                resetedIdStrArr.push(oldItem._id.toHexString());
-                for([itemKey, item] of Object.entries(oldItem[givenYear][givenMonth][givenDay])){
+    var oldItem;var setQueryStr;
+    for(var i=0;i<oldItems.length;i++){
 
-                     if(isNaN(item)){
-                        setQueryStr={[`${givenYear}.${givenMonth}.${givenDay}.${itemKey}`]:''};
+            oldItem=oldItems[i];
+            if(Object.keys(oldItem).includes(givenYear) &&  Object.keys(oldItem[givenYear]).includes(givenMonth)  &&    Object.keys(oldItem[givenYear][givenMonth]).includes(givenDay)){
 
-                        await collection.updateOne( {_id:oldItem._id }, { $set:setQueryStr  });
-                     }else{
-                       setQueryStr={[`${givenYear}.${givenMonth}.${givenDay}.${itemKey}`]:'0'};
-                       await collection.updateOne( {_id:oldItem._id }, { $set:setQueryStr  });
-                     }
+                  let setQuery={};
+                  resetedIdStrArr.push(oldItem._id.toHexString());
+                  for([itemKey, item] of Object.entries(oldItem[givenYear][givenMonth][givenDay])){
 
+                       if(isNaN(item)){
+                          setQueryStr={[`${givenYear}.${givenMonth}.${givenDay}.${itemKey}`]:''};
+
+                          await collection.updateOne( {_id:oldItem._id }, { $set:setQueryStr  });
+                       }else{
+                         setQueryStr={[`${givenYear}.${givenMonth}.${givenDay}.${itemKey}`]:'0'};
+                         await collection.updateOne( {_id:oldItem._id }, { $set:setQueryStr  });
+                       }
+
+
+                  }
+            }
+        }
+
+    var addedIdStrArr=[];
+    var row,header,objStr,valFirstName,valLastName;
+
+    for(var i=0; i<rows.length;i++){//Go through each row and add to database
+        row=rows[i];
+
+        //Enforcing desired formating
+        valFirstName=row.FirstName.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
+        valLastName=row.LastName.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
+
+        objStr=` { "FirstName": "${valFirstName}","LastName":"${valLastName}", "FullName":"${valFirstName} ${valLastName}", "${givenYear}" : { "${givenMonth}" : { "${givenDay}" :{    `;
+
+        if(![undefined,null,''].includes(valFirstName) && ![undefined,null,''].includes(valLastName) ){
+
+                for( [key, value] of Object.entries(row)){
+                    if(key!='FirstName' && key!='LastName'&& key!='_sheet' && key!='_rowNumber' && key!='_rowNumber' && key!='_rawData' && ( typeof value=='string' && value.trim().length!=0)  && value!=null){
+
+                        //Enforcing desired formating
+                        value=value.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
+                        objStr+=` "${key}" : "${value}",`;
+                    }
 
                 }
-          }
-      }
 
-  var addedIdStrArr=[];
-  var row,header,objStr,valFirstName,valLastName;
+                objStr=objStr.slice(0,objStr.length-1);//Remove last ','
+                objStr+='}}}}';
 
-  for(var i=0; i<rows.length;i++){//Go through each row and add to database
-      row=rows[i];
+                await addItemToDatabase(objStr);
+                addedIdStrArr.push((await collection.find({ FirstName:valFirstName,LastName:valLastName }).toArray())[0]._id.toHexString());
 
-      //Enforcing desired formating
-      valFirstName=row.FirstName.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
-      valLastName=row.LastName.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
-
-      objStr=` { "FirstName": "${valFirstName}","LastName":"${valLastName}", "FullName":"${valFirstName} ${valLastName}", "${givenYear}" : { "${givenMonth}" : { "${givenDay}" :{    `;
-
-      for( [key, value] of Object.entries(row)){
-          if(key!='FirstName' && key!='LastName'&& key!='_sheet' && key!='_rowNumber' && key!='_rowNumber' && key!='_rawData' && ( typeof value=='string' && value.trim().length!=0)  && value!=null){
-
-              //Enforcing desired formating
-              value=value.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
-              objStr+=` "${key}" : "${value}",`;
-          }
-
-
-      }
-
-        objStr=objStr.slice(0,objStr.length-1);//Remove last ','
-        objStr+='}}}}';
-
-
-        await addItemToDatabase(objStr);
-        addedIdStrArr.push((await collection.find({ FirstName:valFirstName,LastName:valLastName }).toArray())[0]._id.toHexString());
-
-  }
-
-
-
-  console.log("resetedIdStrArr: "+resetedIdStrArr);
-  console.log("addedIdStrArr: "+addedIdStrArr);
-
-  resetedIdStrArr=resetedIdStrArr.filter((idStr)=>{return !addedIdStrArr.includes(idStr);} );
-
-  var hexString;
-  for(var i=0;i<resetedIdStrArr.length;i++){//Removing items that were not updated (removed in edition of spreadsheet)
-
-       hexString = resetedIdStrArr[i];
-      // console.log("TYPE OBJ: "+ typeof resetedIdObjArr[index]);
-      await collection.updateOne( { _id: ObjectID.createFromHexString(hexString)},{ $unset: { [`${givenYear}.${givenMonth}.${givenDay}`]: "" } });
-
-        let notUpdatedObj=(await collection.find({_id: ObjectID.createFromHexString(hexString)}).toArray())[0];
-
-        console.log(await collection.find({_id: ObjectID.createFromHexString(hexString) }).toArray());
-
-        delete notUpdatedObj[givenYear][givenMonth][givenDay];
-        console.log("B4 hex:"+ JSON.stringify(notUpdatedObj)+'\n');
-
-        if(Object.keys(notUpdatedObj[givenYear][givenMonth])==0){
-              //await collection.aggregate([{ $unset: [`${givenYear}.${givenMonth}`] }]);
-              await collection.updateOne( { _id:ObjectID.createFromHexString(hexString) },{ $unset: { [`${givenYear}.${givenMonth}`]: "" } });
-
-              delete notUpdatedObj[givenYear][givenMonth];
-        }
-        if(Object.keys(notUpdatedObj[givenYear])==0){
-            //  await collection.aggregate([{ $unset: [`${givenYear}`] }]);
-            collection.updateOne( { _id: ObjectID.createFromHexString(hexString) },{ $unset: { [`${givenYear}`]: "" } });
-              delete notUpdatedObj[givenYear];
         }
 
-        console.log("AFTER hex:"+ JSON.stringify(notUpdatedObj)+'\n');
-
-  }
+    }
 
 
-  if(rows.length>0){//Adding to the Database:  a spreadsheet info object, if there was inputed data
-        return (await updateSpreadsheetInfo(true,givenYear,givenMonth,givenDay,time24Hrs))[0];
-  }else{
-    return null;
-  }
+
+    console.log("resetedIdStrArr: "+resetedIdStrArr);
+    console.log("addedIdStrArr: "+addedIdStrArr);
+
+    resetedIdStrArr=resetedIdStrArr.filter((idStr)=>{return !addedIdStrArr.includes(idStr);} );
+
+    var hexString;
+    for(var i=0;i<resetedIdStrArr.length;i++){//Removing items that were not updated (removed in edition of spreadsheet)
+
+         hexString = resetedIdStrArr[i];
+        // console.log("TYPE OBJ: "+ typeof resetedIdObjArr[index]);
+        await collection.updateOne( { _id: ObjectID.createFromHexString(hexString)},{ $unset: { [`${givenYear}.${givenMonth}.${givenDay}`]: "" } });
+
+          let notUpdatedObj=(await collection.find({_id: ObjectID.createFromHexString(hexString)}).toArray())[0];
+
+          console.log(await collection.find({_id: ObjectID.createFromHexString(hexString) }).toArray());
+
+          delete notUpdatedObj[givenYear][givenMonth][givenDay];
+          console.log("B4 hex:"+ JSON.stringify(notUpdatedObj)+'\n');
+
+          if(Object.keys(notUpdatedObj[givenYear][givenMonth])==0){
+                //await collection.aggregate([{ $unset: [`${givenYear}.${givenMonth}`] }]);
+                await collection.updateOne( { _id:ObjectID.createFromHexString(hexString) },{ $unset: { [`${givenYear}.${givenMonth}`]: "" } });
+
+                delete notUpdatedObj[givenYear][givenMonth];
+          }
+          if(Object.keys(notUpdatedObj[givenYear])==0){
+              //  await collection.aggregate([{ $unset: [`${givenYear}`] }]);
+              collection.updateOne( { _id: ObjectID.createFromHexString(hexString) },{ $unset: { [`${givenYear}`]: "" } });
+                delete notUpdatedObj[givenYear];
+          }
+
+          console.log("AFTER hex:"+ JSON.stringify(notUpdatedObj)+'\n');
+
+    }
+
+
+
+    let dataAddedToMessage={true:'Spreadsheet entries have been loaded ',false:'No Spreadsheet Entries' };
+    return { success:true, spreadsheet:(await updateSpreadsheetInfo(true,givenYear,givenMonth,givenDay,time24Hrs))[0],message:dataAddedToMessage[rows.length>0] };
+
+    //if(rows.length>0){//Adding to the Database:  a spreadsheet info object, if there was inputed data
+    // return { success:true, spreadsheet:(await updateSpreadsheetInfo(true,givenYear,givenMonth,givenDay,time24Hrs))[0],message:dataAddedToMessage[rows.length>0] };
+    // }else{
+    //   return return{success:true  };
+    // }
+
+}catch(err){
+
+  return {success:false,
+        errors:['Spreadsheet header may not contain "FirstName" and "LastName" ',
+                'You may not be sharing EDITOR permissions with <strong>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com</strong> ',
+                'Organization may no longer exists']}
+      };
 
 
 

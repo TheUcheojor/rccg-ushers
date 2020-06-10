@@ -34,15 +34,15 @@ routes.get('/updateSpreadsheet', async (req,res)=>{
 
 
 routes.get('/previewSpreadsheet', async function(req, res) {//Collect the data currently in the sheet
-  let output=null;
-  //pass in collection_name
-  try{
-    output=await database.mainInterface(req.session.user,"previewSpreadsheet");
-  }
-  catch(err){console.log(err)}
-  finally{
-    res.send(output);
-  }
+    //pass in collection_name
+    try{
+      res.send(await database.mainInterface(req.session.user,"previewSpreadsheet"));
+    }
+    catch(err){
+      console.log(err);
+      res.send({success:false, errors:['Server error while previewing spreadsheet']})
+    }
+
 });
 
 
@@ -61,17 +61,16 @@ routes.get('/getLastUpdated', async function(req, res) {//Collect the data curre
 
 
 routes.get('/saveSpreadsheet', async function(req, res) {//Collect the data currently in the sheet
-  let output=[false,null];
+
   console.log(" get mode: "+req.params.mode);
   try{
-    output=[ true,await database.mainInterface(req.session.user,"saveSpreadsheet") ];
+      res.send(await database.mainInterface(req.session.user,"saveSpreadsheet"));
+  }
+  catch(err){
+      console.log(err);
+      res.send({success:false, errors:['Server error while saving spreadsheet']})
+  }
 
-  }
-  catch(err){console.log(err);}
-  finally{
-    console.log(output);
-    res.send(output);
-  }
 });
 
 
@@ -107,12 +106,11 @@ routes.get('/getGraphDetails/:filter', async function(req,res){//Get data for gr
   let output=null;
 
   try{
+    
+    res.send(await database.mainInterface(req.session.user,"getGraphDetails",{filter:req.params.filter,mode:'home',data:null}));
 
-    output=await database.mainInterface(req.session.user,"getGraphDetails",{filter:req.params.filter,mode:'home',data:null});
-  }
-  catch(err){console.log(err);}
-  finally{
-    res.send(output);
+  }catch(err){
+    res.send({success:false,errors:['Server Error']});
    }
 });
 

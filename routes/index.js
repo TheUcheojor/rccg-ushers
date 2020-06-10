@@ -79,6 +79,13 @@ routes.get('/settings',async (req,res)=>{
 
 });
 
+
+routes.get('/overview', (req,res)=>{
+
+    res.render('overview',{title:'Overview',user:req.session.user,})
+
+})
+
 // routes.get('/search',(req,res)=>{
 //   res.render('search',{title:'Search', isMain:false});
 // });

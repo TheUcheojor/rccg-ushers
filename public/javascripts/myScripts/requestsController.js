@@ -87,8 +87,22 @@ function getGraphDetails(filter){//Get data for various graphs
     type : "GET",
     contentType : "String",
     url : `/internals/getGraphDetails/${filter}`,
-    success :function(data){
+    success :function(result){
 
+              console.log("getGraphDetails result: "+JSON.stringify(result));
+
+              if(!result.success){
+                    showErrors('Graphing',result.errors);
+                    $('.myGraph').fadeOut(()=>{
+                        $('.graphNav').fadeOut(()=>{
+                          $('.graph-no-data').show();
+                        });
+
+                    });
+                    return;
+
+              }
+              let data=result.graphs;
               console.log("data for graph: "+JSON.stringify(data));
 
               console.log(" Object.keys(data.totalDonationsVsDate).length: "+ Object.keys(data.totalDonationsVsDate).length);
@@ -137,31 +151,38 @@ function getGraphDetails(filter){//Get data for various graphs
            type : "GET",
            contentType : "String",
            url : `/internals/saveSpreadsheet`,
-           success :async function(resultArr) {
+           success :async function(result) {
 
-                  var success=resultArr[0];
-                  var spreadsheet=resultArr[1];
+                  //resultArr
+                  // var success=resultArr[0];
+                  // var spreadsheet=resultArr[1];
+                  //
+                  //
+                  // console.log("requestsController: "+JSON.stringify(spreadsheet) )
+                  //
+                  // var message;
+                  // if(spreadsheet==null ||spreadsheet==undefined ){message="Current Spreadsheet has been saved. (No Data)"}
+                  // else{ message=`Spreadsheet [ ${spreadsheet.title} ] has been uploaded`}
 
 
-                  console.log("requestsController: "+JSON.stringify(spreadsheet) )
+                  if(result.success && result.spreadsheet!=null){
+                      Swal.fire({icon:'success',title:'Saved!', text:`Spreadsheet [ ${result.spreadsheet.title} ] has been uploaded`});
+                      //Swal.fire('Saved!',result.message,'success');
+                  }else{
+                      showErrors('Saving',result.errors);
 
-                  var message;
-                  if(spreadsheet==null ||spreadsheet==undefined ){message="Current Spreadsheet has been saved. (No Data)"}
-                  else{ message=`Spreadsheet [ ${spreadsheet.title} ] has been uploaded to the database`}
-                    Swal.fire(
-                                   'Saved!',
-                                   message,
-                                   'success'
-                              );
+                      //Swal.fire('Saved!',result.errors.join('\n'),'error');
+                  }
+
 
                    //console.log(spreadsheet);
                    // $(".save").attr("onclick","saveSpreadsheet('old');");
                    $(".save").show();
                    $(".loading-saveMessage").hide();
 
-                  if(spreadsheet!=null && spreadsheet!=undefined){
-                    $(".lastUpdated").fadeOut(1000, function(){
-                        $(".lastUpdated").text( `Database Last Update: ${capitalize(spreadsheet.month)} ${spreadsheet.day}, ${spreadsheet.year} (${spreadsheet.time})` ).fadeIn(1500);
+                  if(result.spreadsheet!=null && result.spreadsheet!=undefined){
+                    $(".lastUpdated").hide(function(){
+                        $(".lastUpdated").text( `Database Last Update: ${capitalize(result.spreadsheet.month)} ${result.spreadsheet.day}, ${result.spreadsheet.year} (${result.spreadsheet.time})` ).fadeIn();
                     });
 
                   }
@@ -181,6 +202,19 @@ function getGraphDetails(filter){//Get data for various graphs
              }
              });
 
+
+ }
+
+ function showErrors(errorType,errors){
+
+   let errorMsg='<div class="organization-form-group" ><ul>';
+
+   errors.forEach((error)=>{
+     errorMsg+=`<li> ${error}</li>`;
+   })
+   errorMsg+='<ul></div>';
+
+   Swal.fire({icon:'error',title:errorType+' Error...', html:errorMsg });
 
  }
 
@@ -249,13 +283,23 @@ function getGraphDetails(filter){//Get data for various graphs
               url : "/internals/previewSpreadsheet",
               success : function(result) {
 
-                      if(result==null || result==undefined || result==''){return null;}
+                      //if(result==null || result==undefined || result==''){return null;}
+                      console.log("result: "+JSON.stringify(result));
 
-                      var title=result[0];
-                      var headerValues=result[1];
-                      var contentRows=result[2];
-                      //setting up the header
                       $(".ss-loading-container").hide();
+
+                      if(!result.success){
+                          showErrors('Preview',result.errors);
+                          return;
+
+                      }
+
+
+                      var title=result.spreadsheet.title;
+                      var headerValues=result.spreadsheet.headerValues;
+                      var contentRows=result.spreadsheet.contentRows;
+                      //setting up the header
+
                       // $(".spreadsheet-content").css("border","3px solid  rgba(136, 135, 156,1)");
 
 
