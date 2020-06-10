@@ -145,7 +145,7 @@ async function createOrganization(user,organizationObj){
 
       }catch(err){
           console.log(err)
-          errors.push('Unable to access your spreadsheet. Please share your document with email below (Editor Permissions)');
+          errors.push('Unable to access your spreadsheet. Please share your document with the email below (Editor Permissions)');
 
       }
 
