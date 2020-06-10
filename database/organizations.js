@@ -16,7 +16,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: 
 const ObjectID = require('mongodb').ObjectID;
 
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-let clientPath=process.env.USER_CLIENT_SECRET_PATH;//IMPORTANT:Authorization
+let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
 
 const db_name=process.env.DATABASE_NAME;
 const collection_name='organizations';
