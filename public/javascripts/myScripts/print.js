@@ -46,7 +46,9 @@ async function  pdfDownload(mode,name){
             });
           }
 
-  }catch(error){console.log(error)}
+  }catch(error){
+    //console.log(error)
+  }
   finally{
       doc.save(`${name}_data.pdf`);
       $('.downloadData-button').html('Download PDF');

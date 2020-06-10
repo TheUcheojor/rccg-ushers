@@ -8,7 +8,7 @@ This  module provides functions for  get and post requests.
 
 function getPage(page){
 
-  // console.log( "B4:" +window.location.href);
+  // //console.log( "B4:" +window.location.href);
   window.location.href=page;
 
   // $.ajax({
@@ -16,7 +16,7 @@ function getPage(page){
   //   contentType : "String",
   //   url : `/${page}`,
   //   success :function(data){
-  //             console.log(`${page} pages has been opened`)
+  //             //console.log(`${page} pages has been opened`)
   //
   //    },
   //   error : function(e) {alert("Error!");}
@@ -51,7 +51,7 @@ function updateSpreadsheet(){
                        //   type : "GET",
                        //   contentType : "String",
                        //   url : `/internals/setSpreadsheetOld`,
-                       //   success :function(success){if(!success){console.log("Error!")}  },
+                       //   success :function(success){if(!success){//console.log("Error!")}  },
                        //   error : function(e) {alert("Error!");}
                        // });
 
@@ -62,7 +62,7 @@ function updateSpreadsheet(){
 
                saveOptionTransition();
                if(spreadsheet!=null && spreadsheet!=undefined){
-                   console.log("IN HERE");
+                   //console.log("IN HERE");
                    $(".lastUpdated").fadeOut(1000, function(){
                        $(".lastUpdated").text( `Recent Update: ${capitalize(spreadsheet.month)} ${spreadsheet.day}, ${spreadsheet.year} (${spreadsheet.time})` ).fadeIn(1500);
                    });
@@ -89,7 +89,7 @@ function getGraphDetails(filter){//Get data for various graphs
     url : `/internals/getGraphDetails/${filter}`,
     success :function(result){
 
-              console.log("getGraphDetails result: "+JSON.stringify(result));
+              //console.log("getGraphDetails result: "+JSON.stringify(result));
 
               if(!result.success){
                     showErrors('Graphing',result.errors);
@@ -103,9 +103,9 @@ function getGraphDetails(filter){//Get data for various graphs
 
               }
               let data=result.graphs;
-              console.log("data for graph: "+JSON.stringify(data));
+              //console.log("data for graph: "+JSON.stringify(data));
 
-              console.log(" Object.keys(data.totalDonationsVsDate).length: "+ Object.keys(data.totalDonationsVsDate).length);
+              //console.log(" Object.keys(data.totalDonationsVsDate).length: "+ Object.keys(data.totalDonationsVsDate).length);
 
               if(data!=null && data!=undefined &&  Object.keys(data.totalDonationsVsDate).length!=0 ){
 
@@ -158,7 +158,7 @@ function getGraphDetails(filter){//Get data for various graphs
                   // var spreadsheet=resultArr[1];
                   //
                   //
-                  // console.log("requestsController: "+JSON.stringify(spreadsheet) )
+                  // //console.log("requestsController: "+JSON.stringify(spreadsheet) )
                   //
                   // var message;
                   // if(spreadsheet==null ||spreadsheet==undefined ){message="Current Spreadsheet has been saved. (No Data)"}
@@ -175,7 +175,7 @@ function getGraphDetails(filter){//Get data for various graphs
                   }
 
 
-                   //console.log(spreadsheet);
+                   ////console.log(spreadsheet);
                    // $(".save").attr("onclick","saveSpreadsheet('old');");
                    $(".save").show();
                    $(".loading-saveMessage").hide();
@@ -198,7 +198,7 @@ function getGraphDetails(filter){//Get data for various graphs
            },
          error : function(e) {
            alert("Error!");
-           console.log("ERROR: ", e);
+           //console.log("ERROR: ", e);
              }
              });
 
@@ -241,7 +241,7 @@ function getGraphDetails(filter){//Get data for various graphs
  //                            type : "GET",
  //                            contentType : "String",
  //                            url : `/internals/setSpreadsheetOld`,
- //                            success :function(success){if(!success){console.log("Error!")}  },
+ //                            success :function(success){if(!success){//console.log("Error!")}  },
  //                            error : function(e) {alert("Error!");}
  //                          });
  //
@@ -251,7 +251,7 @@ function getGraphDetails(filter){//Get data for various graphs
  //                  saveOptionTransition();
  //
  //                  if(spreadsheet!=null && spreadsheet!=undefined){
- //                      console.log("IN HERE");
+ //                      //console.log("IN HERE");
  //                      $(".lastUpdated").fadeOut(1000, function(){
  //                          $(".lastUpdated").text( `Recent Update: ${capitalize(spreadsheet.month)} ${spreadsheet.day}, ${spreadsheet.year} (${spreadsheet.time})` ).fadeIn(1500);
  //                      });
@@ -263,7 +263,7 @@ function getGraphDetails(filter){//Get data for various graphs
  //           },
  //         error : function(e) {
  //           alert("Error!");
- //           console.log("ERROR: ", e);
+ //           //console.log("ERROR: ", e);
  //             }
  //        });
  //
@@ -284,7 +284,7 @@ function getGraphDetails(filter){//Get data for various graphs
               success : function(result) {
 
                       //if(result==null || result==undefined || result==''){return null;}
-                      console.log("result: "+JSON.stringify(result));
+                      //console.log("result: "+JSON.stringify(result));
 
                       $(".ss-loading-container").hide();
 
@@ -311,9 +311,9 @@ function getGraphDetails(filter){//Get data for various graphs
                       htmlString+="</tr>\n";
 
 
-                      console.log(contentRows);
+                      //console.log(contentRows);
                       for( var i=0; i<contentRows.length;i++){
-                        //console.log(contentRows[i]);
+                        ////console.log(contentRows[i]);
                          var row=contentRows[i];
                          var names=[row.FirstName,row.LastName];
 
@@ -335,12 +335,12 @@ function getGraphDetails(filter){//Get data for various graphs
                       })
 
 
-                  console.log(result);
+                  //console.log(result);
 
               },
             error : function(e) {
               alert("Error!");
-              console.log("ERROR: ", e);
+              //console.log("ERROR: ", e);
                 }
                 });
 

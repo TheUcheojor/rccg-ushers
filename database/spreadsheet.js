@@ -18,7 +18,11 @@ const uri =process.env.DATABASE_URI;//IMPORTANT: UrI Connection to mongodb datab
 let database=process.env.DATABASE_NAME;//IMPORTANT: Dataebase and collection
 //let mainCollection=process.env.SPREADSHEET_COLLECTION_NAME;//IMPORTANT:Collection
 
-let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
+//let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
+let service_account=JSON.parse(JSON.stringify(require('../auth/keys').service_account)) ;
+service_account.private_key=service_account.private_key.replace(/\\n/gm, '\n');
+
+//console.log("service_account: " +JSON.stringify(service_account));
 
 //Get access to  mongodb database
 const MongoClient = require('mongodb').MongoClient;
@@ -96,7 +100,10 @@ async function mainInterface(user,desiredFunction, paramsObj){
 
           collection= await client.db(database).collection('organization_'+user.organization.organization_id );
 
-          await doc.useServiceAccountAuth(require(clientPath));
+          // await doc.useServiceAccountAuth(require(clientPath));
+
+          await doc.useServiceAccountAuth(service_account);
+          //service_account
           await doc.loadInfo();// loads document properties and worksheets
 
 

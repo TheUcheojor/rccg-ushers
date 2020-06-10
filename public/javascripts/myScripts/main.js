@@ -22,7 +22,7 @@ $(document).ready( ()=>{
     $('#search-bar').on('keyup', ()=>{
         $('.hbs-body-container').hide();
         $('.page.search').fadeIn();
-        console.log($('#search-bar').val())
+        //console.log($('#search-bar').val())
         search( $('#search-bar').val());
 
     });
@@ -90,7 +90,7 @@ function saveOptionTransition(){//Perfroms a simple transition of the .save div
 //
 //     var menuState=parent.getAttribute('name');
 //
-//     console.log(menuState);
+//     //console.log(menuState);
 //
 //     if(menuState== 'menu OFF' ){
 //

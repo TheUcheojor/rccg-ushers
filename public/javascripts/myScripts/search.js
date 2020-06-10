@@ -32,7 +32,7 @@ function search(searchStr){
     if(searchStr.trim().length==0){$('.no-results').show();return;}
 
 
-    console.log(searchStr);
+    //console.log(searchStr);
     if(searchStr.indexOf('/')>-1){//Search Option  YEAR/MONTH or YEAR/MONTH/DAY
 
         var searchArr= searchStr.split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join("").split("/");
@@ -44,7 +44,7 @@ function search(searchStr){
                 }
         });
 
-        console.log('YEAR/Month/.. redFlag: '+redFlag);
+        //console.log('YEAR/Month/.. redFlag: '+redFlag);
         if(redFlag){$('.no-results').show(); return;}
 
         if(searchArr.length==2){ mode='yearMonth';}
@@ -58,7 +58,7 @@ function search(searchStr){
         mode='year';
         if(searchStr.length!=4){$('.no-results').show();return;}
 
-        console.log('YEAR redFlag: '+redFlag);
+        //console.log('YEAR redFlag: '+redFlag);
 
     }else{//Search Option: NAME
 
@@ -68,19 +68,19 @@ function search(searchStr){
                 }
         });
 
-        console.log('name redFlag: '+redFlag);
+        //console.log('name redFlag: '+redFlag);
         if(redFlag){$('.no-results').show();return}
         // var hasNumber='/\d/';
-        // console.log("(hasNumber.test(searchStr): "+hasNumber.test(searchStr));
+        // //console.log("(hasNumber.test(searchStr): "+hasNumber.test(searchStr));
         // if(hasNumber.test(searchStr)){return;}
 
         mode='name';
 
     }
 
-    console.log("mode: "+mode);
-    console.log('AFTER : '+searchStr);
-    console.log(`/searchDatabase/`+mode+"/"+encodeURIComponent(searchStr));
+    //console.log("mode: "+mode);
+    //console.log('AFTER : '+searchStr);
+    //console.log(`/searchDatabase/`+mode+"/"+encodeURIComponent(searchStr));
 
     $.ajax({
       type : "GET",
@@ -94,14 +94,14 @@ function search(searchStr){
                   return;
                 }
 
-              console.log("data: "+JSON.stringify(data));
+              //console.log("data: "+JSON.stringify(data));
               if(!Array.isArray(data)){
-                  console.log("You have been logged out");
+                  //console.log("You have been logged out");
                   window.location.href="/";
               }
 
 
-              // console.log("mode :"+mode);
+              // //console.log("mode :"+mode);
 
 
               var htmlString='';
@@ -166,7 +166,7 @@ function openResultPreview(mode, paramsObj){
         if(mode=='name' ){paramsObj.data=[paramsObj.data];}
 
         $(`#year-filter`).click( ()=>{
-        //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
+        //  //console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
 
           $.ajax({
                   url: '/internals/getMemberGraph',
@@ -175,8 +175,8 @@ function openResultPreview(mode, paramsObj){
                   data: JSON.stringify({member:paramsObj.data, filter:'year' } ),
                   dataType: 'json',
                   success: function(memberGraph){
-                        console.log("mode: "+mode)
-                        console.log("memberGraph: "+JSON.stringify(memberGraph));
+                        //console.log("mode: "+mode)
+                        //console.log("memberGraph: "+JSON.stringify(memberGraph));
                         if(mode=='name' ){ filterNameResult(paramsObj.data[0],'year',memberGraph);}
                         else if(mode=='date'){ filterDateResult(paramsObj.data,'year',memberGraph,paramsObj.date);}
 
@@ -187,7 +187,7 @@ function openResultPreview(mode, paramsObj){
 
 
         $(`#month-filter`).click( ()=>{
-        //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
+        //  //console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
           $.ajax({
                   url: '/internals/getMemberGraph',
                   type: 'POST',
@@ -195,7 +195,7 @@ function openResultPreview(mode, paramsObj){
                   data: JSON.stringify({member:paramsObj.data, filter:'month' } ),
                   dataType: 'json',
                   success: function(memberGraph){
-                        console.log("memberGraph: "+JSON.stringify(memberGraph));
+                        //console.log("memberGraph: "+JSON.stringify(memberGraph));
                           if(mode=='name' ){filterNameResult(paramsObj.data[0],'month',memberGraph);}
                           else if(mode=='date'){filterDateResult(paramsObj.data,'month',memberGraph,paramsObj.date);}
                   },
@@ -204,7 +204,7 @@ function openResultPreview(mode, paramsObj){
         } );
 
         $(`#day-filter`).click( ()=>{
-        //  console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
+        //  //console.log("2 -filterOptionToMode[filterOptions[i]]: "+filterMode);
           $.ajax({
                   url: '/internals/getMemberGraph',
                   type: 'POST',
@@ -212,7 +212,7 @@ function openResultPreview(mode, paramsObj){
                   data: JSON.stringify({member:paramsObj.data, filter:'day' } ),
                   dataType: 'json',
                   success: function(memberGraph){
-                        console.log("memberGraph: "+JSON.stringify(memberGraph));
+                        //console.log("memberGraph: "+JSON.stringify(memberGraph));
                         if(mode=='name' ){filterNameResult(paramsObj.data[0],'day',memberGraph);}
                         else if(mode=='date'){filterDateResult(paramsObj.data,'day',memberGraph,paramsObj.date);}
                   },
@@ -227,7 +227,7 @@ function openResultPreview(mode, paramsObj){
 function filterDateResult(data,filter,graphs,title){
 
   $('.filterBy').fadeOut();
-  console.log("data: "+JSON.stringify(data));
+  //console.log("data: "+JSON.stringify(data));
 
   var overviewMain=developMultiOverview(data,filter);
   var fileName=title;
@@ -243,7 +243,7 @@ function filterNameResult(data,filter, graphs){
         //var overviewData={'FirstName': data['FirstName'],'LastName': data['LastName']};
         overviewData=developOverview(data,{},filter);
 
-        console.log(overviewData);
+        //console.log(overviewData);
         var title=`${capitalize(data['FirstName'])} ${capitalize(data['LastName'])}`;
         var fileName=capitalize(data['FirstName'])+"_"+capitalize(data['LastName']);
         developHtmlResults('name',overviewData, title,graphs,filter,fileName);
@@ -261,9 +261,9 @@ function developMultiOverview(data,filter){//Develop overview for an array of da
 
         var overviewMember=developOverview(memberData,{},filter);
 
-        // console.log("Object.keys(overviewMain): "+Object.keys(overviewMain)[0]);
-        // console.log("Object.keys(overviewMember): "+Object.keys(overviewMember)[0]);
-        // console.log( "State: "+(Object.keys(overviewMain)[0]!=Object.keys(overviewMember)[0]));
+        // //console.log("Object.keys(overviewMain): "+Object.keys(overviewMain)[0]);
+        // //console.log("Object.keys(overviewMember): "+Object.keys(overviewMember)[0]);
+        // //console.log( "State: "+(Object.keys(overviewMain)[0]!=Object.keys(overviewMember)[0]));
 
            Object.keys(overviewMember).forEach( (overviewMemberKey)=>{
 
@@ -294,13 +294,13 @@ function developMultiOverview(data,filter){//Develop overview for an array of da
   });
 
 
-  console.log(" B4 overviewMain: "+JSON.stringify(overviewMain));
-  //console.log("graphs: "+JSON.stringify(graphs));
+  //console.log(" B4 overviewMain: "+JSON.stringify(overviewMain));
+  ////console.log("graphs: "+JSON.stringify(graphs));
 
   var orderedDateKeys=sortDates(Object.keys(overviewMain),'text');
 
-  console.log("Object.keys(overviewMain): "+JSON.stringify(Object.keys(overviewMain)));
-  console.log("orderedDateKeys: "+JSON.stringify(orderedDateKeys));
+  //console.log("Object.keys(overviewMain): "+JSON.stringify(Object.keys(overviewMain)));
+  //console.log("orderedDateKeys: "+JSON.stringify(orderedDateKeys));
   var ordedOverviewMain={};
 
   orderedDateKeys.forEach((key)=>{
@@ -309,7 +309,7 @@ function developMultiOverview(data,filter){//Develop overview for an array of da
 
   });
 
-  console.log("ordedOverviewMain: "+JSON.stringify(ordedOverviewMain));
+  //console.log("ordedOverviewMain: "+JSON.stringify(ordedOverviewMain));
 
   return ordedOverviewMain;
 
@@ -501,7 +501,7 @@ function developOverview(data,overviewData,filter){
 
 
                                       if(! Object.keys(overviewData[ filterToKey[filter]]).includes(category)){
-                                                  console.log("filter: "+filter+ " itemKey: "+itemKey);
+                                                  //console.log("filter: "+filter+ " itemKey: "+itemKey);
 
                                                     overviewData[filterToKey[filter]][category]={}
 

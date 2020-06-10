@@ -16,7 +16,10 @@ const client = new MongoClient(uri, { useNewUrlParser: true,useUnifiedTopology: 
 const ObjectID = require('mongodb').ObjectID;
 
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
+
+//let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
+let service_account=JSON.parse(JSON.stringify(require('../auth/keys').service_account)) ;
+service_account.private_key=service_account.private_key.replace(/\\n/gm, '\n');
 
 const db_name=process.env.DATABASE_NAME;
 const collection_name='organizations';
@@ -129,14 +132,17 @@ async function createOrganization(user,organizationObj){
 
 
           let templateDoc=new GoogleSpreadsheet(process.env.TEMPLATE_SPREADSHEET_KEY);
-          await templateDoc.useServiceAccountAuth(require(clientPath));
+          await templateDoc.useServiceAccountAuth(service_account);
           await templateDoc.loadInfo();
           const templateSheet = templateDoc.sheetsByIndex[0];
           await templateSheet.copyToSpreadsheet(spreadsheetkey);//Copy template doc to new doc
 
           //Attempting to configure the spreadsheet
           let newdoc = new GoogleSpreadsheet(spreadsheetkey);//Access doc object
-          await newdoc.useServiceAccountAuth(require(clientPath));
+          //await newdoc.useServiceAccountAuth(require(clientPath));
+
+          await newdoc.useServiceAccountAuth(service_account);
+
           await newdoc.loadInfo();
           await  newdoc.updateProperties({title: organizationObj.organization_name });
           await  newdoc.sheetsByIndex[0].delete();//Remove default spreadsheet

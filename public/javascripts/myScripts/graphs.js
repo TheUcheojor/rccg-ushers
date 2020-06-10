@@ -42,7 +42,7 @@ function generateGraphs(mode,graphType,graphData,filter){
 
     if(mode==null||mode==undefined){return;}
 
-    console.log("graphData: "+JSON.stringify(graphData) );
+    //console.log("graphData: "+JSON.stringify(graphData) );
 
     var canvas=$('.'+mode+"Canvas"+graphType.charAt(0).toUpperCase()+graphType.slice(1))[0];
 
@@ -52,7 +52,7 @@ function generateGraphs(mode,graphType,graphData,filter){
 
     var momentTimeFormat=filterToMomentTimeFormat[filter];
 
-    //console.log("timeFormat: "+timeFormat);
+    ////console.log("timeFormat: "+timeFormat);
 
       if( ['totalDonationsVsDate','numOfMembersVsDate'].includes(graphType)){
 
@@ -60,7 +60,7 @@ function generateGraphs(mode,graphType,graphData,filter){
 
             xValues.forEach((xVal,index)=>{
                     // xValues[index]= capitalize(xVal)}
-                    console.log("date:"+ xValues[index]);
+                    //console.log("date:"+ xValues[index]);
                     xValues[index]=moment(xValues[index], momentTimeFormat);
 
                   });
@@ -80,7 +80,7 @@ function generateGraphs(mode,graphType,graphData,filter){
       if( ['methodOfPaymentVsDate'].includes(graphType)){
           let xValues=sortDates(Object.keys(graphData),'num');
 
-          console.log("xValues: "+JSON.stringify(xValues));
+          //console.log("xValues: "+JSON.stringify(xValues));
 
           yKeyToColorScheme={ 'Cheque': 'rgba(181, 162, 199,0.8)','Cash': 'rgba(199, 162, 181,0.8)',
                               'Debit':'rgba(162, 181, 199,0.8)'};
@@ -100,7 +100,7 @@ function generateGraphs(mode,graphType,graphData,filter){
                   }
           });
 
-          console.log("yValuesObj: "+ JSON.stringify(yValuesObj));
+          //console.log("yValuesObj: "+ JSON.stringify(yValuesObj));
 
           for([yLabel,yValues] of Object.entries(yValuesObj)){
                     y_dataset.push({
