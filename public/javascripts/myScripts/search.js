@@ -449,7 +449,7 @@ function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
 
             $('.downloadData-button').click( ()=>{
 
-              $('.downloadData-button').html('<img src="/images/loading.gif" style="width:25px;height:25px;" />');
+              $('.downloadData-button').html('<img src="/Images/loading.gif" style="width:25px;height:25px;" />');
               pdfDownload(mode,fileName);
 
             });
