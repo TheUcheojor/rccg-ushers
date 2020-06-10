@@ -103,7 +103,7 @@ function getGraphDetails(filter){//Get data for various graphs
 
               }
               let data=result.graphs;
-              console.log("data for graph: "+JSON.stringify(data));
+              //console.log("data for graph: "+JSON.stringify(data));
 
               //console.log(" Object.keys(data.totalDonationsVsDate).length: "+ Object.keys(data.totalDonationsVsDate).length);
 
