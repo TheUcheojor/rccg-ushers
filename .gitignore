@@ -55,8 +55,6 @@ database/client_secret.json
 database/googleDriveAPI.js
 database/googleSheetsService.js
 
-#Unneeded javascripts folder
-public/javascripts/importedScripts
 
 #Unneeded server file
 server.js
