@@ -174,7 +174,12 @@ function openResultPreview(mode, paramsObj){
                   contentType: 'application/json',
                   data: JSON.stringify({member:paramsObj.data, filter:'year' } ),
                   dataType: 'json',
-                  success: function(memberGraph){
+                  success: function(result){
+                          let memberGraph;
+                          if(result.success){memberGraph=result.graphs}
+                          else{
+                            memberGraph={totalDonationsVsDate:{},numOfMembersVsDate:{},methodOfPaymentVsDate:{} }
+                          }
                         //console.log("mode: "+mode)
                         //console.log("memberGraph: "+JSON.stringify(memberGraph));
                         if(mode=='name' ){ filterNameResult(paramsObj.data[0],'year',memberGraph);}
@@ -194,8 +199,13 @@ function openResultPreview(mode, paramsObj){
                   contentType: 'application/json',
                   data: JSON.stringify({member:paramsObj.data, filter:'month' } ),
                   dataType: 'json',
-                  success: function(memberGraph){
-                        //console.log("memberGraph: "+JSON.stringify(memberGraph));
+                  success: function(result){
+                          let memberGraph;
+                          if(result.success){memberGraph=result.graphs}
+                          else{
+                            memberGraph={totalDonationsVsDate:{},numOfMembersVsDate:{},methodOfPaymentVsDate:{} }
+                          }
+                          console.log("memberGraph: "+JSON.stringify(memberGraph));
                           if(mode=='name' ){filterNameResult(paramsObj.data[0],'month',memberGraph);}
                           else if(mode=='date'){filterDateResult(paramsObj.data,'month',memberGraph,paramsObj.date);}
                   },
@@ -211,7 +221,12 @@ function openResultPreview(mode, paramsObj){
                   contentType: 'application/json',
                   data: JSON.stringify({member:paramsObj.data, filter:'day' } ),
                   dataType: 'json',
-                  success: function(memberGraph){
+                  success: function(result){
+                          let memberGraph;
+                          if(result.success){memberGraph=result.graphs}
+                          else{
+                            memberGraph={totalDonationsVsDate:{},numOfMembersVsDate:{},methodOfPaymentVsDate:{} }
+                          }
                         //console.log("memberGraph: "+JSON.stringify(memberGraph));
                         if(mode=='name' ){filterNameResult(paramsObj.data[0],'day',memberGraph);}
                         else if(mode=='date'){filterDateResult(paramsObj.data,'day',memberGraph,paramsObj.date);}
@@ -438,6 +453,7 @@ function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
               pdfDownload(mode,fileName);
 
             });
+
 
             for([graphType,graphData] of Object.entries(graphs)){
                     if(graphType!="numOfMembersVsDate" && mode=='name'){

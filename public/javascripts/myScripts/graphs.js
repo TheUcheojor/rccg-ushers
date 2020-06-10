@@ -42,7 +42,10 @@ function generateGraphs(mode,graphType,graphData,filter){
 
     if(mode==null||mode==undefined){return;}
 
-    //console.log("graphData: "+JSON.stringify(graphData) );
+    console.log("graphData: "+JSON.stringify(graphData) );
+    console.log("mode: "+JSON.stringify(mode) );
+    console.log("graphType: "+JSON.stringify(graphType) );
+    console.log("filter: "+JSON.stringify(filter) );
 
     var canvas=$('.'+mode+"Canvas"+graphType.charAt(0).toUpperCase()+graphType.slice(1))[0];
 
