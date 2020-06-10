@@ -81,7 +81,7 @@ body{
 #search-bar{
   background-color: #f5f6f8;
 
-  background-image:url('/images/search-icon.png');
+  background-image:url('/Images/search-icon.png');
   background-repeat: no-repeat;
   background-size:25px 25px;
   background-position: 0px 7px;
@@ -245,7 +245,7 @@ body.swal2-height-auto {
   margin-bottom: 25px;
 
 
-background-image:url('/images/previewgradient.png');
+background-image:url('/Images/previewgradient.png');
 background-size:100% 100%;
 
   /* padding: 12px 20px; */
