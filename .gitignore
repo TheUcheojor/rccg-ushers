@@ -62,3 +62,4 @@ server.js
 #json files
 package-lock.json
 server.js
+.DS_Store
