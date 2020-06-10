@@ -63,5 +63,4 @@ server.js
 
 #json files
 package-lock.json
-package.json
 server.js
