@@ -45,7 +45,7 @@ async function mainInterface(mode,paramsObj){
         }else if(mode=='joinOrganization'){
                 return await joinOrganization(paramsObj.user,paramsObj.organization);
         }else if(mode=='deleteOrganization'){
-                console.log("main Interface paramsObj.owner:"+JSON.stringify(paramsObj.owner));
+                //console.log("main Interface paramsObj.owner:"+JSON.stringify(paramsObj.owner));
                 return await deleteOrganization(paramsObj.owner);
         }else if(mode=='getUser'){
                 return await getUser(paramsObj.user);
@@ -64,7 +64,7 @@ async function mainInterface(mode,paramsObj){
         // }
 
   }catch(err){
-    console.log(err);
+    //console.log(err);
     return {success:false, errors:['User Main Interface- Unexpected  Error']}
   }
 
@@ -84,21 +84,21 @@ module.exports=mainInterface;
 
 async function getUser(user){
 
-    //console.log("IN FUNCTION")
+    ////console.log("IN FUNCTION")
     let searchedUser;
     try{
 
-        console.log("IN TRY getUser user.email: "+user.email);
+        //console.log("IN TRY getUser user.email: "+user.email);
        searchedUser=(await users_collection.find({email:user.email}).project({_id:0, name:1,email:1,organization:1 }).toArray())[0];
-       console.log("IN TRY searchedUser:  "+JSON.stringify(searchedUser));
+       //console.log("IN TRY searchedUser:  "+JSON.stringify(searchedUser));
     }catch(err){
-      console.log(err);
-      //console.log('getuser error caught')
+      //console.log(err);
+      ////console.log('getuser error caught')
       return{success:false,errors:['User could not be found']};
     }
 
-  //  console.log('In here success true')
-  console.log("getUser searchedUser: "+JSON.stringify(searchedUser));
+  //  //console.log('In here success true')
+  //console.log("getUser searchedUser: "+JSON.stringify(searchedUser));
 
     return {success:true,user:searchedUser};
 
@@ -120,12 +120,12 @@ async function login(userObj){
 
     errors=[];
     userArray=[];
-    console.log("userObj: "+JSON.stringify(userObj));
+    //console.log("userObj: "+JSON.stringify(userObj));
     try{
       userArray=await users_collection.find({email:userObj.email }).toArray();
     }catch(err){
       //errors.push('Database error!');
-      console.log(err);
+      //console.log(err);
     }
 
     if( userArray.length==0){
@@ -145,17 +145,19 @@ async function login(userObj){
      .then( (res)=>{
 
           if(res==true){
-            console.log("Valid Pass")
+            //console.log("Valid Pass")
             isValidPassword=true;
           }else{
-            console.log("InValid Pass")
+            //console.log("InValid Pass")
             errors.push('Invalid Password!');
           }
 
     })
-    .catch(err=>{console.log(err)});
+    .catch(err=>{
+      //console.log(err)
+    });
 
-    console.log("isValidPassword: "+isValidPassword)
+    //console.log("isValidPassword: "+isValidPassword)
     if(isValidPassword){
 
         // let organization_id
@@ -164,8 +166,8 @@ async function login(userObj){
         // }else{
         //     organization_id='';
         // }
-        //  console.log(user);
-        // console.log("user.organization.name: "+user.organization.name);
+        //  //console.log(user);
+        // //console.log("user.organization.name: "+user.organization.name);
 
         return {
                   success:true,
@@ -254,13 +256,13 @@ async function signUp(userObj){
             await users_collection.insertOne(userObj);
 
           }).catch((err)=>{
-            console.log(err);
+            //console.log(err);
             success=false;
             errors.push('Password hashing error');
           });
 
     }).catch((err)=>{
-        console.log(err);
+        //console.log(err);
         success=false;
         errors.push('Password hashing error');
       });
@@ -321,13 +323,13 @@ async function changePassword(user,passwords){
               }
 
           }).catch((err)=>{
-            console.log(err);
+            //console.log(err);
             success=false;
             errors.push('Password hashing error');
           });
 
     }).catch((err)=>{
-        console.log(err);
+        //console.log(err);
         success=false;
         errors.push('Password hashing error');
       });
@@ -411,7 +413,7 @@ async function createOrganization(user){
 
      };
 
-     console.log('organization: '+JSON.stringify(organization));
+     //console.log('organization: '+JSON.stringify(organization));
       const result_org=await organizationMainInterface('createOrganization',{user:user,organization:organization} );
 
 
@@ -427,7 +429,7 @@ async function createOrganization(user){
         }
 
       }else{
-        console.log("user createOrganization not successfull")
+        //console.log("user createOrganization not successfull")
         return {success:false, errors:result_org.errors};
       }
 
@@ -436,7 +438,7 @@ async function createOrganization(user){
 // User format: {email: String}
 async function deleteOrganization(owner){
 
-    console.log("\n\ndeleteOrganization owner: "+JSON.stringify(owner)+"\n\n" );
+    //console.log("\n\ndeleteOrganization owner: "+JSON.stringify(owner)+"\n\n" );
 
     let result_org=await organizationMainInterface('deleteOrganization',{owner:owner})
 
@@ -446,7 +448,7 @@ async function deleteOrganization(owner){
             let organization={name:'',spreadsheet_id:'' ,organization_id:'',permission:''};
 
             result_org.users.push(owner.email);
-            console.log("\nresult_org: "+result_org+'\n');
+            //console.log("\nresult_org: "+result_org+'\n');
 
             let result_user = await users_collection.updateMany(
                       {email:{$in:result_org.users} },
@@ -553,7 +555,7 @@ async function getOrganizationDetails(organization){
 
       //let errors=[];
 
-      console.log("\n\ngetOrganizationDetails organization: "+JSON.stringify(organization)+'\n')
+      //console.log("\n\ngetOrganizationDetails organization: "+JSON.stringify(organization)+'\n')
       if ( organization==null||organization.organization_id==''|| organization.organization_id==''){
         return {success:false, errors:['Error - Not associated to an organization']}
       }
@@ -583,11 +585,11 @@ async function getOrganizationDetails(organization){
 async function leaveOrganization(user){
 
     if(user==null){return {success:false, errors:['Empty User']}};
-    console.log(" b4user: "+JSON.stringify(user))
+    //console.log(" b4user: "+JSON.stringify(user))
 
 
      // user=(users_collection.find({email:user.email} ).toArray())[0];
-     // console.log("after user: "+JSON.stringify(user))
+     // //console.log("after user: "+JSON.stringify(user))
     const organization_id=user.organization.organization_id;
 
     await users_collection.updateOne(
@@ -659,7 +661,7 @@ async function updateOrganizationPermissions(updateRequests, organization){
 async function doesUserExist(email){
 
       let results= await users_collection.find({ 'email':email } ).toArray();
-      console.log(results>0);
+      //console.log(results>0);
       return results.length>0;
 
 }

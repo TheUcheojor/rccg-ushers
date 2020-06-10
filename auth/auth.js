@@ -5,7 +5,7 @@ const mainInterface=require('../database/users');
 module.exports={
     checkLoggedIn:async function (req,res,next){
 
-        console.log("\ncheckLoggedIn: "+JSON.stringify(req.session.user)+'\n\n');
+        //console.log("\ncheckLoggedIn: "+JSON.stringify(req.session.user)+'\n\n');
 
         if(req.session.user){
 
@@ -13,23 +13,23 @@ module.exports={
 
             let getUserResult=await mainInterface('getUser',{user:req.session.user})
             //req.session.user
-            console.log("getUserResult.success: "+getUserResult.success);
+            //console.log("getUserResult.success: "+getUserResult.success);
 
             if(getUserResult.success){
-                    console.log("getUserResult.user:  "+JSON.stringify(getUserResult.user));
+                    //console.log("getUserResult.user:  "+JSON.stringify(getUserResult.user));
                     req.session.user=getUserResult.user;
 
                     next();
             }else{
-                console.log(getUserResult.errors)
+                //console.log(getUserResult.errors)
                 req.session.user=undefined;
                 res.redirect('/');
             }
 
-            //console.log('In here 2');
+            ////console.log('In here 2');
 
         }else{
-          console.log('checkLoggedIn- In here');
+          //console.log('checkLoggedIn- In here');
           res.render('login', {title: 'Login',layout:'landingLayout'});
         }
 
@@ -40,10 +40,10 @@ module.exports={
         let loginResultObj={success:false, errors:[]};
         let user;
 
-        //console.log(req.body.email, req.body.password);
+        ////console.log(req.body.email, req.body.password);
 
         if(req.body.email && req.body.password){
-          console.log("In Login")
+          //console.log("In Login")
              user= {
                 email:req.body.email,
                 password:req.body.password
@@ -53,7 +53,7 @@ module.exports={
         }
 
         if(loginResultObj.success){
-              console.log("IN LOGIN SUCESS");
+              //console.log("IN LOGIN SUCESS");
 
               req.session.user={
                                   name: loginResultObj.name,
@@ -63,12 +63,12 @@ module.exports={
               req.session.errors={};
               // req.session.email=user.email;
               // req.session.name=loginResultObj.name;
-              console.log(req.session.user.email,req.session.user.name);
+              //console.log(req.session.user.email,req.session.user.name);
 
               res.redirect('/');
         }else{
 
-              console.log(loginResultObj);
+              //console.log(loginResultObj);
               res.render('login',
                   { title:'login',
                     errors:loginResultObj.errors,
@@ -94,10 +94,10 @@ module.exports={
 
           let signUpResultObj={success:false, errors:[]};
           let user;
-          console.log(req.body.name,req.body.email)
+          //console.log(req.body.name,req.body.email)
           if(req.body.name && req.body.email && req.body.password){
 
-            console.log("HELLO");
+            //console.log("HELLO");
              user={
                 name:req.body.name,
                 email:req.body.email,
@@ -105,15 +105,15 @@ module.exports={
                 confirm_password:req.body.confirm_password,
               };
 
-//console.log("SIGN up user);
+////console.log("SIGN up user);
             signUpResultObj=await mainInterface('signUp', {user:user});
 
           }
 
 
           if(signUpResultObj.success){
-            console.log("Sign up 1");
-              console.log(user)
+            //console.log("Sign up 1");
+              //console.log(user)
               // req.session.email=user.email;
               // req.session.name=user.name;
               req.session.user={

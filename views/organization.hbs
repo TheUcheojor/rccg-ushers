@@ -255,12 +255,12 @@
 
                                     {{!-- <div class='form-group-message'>
                                         <div class='message'>Please share your google spreadsheet with</div>
-                                        <div class='email'>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com </div>
+                                        <div class='email'>overview-sheets@overview-sheets.iam.gserviceaccount.com </div>
                                     </div> --}}
 
                                     <div class='form-group-message'>
                                         <div class='message'>Please share your google spreadsheet with</div>
-                                        <div class='email'>rccg-ushers@rccg-ushers-275614.iam.gserviceaccount.com </div>
+                                        <div class='email'>overview-sheets@overview-sheets.iam.gserviceaccount.com </div>
                                     </div>
 
                                     {{!-- https://docs.google.com/spreadsheets/d/1lW2UJ613xaa5uEgVJu5ncheN-qMjTBXcbLBHGuwz6WM/edit?usp=sharing --}}
@@ -268,7 +268,9 @@
                                   </div>
 
                                   <div class='organization-form-group button-container'>
-                                      <button class="create-button">Create</button>
+                                    <button class="create-button" onclick="$('.loading-create-org').show();$(this).hide();">Create</button>
+                                    <img class='loading-create-org' src="/Images/loading.gif" style="display:none;width:25px;height:25px;" />
+
                                   </div>
 
                                 </form>
@@ -299,7 +301,9 @@
 
 
                                   <div class='organization-form-group button-container'>
-                                      <button class="create-button">Join</button>
+                                      <button class="create-button" onclick="$('.loading-join-org').show();$(this).hide();">Join</button>
+                                      <img class='loading-join-org' src="/Images/loading.gif" style="display:none;width:25px;height:25px;" />
+
                                   </div>
 
                                 </form>
