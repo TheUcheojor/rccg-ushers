@@ -13,10 +13,10 @@ require('dotenv').config();
 //The following labled IMPORTANT are neccessary values for database operations
 
 const uri =process.env.DATABASE_URI;//IMPORTANT: UrI Connection to mongodb database
-let spreadsheetkey=process.env.SPREADSHEET_KEY;//IMPORTANT: Spreadsheet key( the is the long id in the sheets URL)
+//let spreadsheetkey=process.env.SPREADSHEET_KEY;//IMPORTANT: Spreadsheet key( the is the long id in the sheets URL)
 
 let database=process.env.DATABASE_NAME;//IMPORTANT: Dataebase and collection
-let mainCollection=process.env.SPREADSHEET_COLLECTION_NAME;//IMPORTANT:Collection
+//let mainCollection=process.env.SPREADSHEET_COLLECTION_NAME;//IMPORTANT:Collection
 
 let clientPath=process.env.CLIENT_SECRET_PATH;//IMPORTANT:Authorization
 
