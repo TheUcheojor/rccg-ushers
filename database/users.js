@@ -146,7 +146,6 @@ async function forgotPassword(user){
             <p>You reseted your password.</p>
             <p>Your new password is <strong>${newPassword}</strong>.</p>
             <br />
-            <p>Cheers,</p>
             <p>Turoken</p>
       `
     };
