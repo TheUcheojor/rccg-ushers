@@ -9,6 +9,7 @@ storing their details in the datebase
 
 require('dotenv').config();
 const bcrypt=require('bcrypt');
+const nodemailer = require('nodemailer');
 
 const uri=process.env.DATABASE_URI;
 
@@ -58,13 +59,15 @@ async function mainInterface(mode,paramsObj){
                 //updateOrganizationPermissions(params.updateRequests,paramsObj.organization);
         }else if(mode=='changePassword'){
               return await  changePassword(paramsObj.user,paramsObj.passwords);
+        }else if(mode=='forgotPassword'){
+              return await forgotPassword(paramsObj.user);
         }
         // else if(mode=='updateSpreadsheet'){
         //       return await changePassword
         // }
 
   }catch(err){
-    //console.log(err);
+    console.log(err);
     return {success:false, errors:['User Main Interface- Unexpected  Error']}
   }
 
@@ -106,6 +109,102 @@ async function getUser(user){
 }
 
 
+async function forgotPassword(user){
+
+  console.log(user);
+  try{
+    user=(await users_collection.find({email:user.email.toLowerCase().trim() }).toArray())[0];
+
+    if(user==null||user==undefined){
+        return {success:false,errors:['No user associated with email']};
+    }
+  }catch(err){
+    return {success:false,errors:['No user associated with email']};
+    console.log(err);
+  }
+
+
+  let newPassword=createNewPassword(8);
+
+  //nodemailer
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.TUROKEN_EMAIL,
+      pass: process.env.TUROKEN_EMAIL_PASS
+    }
+  });
+
+  // console.log(user.email);
+
+    var mailOptions = {
+      from: process.env.TUROKEN_EMAIL,
+      to: user.email.toLowerCase().trim(),
+      subject: 'Turoken - Password Reset',
+      html: `<p>Hello ${user.name},</p>
+            <br />
+            <p>You reseted your password.</p>
+            <p>Your new password is <strong>${newPassword}</strong>.</p>
+            <br />
+            <p>Cheers,</p>
+            <p>Turoken</p>
+      `
+    };
+
+    // let message=[];
+    // let errors=[];
+    // let success=true;
+
+    try{
+      return await transporter.sendMail(mailOptions)
+      .then(async (info)=>{
+            console.log('Email sent: ' + info.response);
+
+            let saltRounds=10;
+
+            return await bcrypt.genSalt(saltRounds)
+            .then( async (salt)=>{
+
+                  return await bcrypt.hash(newPassword, salt)
+                  .then(async (hash)=>{
+                      // console.log("user.email: "+user.email);
+                      await users_collection.updateOne({email:user.email},{$set:{password:hash}});
+                      return {success:true,message:['An email has been sent to '+user.email] }
+
+                  }).catch((err)=>{
+                    // console.log(err);
+                    // success=false;
+                    return {success:false, errors:['Password hashing error'] };
+                  });
+
+            }).catch((err)=>{
+                // console.log(err);
+                return {success:false, errors:['Password hashing error'] };
+            });
+
+      }).catch( (err)=>{
+            return {success:false,errors:['An email could not be sent to '+user.email] }
+      });
+
+    }catch(err){
+        return {success:false,errors:['An email could not be sent to'+user.email] }
+    }
+
+
+
+
+}
+
+function createNewPassword(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
 //The login function checks if user exists
 // userObj Structure:
 //         {
@@ -122,9 +221,9 @@ async function login(userObj){
     userArray=[];
     //console.log("userObj: "+JSON.stringify(userObj));
     try{
-      userArray=await users_collection.find({email:userObj.email }).toArray();
+      userArray=await users_collection.find({email:userObj.email.toLowerCase().trim() }).toArray();
     }catch(err){
-      //errors.push('Database error!');
+      errors.push('Database error!');
       //console.log(err);
     }
 
@@ -251,7 +350,7 @@ async function signUp(userObj){
                   permission:'',
             };
             userObj.name=userObj.name.trim();
-            userObj.email=userObj.email.trim();
+            userObj.email=userObj.email.toLowerCase().trim();
 
             await users_collection.insertOne(userObj);
 

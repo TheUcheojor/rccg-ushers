@@ -3,15 +3,38 @@ const mainInterface=require('../database/users');
 
 
 module.exports={
+
+    forgotPassword:async function(req,res,next){
+
+        let user={};
+        let result={};
+        console.log("req.body.email: 1"+req.body.email);
+        if(req.body.email && req.body.email.trim()!=''){
+          user= { email:req.body.email};
+          result=await mainInterface('forgotPassword',{user:user});
+        }
+
+        // console.log(result);
+        // console.log("req.body.email: 2 "+req.body.email);
+
+        res.render('forgotPassword', {
+              title: 'Forgot Password',
+              layout:'landingLayout',
+              email:req.body.email,
+              message:result.message,
+              errors:result.errors,
+        });
+
+    },
     checkLoggedIn:async function (req,res,next){
 
         //console.log("\ncheckLoggedIn: "+JSON.stringify(req.session.user)+'\n\n');
 
         if(req.session.user){
 
-            //Should go get user from database - ADD
+            //Get user from database
 
-            let getUserResult=await mainInterface('getUser',{user:req.session.user})
+            let getUserResult=await mainInterface('getUser',{user:req.session.user});
             //req.session.user
             //console.log("getUserResult.success: "+getUserResult.success);
 

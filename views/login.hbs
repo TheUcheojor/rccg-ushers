@@ -5,7 +5,7 @@
       {{#if errors}}
           <ul>
               {{#each errors as |error|}}
-                    <li>
+                    <li class='error-message'>
                       {{error}}
                     </li>
               {{/each}}
@@ -28,7 +28,11 @@
 
               <div class='form-group'>
                   <a href="/sign-up">Sign Up</a>
+                    <a href="/forgot-password">Forgot Password</a>
               </div>
+              {{!-- <div class='form-group'>
+                  <a href="/forgot-password">Forgot Password</a>
+              </div> --}}
 
               <div class='form-group button-container'>
                   <button class="submit-button">Login</button>

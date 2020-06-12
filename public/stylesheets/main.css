@@ -46,11 +46,23 @@ body{
 }
 
 .hor-nav-item.logo{
-  width:30px;
+  width: 30px;
   height: 30px;
   float:right;
 
+
 }
+
+img{
+ filter:none;
+ max-width:100%;
+ max-height: 100%;
+ object-fit: contain;
+
+}
+
+
+
 
 .hor-nav-item.right{
   float:right;
@@ -70,13 +82,7 @@ body{
   width:70%;
 }
 
- img{
-  filter:none;
-  max-width:100%;
-  max-height: 100%;
-  object-fit: contain;
 
-}
 
 #search-bar{
   background-color: #f5f6f8;
@@ -122,7 +128,7 @@ body.swal2-height-auto {
 
   background: #fff;
   float: left;
-
+  position: relative;
   width: 15%;
   /* max-width: 200px; */
   /* height: 600px; */
@@ -159,7 +165,24 @@ body.swal2-height-auto {
   color: white;
 }
 
+.logo_long{
+  display:block;
+  text-align: left;
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 40px;
+  /* background-image: url('/Images/turoken_long.png');
+  background-repeat: no-repeat;
+  background-size: 50% 100%; */
+}
 
+.logo_long img{
+  width:100%;
+  height: 100%;
+}
 
 /* Organization */
 .organization-none{

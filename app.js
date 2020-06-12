@@ -73,6 +73,7 @@ app.use('/organization',auth.checkLoggedIn,organizationRouter );
 app.use('/settings',auth.checkLoggedIn,settingsRouter);
 app.use('/login',auth.login,indexRouter);
 app.use('/sign-up',auth.signUp,indexRouter);
+app.use('/forgot-password',auth.forgotPassword,indexRouter);
 app.use('/logout',auth.logout);
 
 app.use('/',auth.checkLoggedIn, indexRouter);

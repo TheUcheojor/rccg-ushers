@@ -23,16 +23,31 @@ li{
   text-align: center;
   text-decoration: none;
   padding: 4px 8px;
-  background: #FFBABA;
   border-radius: 5px;
   margin-top: 5px;
 }
+
+img{
+  width:25px;
+  height: 25px;
+}
+
+
+.error-message{
+  background: #FFBABA;
+}
+
+.complete-message{
+  background:rgba(75,	202	,129,0.8);
+}
+
 .login-container{
   background: White;
   max-width: 30%;
   margin: 0 auto;
   padding: 2%;
   box-shadow: 0px 1px 6px 1px grey;
+  border-radius: 20px;
 }
 
 .wrapper{
