@@ -182,6 +182,8 @@ function openResultPreview(mode, paramsObj){
                           }
                         //console.log("mode: "+mode)
                         //console.log("memberGraph: "+JSON.stringify(memberGraph));
+                        console.log("paramsObj.data: "+JSON.stringify(paramsObj.data));
+
                         if(mode=='name' ){ filterNameResult(paramsObj.data[0],'year',memberGraph);}
                         else if(mode=='date'){ filterDateResult(paramsObj.data,'year',memberGraph,paramsObj.date);}
 
@@ -205,7 +207,9 @@ function openResultPreview(mode, paramsObj){
                           else{
                             memberGraph={totalDonationsVsDate:{},numOfMembersVsDate:{},methodOfPaymentVsDate:{} }
                           }
-                          console.log("memberGraph: "+JSON.stringify(memberGraph));
+                          // console.log("memberGraph: "+JSON.stringify(memberGraph));
+                            console.log("paramsObj.data: "+JSON.stringify(paramsObj.data));
+
                           if(mode=='name' ){filterNameResult(paramsObj.data[0],'month',memberGraph);}
                           else if(mode=='date'){filterDateResult(paramsObj.data,'month',memberGraph,paramsObj.date);}
                   },
@@ -227,6 +231,8 @@ function openResultPreview(mode, paramsObj){
                           else{
                             memberGraph={totalDonationsVsDate:{},numOfMembersVsDate:{},methodOfPaymentVsDate:{} }
                           }
+                          // console.log("paramsObj.data: "+JSON.stringify(paramsObj.data));
+
                         //console.log("memberGraph: "+JSON.stringify(memberGraph));
                         if(mode=='name' ){filterNameResult(paramsObj.data[0],'day',memberGraph);}
                         else if(mode=='date'){filterDateResult(paramsObj.data,'day',memberGraph,paramsObj.date);}
@@ -309,13 +315,15 @@ function developMultiOverview(data,filter){//Develop overview for an array of da
   });
 
 
-  //console.log(" B4 overviewMain: "+JSON.stringify(overviewMain));
+
+  // console.log(" B4 overviewMain: "+JSON.stringify(overviewMain));
+  delete overviewMain['Extra Details'];
   ////console.log("graphs: "+JSON.stringify(graphs));
 
   var orderedDateKeys=sortDates(Object.keys(overviewMain),'text');
 
   //console.log("Object.keys(overviewMain): "+JSON.stringify(Object.keys(overviewMain)));
-  //console.log("orderedDateKeys: "+JSON.stringify(orderedDateKeys));
+  console.log("orderedDateKeys: "+JSON.stringify(orderedDateKeys));
   var ordedOverviewMain={};
 
   orderedDateKeys.forEach((key)=>{
@@ -391,6 +399,8 @@ function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
 
 
               for([categoryKey,categoryObj] of Object.entries(overviewData)){//Disolay user data filtered by year,month or day
+
+                   // console.log("overviewData: "+JSON.stringify(overviewData));
                     if(!['FirstName','LastName'].includes(categoryKey)){
                           htmlString+=`
                                 <table class="result-table inner" id="result-table-${idOffset+=1}">
@@ -403,30 +413,45 @@ function developHtmlResults(mode,overviewData, title,graphs,filter,fileName){
                                 <tbody>
                                     `;
 
-                       for([subCatKey,subCatObj] of Object.entries(categoryObj)){
-                              htmlString+=`
+                        if(categoryKey!='Extra Details'){
+                              for([subCatKey,subCatObj] of Object.entries(categoryObj)){
+                                     htmlString+=`
 
-                                                <tr>
-                                                  <td colspan="2" style="background-color:#eee; font-size:17px; text-align:center; ">${subCatKey}</td>
-                                                </tr>
-
-
-                                          `;
+                                                       <tr>
+                                                         <td colspan="2" style="background-color:#eee; font-size:17px; text-align:center; ">${subCatKey}</td>
+                                                       </tr>
 
 
-                            for([key,val] of Object.entries(subCatObj)){
-                              htmlString+=`
-                                          <tr>
-                                              <td style="background-color:white;">${key}</td>
-                                              <td style="background-color:white;">${val}</td>
-                                          </tr>`;
-
-                            }
-
-                            //htmlString+=``;
+                                                 `;
 
 
-                       }
+                                   for([key,val] of Object.entries(subCatObj)){
+                                     htmlString+=`
+                                                 <tr>
+                                                     <td style="background-color:white;">${capitalize(key)}</td>
+                                                     <td style="background-color:white;">${val}</td>
+                                                 </tr>`;
+
+                                   }
+
+                                   //htmlString+=``;
+
+
+                              }
+
+                        }else{
+                          for([key,val] of Object.entries(categoryObj)){
+                            htmlString+=`
+                                        <tr>
+                                            <td style="background-color:white;">${capitalize(key)}</td>
+                                            <td style="background-color:white;">${val}</td>
+                                        </tr>`;
+
+                          }
+
+                        }
+
+
                        htmlString+=`</tbody></table>`;
                       // htmlString+=`<tr><th colspan="2"></th> </tr>`;
 
@@ -516,34 +541,48 @@ function developOverview(data,overviewData,filter){
                                       }
 
 
-                                      if(! Object.keys(overviewData[ filterToKey[filter]]).includes(category)){
-                                                  //console.log("filter: "+filter+ " itemKey: "+itemKey);
 
-                                                    overviewData[filterToKey[filter]][category]={}
+                                        if(category!='Extra Details'){
 
+                                            if(! Object.keys(overviewData[ filterToKey[filter]]).includes(category)){
+                                                        //console.log("filter: "+filter+ " itemKey: "+itemKey);
+                                                          overviewData[filterToKey[filter]][category]={};
+                                              }
 
-                                        }
+                                              if(!Object.keys(overviewData[filterToKey[filter]][category]).includes(itemKey)){
+                                                    overviewData[filterToKey[filter]][category][itemKey]=0;
+                                              }
 
-                                        if(!Object.keys(overviewData[filterToKey[filter]][category]).includes(itemKey)){
-                                              overviewData[filterToKey[filter]][category][itemKey]=0;
-                                        }
+                                              if(isNaN(item)){
+                                                      item.split(',').forEach((item) => {
+                                                                if(['yes','y','true','t'].includes(item)){
+                                                                    overviewData[filterToKey[filter]][category][itemKey]+=1;
+                                                                }
+                                                      });
+                                              }else{
+                                                overviewData[filterToKey[filter]][category][itemKey]+=parseFloat(item);
+                                              }
 
-
-                                        if(isNaN(item)){
-                                                item.split(',').forEach((item) => {
-                                                          if(['yes','y','true','t'].includes(item)){
-                                                              overviewData[filterToKey[filter]][category][itemKey]+=1;
-                                                          }
-                                                });
                                         }else{
-                                          overviewData[filterToKey[filter]][category][itemKey]+=parseFloat(item);
+                                            if(! Object.keys(overviewData).includes(category)){
+                                                      //console.log("filter: "+filter+ " itemKey: "+itemKey);
+                                                        overviewData[category]={};
+                                            }
+
+                                            if(!Object.keys(overviewData[category]).includes(itemKey)){
+                                                  overviewData[category][itemKey]={};
+                                            }
+                                            overviewData[category][itemKey]=item;
+
                                         }
+
                                     }
                                   }
                                 }
                               }
 }
 
+// console.log("Overview Data: "+JSON.stringify(overviewData));
 
 return overviewData;
 

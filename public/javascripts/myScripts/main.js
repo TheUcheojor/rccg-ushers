@@ -32,8 +32,18 @@ $(document).ready( ()=>{
 
 
 function capitalize(str){//capitalize a given string
-      if(str==null|| str==''|| str==undefined){ return ""}
-      return str.charAt(0).toUpperCase() +str.toLowerCase().slice(1);
+      if(str==null|| str.trim()==''|| str==undefined){ return ""}
+
+      let capitalizedStr='';
+
+      str.split(/(\s+)/).filter( function(substr){ return substr.trim().length>0}).forEach((substr)=>{
+
+          capitalizedStr+=substr.charAt(0).toUpperCase() +substr.toLowerCase().slice(1)+' ';
+
+      })
+
+      return capitalizedStr;
+
 }
 
 

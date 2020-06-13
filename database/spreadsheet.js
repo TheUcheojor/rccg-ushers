@@ -491,6 +491,7 @@ try{
 
                         //Enforcing desired formating
                         value=value.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
+                        key=key.toLowerCase().split(/(\s+)/).filter( function(str){ return str.trim().length>0}).join(" ");
                         objStr+=` "${key}" : "${value}",`;
                     }
 

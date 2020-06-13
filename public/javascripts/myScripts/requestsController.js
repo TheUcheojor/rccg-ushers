@@ -109,7 +109,13 @@ function getGraphDetails(filter){//Get data for various graphs
 
               if(data!=null && data!=undefined &&  Object.keys(data.totalDonationsVsDate).length!=0 ){
 
-                    $('.totalDonationsVsDate').show();
+                    if($('.totalDonationsVsDate').css('display')=='none'
+                            && $('.numOfMembersVsDate').css('display')=='none' &&
+                          $('.methodOfPaymentVsDate').css('display')=='none'){
+
+                            $('.totalDonationsVsDate').show();
+                      }
+
                     $('.graphNav').show();
                     $('.graph-no-data').hide();
 
