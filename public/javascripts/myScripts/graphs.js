@@ -104,13 +104,14 @@ function generateGraphs(mode,graphType,graphData,filter){
           });
 
           //console.log("yValuesObj: "+ JSON.stringify(yValuesObj));
+          var randomColor=generateRandomColour();
 
           for([yLabel,yValues] of Object.entries(yValuesObj)){
                     y_dataset.push({
                           label:capitalize(yLabel),
                           fill:false,
-                          backgroundColor:yKeyToColorScheme[yLabel],
-                          borderColor:yKeyToColorScheme[yLabel],
+                          backgroundColor:yKeyToColorScheme[yLabel] || randomColor,
+                          borderColor:yKeyToColorScheme[yLabel] || randomColor,
                           data:yValuesObj[yLabel],
                     });
           }
@@ -173,6 +174,21 @@ function createCanvas(ctx,xValues, y_dataset,graphType,filter){
                                           }
                                   }
                 });
+
+}
+
+//Creates random random colour
+function generateRandomColour(){
+
+    var colour=[];
+
+    for(var i=0;i<3;i++){
+      colour.push(Math.floor(Math.random() * 255));
+    }
+
+
+    return `rgb(${colour[0]},${colour[1]},${colour[2]},0.8)`;
+
 
 }
 
