@@ -53,9 +53,9 @@ img{
 }
 
 .wrapper{
-  margin: 10% 0;
+  margin: 5% 0;
   width: 100%;
-  height: 80%;
+  max-height: 95%;
 }
 
 .form-group{
