@@ -1,6 +1,8 @@
 
 
 body {
+    width: 100%;
+    height: 100%;
     margin: 0;
     font-family: Verdana;
     font-size: 1rem;
@@ -42,7 +44,7 @@ img{
 }
 
 .login-container{
-  background: White;
+  background: #fff;
   max-width: 30%;
   margin: 0 auto;
   padding: 2%;
@@ -52,6 +54,8 @@ img{
 
 .wrapper{
   margin: 10% 0;
+  width: 100%;
+  height: 100%;
 }
 
 .form-group{
@@ -61,6 +65,7 @@ img{
 .button-container{
   text-align: right;
 }
+
 .submit-button{
 
   background-color: rgba(136, 135, 156,1);
@@ -85,4 +90,18 @@ img{
 
 div{
   display: block;
+}
+
+@media only screen and (max-width: 768px) {
+    .wrapper{
+        margin: 20%  0;
+    }
+    
+    .login-container{
+      margin: 5px 10px;
+      min-width: calc(100% - 20px);
+      /* background: blue; */
+    }
+
+
 }
