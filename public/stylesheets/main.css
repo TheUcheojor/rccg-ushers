@@ -444,6 +444,9 @@ background-size:100% 100%;
     .hor-nav-item .name-text{
       display: none;
     }
+    .hor-nav-item.search{
+      width:65%;
+    }
 
     .side-bar{
       order: 0;
