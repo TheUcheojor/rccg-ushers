@@ -8,6 +8,9 @@ $(document).ready(()=>{
    (async ()=>{getGraphDetails('month');} )();
 
     (async ()=>{updateSpreadsheet()} )();
+
+
+    
   // updateSpreadsheet();
 
    //

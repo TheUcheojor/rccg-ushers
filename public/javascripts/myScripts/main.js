@@ -27,6 +27,11 @@ $(document).ready( ()=>{
 
     });
 
+    $('.hor-nav-item.menu').on('click',()=>{
+        // $('.hor-nav-bar').insertBefore('.side-bar');
+        $('.side-bar').toggle();
+    });
+
 })
 
 
