@@ -75,7 +75,7 @@ routes.get('/settings',async (req,res)=>{
     let errors=req.session.errors;
     req.session.errors={};
 
-    res.render('settings',{title:'Settings',errors:errors,message:message})
+    res.render('settings',{title:'Settings',user:req.session.user,errors:errors,message:message})
 
 });
 

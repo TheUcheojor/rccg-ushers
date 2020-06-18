@@ -217,3 +217,19 @@
   max-height: 250px;
   overflow: auto;
 }
+
+@media only screen and (max-width: 768px) {
+
+    .organization-options-item{
+        width:95%;
+        margin: 10px 2.5%;
+
+    }
+    .limitContent{
+      max-height: unset;
+    }
+
+    .page.settings{
+      margin-top: unset;
+    }
+}
