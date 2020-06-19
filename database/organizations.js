@@ -127,7 +127,7 @@ async function createOrganization(user,organizationObj){
           let defaultHeader=['FirstName',	'LastName',	'Cheque',	'Cash',	'Debit',	'Tithe'	,'Offerings',	'Thanksgiving',	'Mission',	'Building',	'Vow']
 
 
-
+          organizationObj.spreadsheet_url=organizationObj.spreadsheet_url.trim();
           let spreadsheetkey=organizationObj.spreadsheet_url.match(spreadsheetIdRegex)[0];
 
 
@@ -161,7 +161,6 @@ async function createOrganization(user,organizationObj){
         return {success:false, errors:errors};
       }
 
-
       organizationObj.spreadsheet_id=organizationObj.spreadsheet_url.match(spreadsheetIdRegex)[0];
       //console.log("\norganizationObj.spreadsheet_id: "+organizationObj.spreadsheet_id);
 
@@ -188,6 +187,7 @@ async function createOrganization(user,organizationObj){
                 connection_obj:result.insertedId,
                 organization_id:result.insertedId.toHexString(),
                 spreadsheet_id:organizationObj.spreadsheet_id,
+                spreadsheet_url:organizationObj.spreadsheet_url,
                 permission:'Owner - All Access'
             }
           };

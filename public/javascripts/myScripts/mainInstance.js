@@ -10,7 +10,10 @@ $(document).ready(()=>{
     (async ()=>{updateSpreadsheet()} )();
 
 
-    
+    $('.open-spreadsheet').click(()=>{
+        console.log("$(this).attr('link'): "+$('.open-spreadsheet').attr('link'))
+        window.open($('.open-spreadsheet').attr('link'));
+    })
   // updateSpreadsheet();
 
    //

@@ -347,6 +347,7 @@ async function signUp(userObj){
                   spreadsheet_id:'' ,
                   organization_id:'',
                   permission:'',
+                  spreadsheet_url:'',
             };
             userObj.name=userObj.name.trim();
             userObj.email=userObj.email.toLowerCase().trim();
@@ -591,8 +592,8 @@ async function updateOrganization(user,organization){
                         name:organization.name,
                         organization_id:organization.connection_obj,
                         spreadsheet_id:organization.spreadsheet_id,
-                        permission:user.permission
-
+                        permission:user.permission,
+                        spreadsheet_url:organization.spreadsheet_url,
                     }
               }
             }
