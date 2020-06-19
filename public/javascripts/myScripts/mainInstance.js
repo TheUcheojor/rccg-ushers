@@ -11,7 +11,7 @@ $(document).ready(()=>{
 
 
     $('.open-spreadsheet').click(()=>{
-        console.log("$(this).attr('link'): "+$('.open-spreadsheet').attr('link'))
+        // console.log("$(this).attr('link'): "+$('.open-spreadsheet').attr('link'))
         window.open($('.open-spreadsheet').attr('link'));
     })
   // updateSpreadsheet();
