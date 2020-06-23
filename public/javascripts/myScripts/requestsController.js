@@ -196,6 +196,7 @@ function getGraphDetails(filter){//Get data for various graphs
                   $(".ss-Default").show();
                   $(".ss-onhover").hide();
 
+
                   $(".spreadsheet-display").attr("onmouseenter",'$(".ss-onhover").css("display","block");$(".ss-Default").css("display","none");');
                   $(".spreadsheet-display").attr("onmouseleave",'$(".ss-onhover").css("display","none");$(".ss-Default").css("display","block");');
 

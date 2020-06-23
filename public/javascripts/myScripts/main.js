@@ -32,6 +32,30 @@ $(document).ready( ()=>{
         $('.side-bar').toggle();
     });
 
+    $('.side-bar-title.dashboard').click(()=>{
+        window.location.href="/";
+    })
+
+    $('.side-bar-item.organization').click(()=>{
+        window.location.href="/organization";
+    })
+
+    $('.side-bar-item.settings').click(()=>{
+        window.location.href="/settings";
+    })
+    $('.side-bar-item.overview').click(()=>{
+        window.location.href="/overview";
+    })
+
+    $('.side-bar-item.logout').click(()=>{
+        window.location.href="/logout";
+    })
+
+    $('.hor-nav-item.logo').click( ()=>{
+      window.location.href="/";
+    })
+
+
 })
 
 

@@ -49,28 +49,28 @@
     </div> --}}
 
     <div class='side-bar'>
-          <div class='side-bar-title dashboard' onclick='window.location.href="/"'>Dashboard</div>
+          <div class='side-bar-title dashboard'>Dashboard</div>
 
           {{#ifEquals title 'Organization'}}
-            <div class='side-bar-item selected' onclick='window.location.href="/organization" ' >Organization</div>
+            <div class='side-bar-item organization selected'  >Organization</div>
           {{else}}
-            <div class='side-bar-item' onclick='window.location.href="/organization" ' >Organization</div>
+            <div class='side-bar-item organization'>Organization</div>
           {{/ifEquals}}
 
 
           {{#ifEquals title 'Settings'}}
-            <div class='side-bar-item selected' onclick='window.location.href="/settings" ' >Settings</div>
+            <div class='side-bar-item settings selected' >Settings</div>
           {{else}}
-            <div class='side-bar-item' onclick='window.location.href="/settings" ' >Settings</div>
+            <div class='side-bar-item settings' >Settings</div>
           {{/ifEquals}}
 
           {{#ifEquals title 'Overview'}}
-            <div class='side-bar-item selected' onclick='window.location.href="/overview" ' >Overview</div>
+            <div class='side-bar-item overview selected' >Overview</div>
           {{else}}
-            <div class='side-bar-item' onclick='window.location.href="/overview" '>Overview</div>
+            <div class='side-bar-item overview' >Overview</div>
           {{/ifEquals}}
 
-          <div class='side-bar-item' onclick='window.location.href="/logout" ' >Logout</div>
+          <div class='side-bar-item logout'  >Logout</div>
 
           {{!-- <div class='logo_long'  ><img src="/Images/turoken_long.png"/></div> --}}
 

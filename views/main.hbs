@@ -5,7 +5,7 @@
 
           {{#if user.organization.organization_id}}
 
-              <div class="spreadsheet-display"  onmouseenter='$(".ss-onhover").css("display","inline-block");$(".ss-Default").css("display","none");'  onmouseleave='$(".ss-onhover").css("display","none");$(".ss-Default").css("display","inline-block");'>
+              <div class="spreadsheet-display"    onmouseenter='$(".ss-onhover").css("display","inline-block");$(".ss-Default").css("display","none");'  onmouseleave='$(".ss-onhover").css("display","none");$(".ss-Default").css("display","inline-block");' >
 
                 <div class="center ss-Default" style="display:inline-block;width: 100%;">
                     <div style="float:top;font-size:22px;">Service Transactions</div>
@@ -20,8 +20,8 @@
                                 <span class="save">Save</span> -->
                                 <div class='center' style="display:inline-block;width:100%;" >
 
-                                  <div class=" preview" style="display:inline-block;position: relative;margin-right:5%; float:center;cursor:pointer;text-shadow:1px 1px rgba(0, 0, 0,0.4)"  onclick="getPreviewSpreadsheet();"  onmouseover="$(this).css('color','rgba(255, 255, 255,0.8)'); "  onmouseout="$(this).css('color','rgba(255, 255, 255,1)'); " ><h2>Preview</h2></div>
-                                  <div class=" save" onclick="saveSpreadsheet()"  style="display:inline-block;margin-left:5%;position: relative;float:center;cursor:pointer;text-shadow: 1px 1px rgba(0, 0, 0,0.4)" onmouseover="$(this).css('color','rgba(255, 255, 255,0.8)'); " onmouseout="$(this).css('color','rgba(255, 255, 255,1)') "></div>
+                                  <div class="ss-option preview" ><h2>Preview</h2></div>
+                                  <div class="ss-option save"  ></div>
 
                                   <div class="loading-saveMessage" style="display:inline-block;margin:5px;position: relative;float:center;cursor:pointer;">
                                     <img src="/Images/loading.gif" style="width:25px;height:25px;" />
@@ -99,7 +99,6 @@
 
                   <div class='message'>
                       Not registered with an organization
-
                   </div>
                   <div class='getStarted'>
                       <a href='organization'> Get Started - Join or Create Your Organization</a>
