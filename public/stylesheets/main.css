@@ -77,6 +77,10 @@ img{
   font-family: Courier;
   color:rgba(136, 135, 156,1);
   text-transform: capitalize;
+  width: 100%;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  text-align: right;
 }
 .hor-nav-item.search{
   width:70%;
