@@ -86,6 +86,11 @@ routes.get('/overview', (req,res)=>{
 
 })
 
+routes.get('/auxilliary',(req,res)=>{
+    res.render('auxilliary',{title:'Auxilliary',user:req.session.user,})
+
+})
+
 // routes.get('/search',(req,res)=>{
 //   res.render('search',{title:'Search', isMain:false});
 // });

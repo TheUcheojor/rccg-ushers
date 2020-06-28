@@ -1,0 +1,58 @@
+
+
+<div class="mainContent">
+
+
+
+    <div class="page auxilliary">
+
+      <div class='organization-options-item'>
+                  <div class='title'>Import Data</div>
+
+                  <form action='/organization/import' method='post'>
+
+                    {{#if errors.joinOrganization}}
+                        <div class='organization-form-group' >
+                            <ul>
+                                {{#each errors.joinOrganization as |error|}}
+                                      <li>
+                                        {{error}}
+                                      </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                    {{/if}}
+
+                    <div class='auxilliary-form-group' >
+
+
+                      <div class="upload">
+                          <input type="button" class="uploadButton" value="Browse" />
+                          <input type="file" name="upload" accept=".csv" id="fileUpload" required />
+                          <span class="fileName">Select Your CSV File..</span>
+                      </div>
+
+
+                    </div>
+
+
+                    <div class='organization-form-group button-container'>
+                        <button class="create-button" onclick="if ($('#fileUpload').val()) {$('.loading-import').show();$(this).hide();}">Import</button>
+                        <img class='loading-import' src="/Images/loading.gif" style="display:none;width:25px;height:25px;" />
+                    </div>
+
+                  </form>
+
+      </div>
+
+
+
+
+
+
+
+    </div>
+
+
+
+</div>

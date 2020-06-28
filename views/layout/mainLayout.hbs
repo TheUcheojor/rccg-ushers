@@ -4,9 +4,6 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport" />
 
-
-
-
     <script src="javascripts/importedScripts/jquery-3.5.0.min.js" ></script>
     <script src="javascripts/importedScripts/moment.min.js"></script>
 
@@ -36,7 +33,7 @@
     <link type="text/css"   rel="stylesheet" href="/stylesheets/graph.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/search.css" media="all"  />
     <link type="text/css"   rel="stylesheet" href="/stylesheets/organization.css" media="all"  />
-
+    <link type="text/css"   rel="stylesheet" href="/stylesheets/auxilliary.css" media="all"  />
 
     <title> {{title}}</title>
 
@@ -49,28 +46,46 @@
     </div> --}}
 
     <div class='side-bar'>
-          <div class='side-bar-title dashboard'>Dashboard</div>
+          <div class='side-bar-nav side-bar-title' page=''>Dashboard</div>
 
           {{#ifEquals title 'Organization'}}
-            <div class='side-bar-item organization selected'  >Organization</div>
+            <div class='side-bar-nav side-bar-item  selected' page='organization'  >Organization</div>
           {{else}}
-            <div class='side-bar-item organization'>Organization</div>
+            <div class='side-bar-nav side-bar-item ' page='organization'>Organization</div>
           {{/ifEquals}}
 
+          {{#if user.organization.organization_id}}
+              {{#ifEquals user.organization.permission 'All-Access'}}
+
+                  {{#ifEquals title 'Auxilliary'}}
+                    <div class='side-bar-nav side-bar-item selected' page='auxilliary' >Auxilliary</div>
+                  {{else}}
+                    <div class='side-bar-nav side-bar-item ' page='auxilliary' >Auxilliary</div>
+                  {{/ifEquals}}
+
+              {{/ifEquals}}
+              {{#ifEquals user.organization.permission 'Owner - All Access'}}
+                    {{#ifEquals title 'Auxilliary'}}
+                      <div class='side-bar-nav side-bar-item selected' page='auxilliary' >Auxilliaries</div>
+                    {{else}}
+                      <div class='side-bar-nav side-bar-item ' page='auxilliary' >Auxilliaries</div>
+                    {{/ifEquals}}
+              {{/ifEquals}}
+          {{/if}}
 
           {{#ifEquals title 'Settings'}}
-            <div class='side-bar-item settings selected' >Settings</div>
+            <div class='side-bar-nav side-bar-item  selected' page='settings' >Settings</div>
           {{else}}
-            <div class='side-bar-item settings' >Settings</div>
+            <div class='side-bar-nav side-bar-item ' page='settings'>Settings</div>
           {{/ifEquals}}
 
           {{#ifEquals title 'Overview'}}
-            <div class='side-bar-item overview selected' >Overview</div>
+            <div class='side-bar-nav side-bar-item  selected' page='overview' >Overview</div>
           {{else}}
-            <div class='side-bar-item overview' >Overview</div>
+            <div class='side-bar-nav side-bar-item' page='overview'>Overview</div>
           {{/ifEquals}}
 
-          <div class='side-bar-item logout'  >Logout</div>
+          <div class='side-bar-nav side-bar-item logout' page='logout' >Logout</div>
 
           {{!-- <div class='logo_long'  ><img src="/Images/turoken_long.png"/></div> --}}
 
