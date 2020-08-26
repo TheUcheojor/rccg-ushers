@@ -1,5 +1,5 @@
-# Ushering-Application
-    Title: RCCG Ushers
+# Turoken-Application
+    Title: Turoken
     Description: Web application for storing organizations' transactions and users
     Author: Paul Okenne
     Date: Jun 6,2020
