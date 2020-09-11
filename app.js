@@ -78,10 +78,7 @@ app.use('/logout',auth.logout);
 
 app.get('/.well-known/pki-validation/41A3EECFEBDD52D24C47D6735557E953.txt', async (req,res)=>{
 
-  res.send(`CDB28A86EA35C9FF25B3CF02D05A4E4052A12EAD1DBE22978D1EE9FB32A78EDB<br/>
-            comodoca.com<br/>
-            31ad3c5804d47d9`
-  );
+  res.sendFile('/.well-known/pki-validation/41A3EECFEBDD52D24C47D6735557E953.txt');
 })
 
 app.use('/',auth.checkLoggedIn, indexRouter);
