@@ -78,7 +78,7 @@ app.use('/logout',auth.logout);
 
 app.get('/.well-known/pki-validation/41A3EECFEBDD52D24C47D6735557E953.txt', async (req,res)=>{
 
-  res.sendFile('/.well-known/pki-validation/41A3EECFEBDD52D24C47D6735557E953.txt');
+  res.sendFile('.well-known/pki-validation/41A3EECFEBDD52D24C47D6735557E953.txt');
 })
 
 app.use('/',auth.checkLoggedIn, indexRouter);
