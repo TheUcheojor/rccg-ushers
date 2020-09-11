@@ -89,10 +89,13 @@ function generateGraphs(mode,graphType,graphData,filter){
                               'debit':'rgba(162, 181, 199,0.8)'};
 
           let y_dataset=[];let yValuesObj={};
-          xValues.forEach( (xkey, xindex)=> {
 
-                  xValues[xindex]=moment(xValues[xindex], momentTimeFormat);
-                  for( [yKey,yVal] of Object.entries(graphData[xkey])){
+          if (xValues){
+
+                xValues.forEach( (xkey, xindex)=> {
+
+                    xValues[xindex]=moment(xValues[xindex], momentTimeFormat);
+                    for( [yKey,yVal] of Object.entries(graphData[xkey])){
 
                     if(Object.keys(yValuesObj).includes(yKey) ){
                         yValuesObj[yKey].push(yVal);
@@ -100,8 +103,11 @@ function generateGraphs(mode,graphType,graphData,filter){
                         yValuesObj[yKey]=[yVal];
                     }
 
-                  }
-          });
+                    }
+            });
+
+          }
+          
 
           //console.log("yValuesObj: "+ JSON.stringify(yValuesObj));
           var randomColor=generateRandomColour();
