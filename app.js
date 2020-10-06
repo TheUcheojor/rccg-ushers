@@ -76,9 +76,9 @@ app.use('/sign-up',auth.signUp,indexRouter);
 app.use('/forgot-password',auth.forgotPassword,indexRouter);
 app.use('/logout',auth.logout);
 
-app.get('/.well-known/pki-validation/41A3EECFEBDD52D24C47D6735557E953.txt', async (req,res)=>{
+app.get('/.well-known/pki-validation/BA161BD1A6E367949ABD8C18F6F986B8.txt', async (req,res)=>{
 
-  res.sendFile('41A3EECFEBDD52D24C47D6735557E953.txt',{root:__dirname});
+  res.sendFile('BA161BD1A6E367949ABD8C18F6F986B8.txt',{root:__dirname});
 })
 
 app.use('/',auth.checkLoggedIn, indexRouter);
