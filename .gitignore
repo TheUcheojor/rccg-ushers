@@ -63,3 +63,6 @@ server.js
 package-lock.json
 server.js
 .DS_Store
+
+#others
+turoken_server_key.pem
